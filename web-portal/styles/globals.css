@@ -1,0 +1,19 @@
+@media (max-width: 900px) {
+	.logo-large {
+		display: none;
+	}
+
+	.logo-small {
+		display: block;
+	}
+}
+
+@media (min-width: 900px) {
+	.logo-large {
+		display: block;
+	}
+
+	.logo-small {
+		display: none;
+	}
+}

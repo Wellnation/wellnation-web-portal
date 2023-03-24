@@ -1,0 +1,232 @@
+import React from 'react';
+import {
+	AppBar,
+	Avatar,
+	Box,
+	Button,
+	Container,
+	Divider,
+	Drawer,
+	IconButton,
+	List,
+	ListItem,
+	ListItemButton,
+	ListItemText,
+	Menu,
+	MenuItem,
+	Toolbar,
+	Tooltip,
+	Typography,
+} from '@mui/material';
+import Image from 'next/image';
+import MenuIcon from '@mui/icons-material/Menu';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '@/firebase.config';
+
+const drawerWidth = 240;
+const navItems = ['Home', 'About', 'Contact'];
+const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+
+function Navbar() {
+	const [anchorElUser, setAnchorElUser] = React.useState(null);
+	const [mobileOpen, setMobileOpen] = React.useState(false);
+	const [user, loading, error] = useAuthState(auth);
+
+	const handleDrawerToggle = () => {
+		setMobileOpen((prevState) => !prevState);
+	};
+
+	const handleOpenUserMenu = (event) => {
+		setAnchorElUser(event.currentTarget);
+	};
+
+	const handleCloseUserMenu = () => {
+		setAnchorElUser(null);
+	};
+
+	const container = undefined;
+
+	const drawer = (
+		<Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
+			<Typography
+				variant="h6"
+				sx={{ my: 2 }}
+				style={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center'
+				}}
+			>
+				<Image
+					src="/plus-black.svg"
+					width={40}
+					height={40}
+					alt="Hospital Logo"
+					style={{
+						paddingRight: '10px'
+					}}
+				/>
+				WELLNATION
+			</Typography>
+			<Divider />
+			<List>
+				{navItems.map((item) => (
+					<ListItem key={item} disablePadding>
+						<ListItemButton sx={{ textAlign: 'center' }}>
+							<ListItemText primary={item} />
+						</ListItemButton>
+					</ListItem>
+				))}
+			</List>
+		</Box>
+	);
+
+	return (
+		<>
+			<AppBar position="sticky">
+				<Container maxWidth="xl">
+					<Toolbar disableGutters>
+						<Image
+							className='logo-large'
+							src="/plus.svg"
+							width={40}
+							height={40}
+							alt="Hospital Logo"
+							style={{
+								cursor: 'pointer',
+								paddingRight: '10px',
+							}}
+						/>
+						<Typography
+							variant="h6"
+							noWrap
+							component="a"
+							href="/"
+							sx={{
+								mr: 2,
+								display: { xs: 'none', md: 'flex' },
+								fontWeight: 700,
+								color: 'inherit',
+								textDecoration: 'none',
+							}}
+						>
+							WELLNATION
+						</Typography>
+
+						<Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+							<IconButton
+								size="large"
+								aria-label="account of current user"
+								aria-controls="menu-appbar"
+								aria-haspopup="true"
+								onClick={handleDrawerToggle}
+								color="inherit"
+							>
+								<MenuIcon />
+							</IconButton>
+						</Box>
+						<Image
+							className='logo-small'
+							src="/plus.svg"
+							width={40}
+							height={40}
+							alt="Hospital Logo"
+							style={{
+								cursor: 'pointer',
+								paddingRight: '10px',
+							}}
+						/>
+						<Typography
+							variant="h5"
+							noWrap
+							component="a"
+							href=""
+							sx={{
+								mr: 2,
+								display: { xs: 'flex', md: 'none' },
+								flexGrow: 1,
+								fontWeight: 700,
+								color: 'inherit',
+								textDecoration: 'none',
+							}}
+						>
+							WELLNATION
+						</Typography>
+						<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+							{navItems.map((page) => (
+								<Button
+									key={page}
+									onClick={handleDrawerToggle}
+									sx={{ my: 2, color: 'white', display: 'block' }}
+								>
+									{page}
+								</Button>
+							))}
+						</Box>
+
+						<Box sx={{ flexGrow: 0 }}>
+							{/* {user ? (<> */}
+							<Tooltip title="Open settings">
+								<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+									<Avatar alt="Remy Sharp" src="https://www.w3schools.com/howto/img_avatar.png" />
+								</IconButton>
+							</Tooltip>
+							<Menu
+								sx={{ mt: '45px' }}
+								id="menu-appbar"
+								anchorEl={anchorElUser}
+								anchorOrigin={{
+									vertical: 'top',
+									horizontal: 'right',
+								}}
+								keepMounted
+								transformOrigin={{
+									vertical: 'top',
+									horizontal: 'right',
+								}}
+								open={Boolean(anchorElUser)}
+								onClose={handleCloseUserMenu}
+							>
+								{settings.map((setting) => (
+									<MenuItem key={setting} onClick={handleCloseUserMenu}>
+										<Typography textAlign="center">{setting}</Typography>
+									</MenuItem>
+								))}
+							</Menu>
+							{user ? 'user' 
+							: loading ? 'loading'
+							: error ? 'error'
+							: 'no user'}
+							{/* </>) : (
+								<Button
+									variant="contained"
+									onClick={() => window.location.href = '/login'}
+								>
+									Login
+								</Button>
+							)} */}
+						</Box>
+					</Toolbar>
+				</Container>
+			</AppBar>
+			<Box component="nav">
+				<Drawer
+					container={container}
+					variant="temporary"
+					open={mobileOpen}
+					onClose={handleDrawerToggle}
+					ModalProps={{
+						keepMounted: true, 
+					}}
+					sx={{
+						display: { xs: 'block', sm: 'none' },
+						'& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+					}}
+				>
+					{drawer}
+				</Drawer>
+			</Box>
+		</>
+	);
+}
+export default Navbar;
