@@ -15,6 +15,7 @@ export default function Document() {
         />
       </Head>
       <body>
+      <script src="https://chatthing.ai/chat-widget.js" type="text/javascript" data-bot-id="6ecb864c-68c7-451b-b032-8d674e1888de" />
         <Main />
         <NextScript />
       </body>
