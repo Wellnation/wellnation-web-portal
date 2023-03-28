@@ -26,7 +26,7 @@ function Copyright(props) {
   );
 }
 
-const reset = () => {
+const Reset = () => {
   const [password, setPassword] = React.useState('')
   const [rePassword, setRePassword] = React.useState('')
   const [checkPass, setCheckPass] = React.useState(false)
@@ -120,4 +120,4 @@ const reset = () => {
   )
 }
 
-export default reset
+export default Reset

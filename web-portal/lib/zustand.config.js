@@ -7,7 +7,6 @@ const useAuthStore = create((set) => ({
   loading: true,
   setUser: (user) => set({ user }),
   setLoading: (loading) => set({ loading })
-
 }));
 
 onAuthStateChanged(auth, (user) => {
