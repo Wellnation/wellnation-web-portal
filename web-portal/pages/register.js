@@ -38,10 +38,11 @@ const Register = () => {
 	const [checkPass, setCheckPass] = React.useState(false);
 	const [open, setOpen] = React.useState(false);
 	const [errorMessage, setErrorMessage] = React.useState("");
+	const [type, setType] = React.useState("error");
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
-		checkPass && register(name, email, rePassword, setOpen, setErrorMessage);
+		checkPass && register(name, email, rePassword, setOpen, setErrorMessage, setType);
 	};
 
   const handleClose = (event, reason) => {
@@ -143,7 +144,7 @@ const Register = () => {
 					>
 						Sign Up
 					</Button>
-					<Notifications open={open} message={errorMessage} handleClose={handleClose} />
+					<Notifications open={open} type={type} message={errorMessage} handleClose={handleClose} />
 					<Grid container justifyContent="flex-end">
 						<Grid item>
 							<Link href="/login" variant="body2">

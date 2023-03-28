@@ -20,17 +20,41 @@ import {
 } from '@mui/material';
 import Image from 'next/image';
 import MenuIcon from '@mui/icons-material/Menu';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '@/firebase.config';
+import { useAuthStore } from '@/lib/zustand.config';
+import { useRouter } from 'next/router';
+import { signOut } from 'firebase/auth';
+import { logout } from '@/pages/api/auth';
 
 const drawerWidth = 240;
 const navItems = ['Home', 'About', 'Contact'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function Navbar() {
 	const [anchorElUser, setAnchorElUser] = React.useState(null);
 	const [mobileOpen, setMobileOpen] = React.useState(false);
-	const [user, loading, error] = useAuthState(auth);
+	const { user, loading } = useAuthStore();
+	const router = useRouter();
+
+	const settings = [
+		{
+			name: 'Account',
+			click: () => {
+				router.push('/account');
+			},
+		},
+		{
+			name: 'Dashboard',
+			click: () => {
+				router.push('/dashboard');
+			},
+		},
+		{
+			name: 'Logout',
+			click: () => {
+				logout();
+				router.push('/');
+			},
+		},
+	];
 
 	const handleDrawerToggle = () => {
 		setMobileOpen((prevState) => !prevState);
@@ -165,7 +189,7 @@ function Navbar() {
 						</Box>
 
 						<Box sx={{ flexGrow: 0 }}>
-							{/* {user ? (<> */}
+							{user ? <>
 							<Tooltip title="Open settings">
 								<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
 									<Avatar alt="Remy Sharp" src="https://www.w3schools.com/howto/img_avatar.png" />
@@ -187,24 +211,20 @@ function Navbar() {
 								open={Boolean(anchorElUser)}
 								onClose={handleCloseUserMenu}
 							>
-								{settings.map((setting) => (
-									<MenuItem key={setting} onClick={handleCloseUserMenu}>
-										<Typography textAlign="center">{setting}</Typography>
+								{settings.map((item) => (
+									<MenuItem key={item.name} onClick={item.click}>
+										<Typography textAlign="center">{item.name}</Typography>
 									</MenuItem>
 								))}
 							</Menu>
-							{user ? 'user' 
-							: loading ? 'loading'
-							: error ? 'error'
-							: 'no user'}
-							{/* </>) : (
-								<Button
-									variant="contained"
-									onClick={() => window.location.href = '/login'}
+							</> 
+							: <Button 
+									variant="text"
+									href="/login"
 								>
-									Login
+									<div style={{color: 'white'}}>Login</div>
 								</Button>
-							)} */}
+							}
 						</Box>
 					</Toolbar>
 				</Container>

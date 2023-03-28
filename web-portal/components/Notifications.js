@@ -2,7 +2,7 @@ import React from "react";
 import { Alert, IconButton, Snackbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-const Notifications = ({ open, message, handleClose }) => {
+const Notifications = ({ open, type, message, handleClose }) => {
 	const action = (
     <React.Fragment>
       <IconButton
@@ -27,7 +27,7 @@ const Notifications = ({ open, message, handleClose }) => {
 			autoHideDuration={4000}
 			action={action}
 		>
-			<Alert variant="filled" severity="error" onClose={handleClose}>
+			<Alert variant="filled" severity={type} onClose={handleClose}>
         {message}
       </Alert>
 		</Snackbar>

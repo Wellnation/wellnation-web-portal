@@ -10,7 +10,7 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { login, verify } from './api/auth';
+import { login } from './api/auth';
 import Notifications from '@/components/Notifications';
 
 function Copyright(props) {
@@ -30,10 +30,11 @@ const Login = () => {
   const [password, setPassword] = React.useState('');
   const [open, setOpen] = React.useState(false);
 	const [errorMessage, setErrorMessage] = React.useState("");
+  const [type, setType] = React.useState("error");
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    login(email, password, setOpen, setErrorMessage);
+    login(email, password, setOpen, setErrorMessage, setType);
   };
 
   const handleClose = (event, reason) => {
@@ -98,10 +99,10 @@ const Login = () => {
             >
               Sign In
             </Button>
-            <Notifications open={open} message={errorMessage} handleClose={handleClose} />
+            <Notifications open={open} type={type} message={errorMessage} handleClose={handleClose} />
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2" onClick={() => verify(setOpen, setErrorMessage)}>
+                <Link href="#" variant="body2" onClick={() => window.location.href="/forgot"}>
                   Forgot password?
                 </Link>
               </Grid>
