@@ -24,7 +24,7 @@ function Copyright(props) {
   );
 }
 
-const forgot = () => {
+const Forgot = () => {
   const [email, setEmail] = React.useState('')
   const [open, setOpen] = React.useState(false)
   const [errorMessage, setErrorMessage] = React.useState('')
@@ -90,4 +90,4 @@ const forgot = () => {
   )
 }
 
-export default forgot
+export default Forgot

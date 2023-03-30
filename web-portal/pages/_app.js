@@ -4,9 +4,11 @@ import Layout from '@/components/Layout';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Head from 'next/head';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 export default function MyApp({ Component, pageProps }) {
   const [mode, setMode] = React.useState('light');
+  const queryClient = new QueryClient();
   const theme = createTheme({
     palette: {
       mode: mode,
@@ -22,9 +24,11 @@ export default function MyApp({ Component, pageProps }) {
       </Head>
         <ThemeProvider theme={theme}>
           <CssBaseline />
+          <QueryClientProvider client={queryClient}>
           <Layout>
             <Component {...pageProps} />
           </Layout>
+          </QueryClientProvider>
         </ThemeProvider>
     </>
   )

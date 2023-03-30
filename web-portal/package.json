@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.10.6",
     "@mui/icons-material": "^5.11.11",
     "@mui/material": "^5.11.13",
+    "@mui/x-data-grid": "^6.0.3",
     "firebase": "^9.18.0",
     "next": "13.2.4",
     "react": "18.2.0",
