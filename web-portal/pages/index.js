@@ -3,9 +3,9 @@ import { db } from '@/lib/firebase.config';
 import { collection, query, getDocs, doc as firestoreDoc, getDoc, where } from "firebase/firestore";
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
-import { useQuery } from 'react-query';
-import { useAuthStore } from '@/lib/zustand.config';
+import { useAuth } from '@/lib/zustand.config';
 import {Loader, NotUser} from '@/components/utils';
+import { Typography } from '@mui/material';
 
 const columns = [
   { 
@@ -49,41 +49,25 @@ const columns = [
   {
     field: 'completed',
     headerName: 'Status',
-    type: 'string',
+    type: 'boolean',
     width: 110,
     // editable: true,
   },
 ];
 
 const Home = () => {
-  const { user, loading, userError } = useAuthStore();
-  // const { data: appointments, isLoading, error } = useQuery('appointments', async () => {
-  //   const querySnap = await getDocs(collection(db, 'users'), where('email', '==', user.email));
-  //   const hospitalId = querySnap.docs[1].id;
-  //   const querySnapshot = await getDocs(query(collection(db, 'appointments'), where('hospital', '==', hospitalId)));
-  //   const appointmentsData = await Promise.all(
-  //     querySnapshot.docs.map(async (doc) => {
-  //       const appointmentData = doc.data();
-  //       const userDoc = await getDoc(firestoreDoc(db, 'users', appointmentData.hospital));
-  //       const doctorName = userDoc.data().doctors.find((doctor) => doctor.id === appointmentData.doctor).name;
-  //       return { id: doc.id, ...appointmentData, hospitalName: userDoc.data().name, doctorName: doctorName };
-  //     })
-  //   );
-  //   return appointmentsData;
-  // });
+  const { user, loading, userError } = useAuth();
   const [appointmentData, setAppointmentData] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [auth, setAuth] = React.useState(true);
   
   const hId = localStorage.getItem('hId');
-  console.log(hId);
+  // console.log(hId);
 
   React.useEffect(() => {
     const getAppointmentData = async () => {
       try {
-        // const querySnap = await getDocs(query(collection(db, 'users'), where('email', '==', user.email)));
-        // const hospitalId = querySnap.docs[0].id;
         const querySnapshot = await getDocs(query(collection(db, 'appointments'), where('hospital', '==', hId)));
         const appointmentsData = await Promise.all(
           querySnapshot.docs.map(async (doc) => {
@@ -105,7 +89,9 @@ const Home = () => {
   }, [loading]);
 
   if(!auth) return <NotUser />;
+
   else if (isLoading) return <Loader />;
+
   else if (error) { 
     return (
       <div>
@@ -117,7 +103,18 @@ const Home = () => {
 
   return (
     <>
-      <h1>Appointments</h1>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingTop: '50px',
+          fontWeight: 900,
+          fontSize: '2.5rem'
+        }}
+      >
+        Appointments
+      </div>
       <div 
         style={{
           display: 'flex',

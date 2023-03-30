@@ -9,7 +9,6 @@ import {
 	Drawer,
 	IconButton,
 	List,
-	ListItem,
 	ListItemButton,
 	ListItemText,
 	Menu,
@@ -20,18 +19,34 @@ import {
 } from '@mui/material';
 import Image from 'next/image';
 import MenuIcon from '@mui/icons-material/Menu';
-import { useAuthStore } from '@/lib/zustand.config';
+import { useAuth } from '@/lib/zustand.config';
 import { useRouter } from 'next/router';
-import { signOut } from 'firebase/auth';
 import { logout } from '@/pages/api/auth';
 
 const drawerWidth = 240;
-const navItems = ['Home', 'About', 'Contact'];
+const navItems = [
+	{
+		name: 'Home',
+		link: '/',
+	},
+	{
+		name: 'History',
+		link: '/history',
+	},
+	{
+		name: 'About',
+		link: '/about',
+	},
+	{
+		name: 'Contact',
+		link: '/contact',
+	}
+];
 
 function Navbar() {
 	const [anchorElUser, setAnchorElUser] = React.useState(null);
 	const [mobileOpen, setMobileOpen] = React.useState(false);
-	const { user, loading } = useAuthStore();
+	const { user, loading } = useAuth();
 	const router = useRouter();
 
 	const settings = [
@@ -95,11 +110,11 @@ function Navbar() {
 			<Divider />
 			<List>
 				{navItems.map((item) => (
-					<ListItem key={item} disablePadding>
+					<MenuItem key={item.name} onClick={() => router.push(`/${item.link}`)}>
 						<ListItemButton sx={{ textAlign: 'center' }}>
-							<ListItemText primary={item} />
+							<ListItemText primary={item.name} />
 						</ListItemButton>
-					</ListItem>
+					</MenuItem>
 				))}
 			</List>
 		</Box>
@@ -179,11 +194,11 @@ function Navbar() {
 						<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
 							{navItems.map((page) => (
 								<Button
-									key={page}
-									onClick={handleDrawerToggle}
+									key={page.name}
+									onClick={() => router.push(`/${page.link}`)}
 									sx={{ my: 2, color: 'white', display: 'block' }}
 								>
-									{page}
+									{page.name}
 								</Button>
 							))}
 						</Box>

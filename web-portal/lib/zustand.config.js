@@ -1,32 +1,20 @@
 import { create } from 'zustand';
 import { auth } from './firebase.config';
 import { onAuthStateChanged } from 'firebase/auth';
-import { useQuery } from 'react-query';
 
-const useStore = create((set) => ({
+const useAuth = create((set) => ({
   user: null,
   loading: true,
+  error: null,
   setUser: (user) => set({ user }),
-  setLoading: (loading) => set({ loading })
+  setLoading: (loading) => set({ loading }),
+  setError: (error) => set({ error }),
 }));
 
-function useAuth() {
-  const setUser = useStore(state => state.setUser);
-
-  useQuery('auth', () => new Promise(resolve => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      setUser(user);
-      setLoading(false);
-      resolve(user);
-    });
-    return unsubscribe;
-  }));
-
-  return useStore(state => state.user);
-}
-
 onAuthStateChanged(auth, (user) => {
-  useAuthStore.setState({ user, loading: false });
+  useAuth.setState({ user, loading: false });
+}, (error) => {
+  useAuth.setState({ error, loading: false });
 });
 
 export { useAuth };
