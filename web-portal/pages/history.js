@@ -14,30 +14,11 @@ import Paper from '@mui/material/Paper';
 import TablePagination from '@mui/material/TablePagination';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { useQuery,QueryClient,QueryClientProvider } from 'react-query';
+import { collection, getDocs, where } from 'firebase/firestore';
+import { getAuth } from "firebase/auth";
 
-function createData(name, calories, fat, carbs, protein, price) {
-  return {
-    name,
-    calories,
-    fat,
-    carbs,
-    protein,
-    price,
-    history: [
-      {
-        date: '2020-01-05',
-        customerId: '11091700',
-        amount: 3,
-      },
-      {
-        date: '2020-01-02',
-        customerId: 'Anonymous',
-        amount: 1,
-      },
-    ],
-  };
-}
-
+const queryprovider = new QueryClient(); 
 function Row(props) {
   const { row } = props;
   const [open, setOpen] = React.useState(false);
@@ -57,17 +38,17 @@ function Row(props) {
         <TableCell component="th" scope="row">
           {row.name}
         </TableCell>
-        <TableCell align="right">{row.calories}</TableCell>
-        <TableCell align="right">{row.fat}</TableCell>
-        <TableCell align="right">{row.carbs}</TableCell>
-        <TableCell align="right">{row.protein}</TableCell>
+        <TableCell align="right">{row.PatientName}</TableCell>
+        <TableCell align="right">{row.Date}</TableCell>
+        <TableCell align="right">{row.Time}</TableCell>
+        <TableCell align="right">{row.Tests}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Typography variant="h6" gutterBottom component="div">
-                History
+                Patient History
               </Typography>
               <Table size="small" aria-label="purchases">
                 <TableHead>
@@ -103,79 +84,75 @@ function Row(props) {
 
 Row.propTypes = {
   row: PropTypes.shape({
-    calories: PropTypes.number.isRequired,
-    carbs: PropTypes.number.isRequired,
-    fat: PropTypes.number.isRequired,
+    PatientName: PropTypes.string.isRequired,
+    Date: PropTypes.string.isRequired,
+    Time: PropTypes.string.isRequired,
+
+    Tests: PropTypes.arrayOf(
+      PropTypes.shape({
+        type: PropTypes.number.isRequired,
+      }),
+    ).isRequired,
     history: PropTypes.arrayOf(
       PropTypes.shape({
-        amount: PropTypes.number.isRequired,
+        Name: PropTypes.string.isRequired,
         customerId: PropTypes.string.isRequired,
         date: PropTypes.string.isRequired,
       }),
-    ).isRequired,
-    name: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
-    protein: PropTypes.number.isRequired,
+    ).isRequired
   }).isRequired,
 };
 
 const columns = [
-  { id: 'Dessert', label: 'Dessert (100g serving)', minWidth: 170 },
-  { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
+  { id: 'patient', label: 'Patient history', minWidth: 10 },
+  { id: 'patient', label: 'Patient name', minWidth: 10 },
   {
-    id: 'Calories',
-    label: 'Calories',
-    minWidth: 170,
+    id: 'Date',
+    label: 'Date',
+    minWidth: 100,
     align: 'right',
     format: (value) => value.toLocaleString('en-US'),
   },
   {
-    id: 'Fat(g)',
-    label: 'Fat(g)',
-    minWidth: 170,
+    id: 'Time',
+    label: 'Time',
+    minWidth: 100,
     align: 'right',
     format: (value) => value.toLocaleString('en-US'),
   },
   {
-    id: 'Carbs(g)',
-    label: 'Carbs(g)',
+    id: 'Tests',
+    label: 'Tests',
     minWidth: 170,
     align: 'right',
-    format: (value) => value.toFixed(2),
-  },
-  {
-    id: 'Protein(g)',
-    label: 'Protein(g)',
-    minWidth: 170,
-    align: 'right',
-    format: (value) => value.toFixed(2),
+    format: (value) => value.toLocaleString('en-US'),
   },
 ];
 
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0, 3.99),
-  createData('Eclair', 262, 16.0, 24, 6.0, 3.79),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3, 4.99),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3, 4.99),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3, 4.99),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3, 4.99),
-  createData('Cupcake', 305, 3.7, 67, 4.3, 2.5),
-  createData('Cupcake', 305, 3.7, 67, 4.3, 2.5),
-  createData('Cupcake', 305, 3.7, 67, 4.3, 2.5),
-  createData('Cupcake', 305, 3.7, 67, 4.3, 2.5),
-  createData('Cupcake', 305, 3.7, 67, 4.3, 2.5),
-  createData('Gingerbread', 356, 16.0, 49, 3.9, 1.5),
-  createData('Gingerbread', 356, 16.0, 49, 3.9, 1.5),
-  createData('Gingerbread', 356, 16.0, 49, 3.9, 1.5),
-  createData('Gingerbread', 356, 16.0, 49, 3.9, 1.5),
-  createData('Gingerbread', 356, 16.0, 49, 3.9, 1.5),
-  createData('Gingerbread', 356, 16.0, 49, 3.9, 1.5),
-  createData('Gingerbread', 356, 16.0, 49, 3.9, 1.5),
-];
 
 export default function History() {
+  const auth = getAuth();
+  const user = auth.currentUser;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [test, setTests] = React.useState([]);
+
+  const { isLoading, error, data } = useQuery({
+    queryKey: ['tests'],
+    queryFn: fetchtests,
+  });
+  
+  async function fetchtests() {
+    // fetch all from tests collection from firebase
+    console.log(user)
+    const tests = await getdocs(collection(db, 'tests'), where('hId', '==', user._id));
+    tests.get().then((querySnapshot) => {
+      const data = querySnapshot.docs.map((doc) => doc.data());
+      setTests(data);
+    }
+    );
+  }
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -186,7 +163,13 @@ export default function History() {
     setPage(0);
   };
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+    <QueryClientProvider client={queryprovider}>
+    <div style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    }}>
+    <Paper sx={{ width: '80%', overflow: 'hidden' }} style={{margin: "1rem 5rem 1rem 5rem"}}>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="collapsible table">
           <TableHead>
@@ -222,7 +205,9 @@ export default function History() {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
-    </Paper>
+      </Paper>
+      </div>
+      </QueryClientProvider>
   );
 }
 
