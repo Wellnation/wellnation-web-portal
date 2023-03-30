@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 import { useQuery } from 'react-query';
 import { useAuthStore } from '@/lib/zustand.config';
+import {Loader, NotUser} from '@/components/utils';
 
 const columns = [
   { 
@@ -73,13 +74,17 @@ const Home = () => {
   const [appointmentData, setAppointmentData] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
+  const [auth, setAuth] = React.useState(true);
+  
+  const hId = localStorage.getItem('hId');
+  console.log(hId);
 
   React.useEffect(() => {
     const getAppointmentData = async () => {
       try {
-        const querySnap = await getDocs(collection(db, 'users'), where('email', '==', user.email));
-        const hospitalId = querySnap.docs[1].id;
-        const querySnapshot = await getDocs(query(collection(db, 'appointments'), where('hospital', '==', hospitalId)));
+        // const querySnap = await getDocs(query(collection(db, 'users'), where('email', '==', user.email)));
+        // const hospitalId = querySnap.docs[0].id;
+        const querySnapshot = await getDocs(query(collection(db, 'appointments'), where('hospital', '==', hId)));
         const appointmentsData = await Promise.all(
           querySnapshot.docs.map(async (doc) => {
             const appointmentData = doc.data();
@@ -95,13 +100,13 @@ const Home = () => {
         setIsLoading(false);
       }
     }
+    !loading && !user && setAuth(false);
+    !loading && user && getAppointmentData();
+  }, [loading]);
 
-    getAppointmentData();
-  }, [user.email]);
-
-  if (isLoading) return <p>Loading...</p>;
-
-  if (error) { 
+  if(!auth) return <NotUser />;
+  else if (isLoading) return <Loader />;
+  else if (error) { 
     return (
       <div>
         An error occurred: {error.message}<br />
@@ -113,7 +118,6 @@ const Home = () => {
   return (
     <>
       <h1>Appointments</h1>
-      {user.email}
       <div 
         style={{
           display: 'flex',

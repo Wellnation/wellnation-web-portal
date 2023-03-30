@@ -15,10 +15,11 @@ import TablePagination from '@mui/material/TablePagination';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useQuery,QueryClient,QueryClientProvider } from 'react-query';
-import { collection, getDocs, where } from 'firebase/firestore';
+import { collection, getDocs, where, getDoc, doc, query } from 'firebase/firestore';
 import { getAuth } from "firebase/auth";
-
-const queryprovider = new QueryClient(); 
+import { db } from '@/lib/firebase.config';
+import { useAuthStore } from '@/lib/zustand.config';
+import {Loader} from '@/components/utils';
 function Row(props) {
   const { row } = props;
   const [open, setOpen] = React.useState(false);
@@ -104,7 +105,7 @@ Row.propTypes = {
 };
 
 const columns = [
-  { id: 'patient', label: 'Patient history', minWidth: 10 },
+  { id: 'patientHist', label: 'Patient history', minWidth: 10 },
   { id: 'patient', label: 'Patient name', minWidth: 10 },
   {
     id: 'Date',
@@ -129,85 +130,82 @@ const columns = [
   },
 ];
 
+const rows = []
 
 export default function History() {
-  const auth = getAuth();
-  const user = auth.currentUser;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [test, setTests] = React.useState([]);
+  const [isLoad, setIsLoad] = React.useState(true);
+  const [err, setError] = React.useState(null);
+  const [auth,setAuth] = React.useState(true);
 
-  const { isLoading, error, data } = useQuery({
-    queryKey: ['tests'],
-    queryFn: fetchtests,
-  });
+  const { user, loading } = useAuthStore();
   
-  async function fetchtests() {
-    // fetch all from tests collection from firebase
-    console.log(user)
-    const tests = await getdocs(collection(db, 'tests'), where('hId', '==', user._id));
-    tests.get().then((querySnapshot) => {
-      const data = querySnapshot.docs.map((doc) => doc.data());
-      setTests(data);
-    }
+    const { isLoading, error, data } = useQuery({
+      queryKey: ['tests'],
+      queryFn: fetchtests,
+    });
+  
+    async function fetchtests() {
+      // console.log(user)
+      const hDoc = await getDocs(query(collection(db, "users"), where("email", "==", user.email)));
+      console.log(hDoc.docs)
+      const tests = await getDocs(query(collection(db, "tests"), where("hId", "==", hDoc.docs[0].id)));
+      return tests;
+      }
+
+    const handleChangePage = (event, newPage) => {
+      setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+      setRowsPerPage(+event.target.value);
+      setPage(0);
+    };
+    return (
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+      }}>
+          <Paper sx={{ width: '80%', overflow: 'hidden' }} style={{ margin: "1rem 5rem 1rem 5rem" }}>
+            <TableContainer sx={{ maxHeight: 440 }}>
+              <Table stickyHeader aria-label="collapsible table">
+                <TableHead>
+                  <TableRow>
+                    {columns.map((column) => (
+                      <TableCell
+                        key={column.id}
+                        align={column.align}
+                        style={{ minWidth: column.minWidth }}
+                      >
+                        {column.label}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row) => {
+                      return (
+                        <Row key={row.name} row={row} />
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 100]}
+              component="div"
+              count={rows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Paper>
+        </div>
     );
-  }
-
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-  return (
-    <QueryClientProvider client={queryprovider}>
-    <div style={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-    }}>
-    <Paper sx={{ width: '80%', overflow: 'hidden' }} style={{margin: "1rem 5rem 1rem 5rem"}}>
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="collapsible table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <Row key={row.name} row={row} />
-                );
-              })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-      </Paper>
-      </div>
-      </QueryClientProvider>
-  );
 }
 
