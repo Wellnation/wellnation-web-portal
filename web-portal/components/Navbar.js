@@ -227,7 +227,7 @@ function Navbar() {
 								onClose={handleCloseUserMenu}
 							>
 								{settings.map((item) => (
-									<MenuItem key={item.name} onClick={item.click}>
+									<MenuItem key={item.name} onClick={() => {item.click(); handleCloseUserMenu();}}>
 										<Typography textAlign="center">{item.name}</Typography>
 									</MenuItem>
 								))}
