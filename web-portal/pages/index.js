@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 import { useAuth } from '@/lib/zustand.config';
 import {Loader, NotUser} from '@/components/utils';
+import DataUpdate from '@/components/DataUpdate';
 
 const columns = [
   { 
@@ -138,6 +139,7 @@ const Home = () => {
           />
         </Box>
       </div>
+      <DataUpdate/>
     </>
   )
 }
