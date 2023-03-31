@@ -5,7 +5,6 @@ import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 import { useAuth } from '@/lib/zustand.config';
 import {Loader, NotUser} from '@/components/utils';
-import { Typography } from '@mui/material';
 
 const columns = [
   { 
@@ -63,7 +62,6 @@ const Home = () => {
   const [auth, setAuth] = React.useState(true);
   
   const hId = localStorage.getItem('hId');
-  // console.log(hId);
 
   React.useEffect(() => {
     const getAppointmentData = async () => {
@@ -123,7 +121,7 @@ const Home = () => {
           paddingTop: '50px'
         }}
       >
-        <Box sx={{ height: 400, width: '80%' }}>
+        <Box sx={{ height: 300, width: '80%' }}>
           <DataGrid
             rows={appointmentData}
             columns={columns}

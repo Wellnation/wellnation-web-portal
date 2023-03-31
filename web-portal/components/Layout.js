@@ -4,6 +4,8 @@ import { useAuth } from "@/lib/zustand.config"
 import { Loader } from "./utils"
 import { db } from '@/lib/firebase.config';
 import { collection, query, getDocs, where } from "firebase/firestore";
+import Footer from "./Footer";
+import Box from "@mui/material/Box"
 
 const Layout = ({ children }) => {
   const { user, loading } = useAuth()
@@ -35,10 +37,17 @@ const Layout = ({ children }) => {
       {isLoading ? (
         <Loader />
       ) : (
-        <>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '100vh',
+          }}
+        >
           <Navbar />
           <main>{children}</main>
-        </>
+          <Footer />
+        </Box>
       )}
     </>
   )
