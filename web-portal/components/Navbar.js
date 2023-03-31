@@ -205,39 +205,39 @@ function Navbar() {
 
 						<Box sx={{ flexGrow: 0 }}>
 							{user ? <>
-							<Tooltip title="Open settings">
-								<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-									<Avatar alt="Remy Sharp" src="https://www.w3schools.com/howto/img_avatar.png" />
-								</IconButton>
-							</Tooltip>
-							<Menu
-								sx={{ mt: '45px' }}
-								id="menu-appbar"
-								anchorEl={anchorElUser}
-								anchorOrigin={{
-									vertical: 'top',
-									horizontal: 'right',
-								}}
-								keepMounted
-								transformOrigin={{
-									vertical: 'top',
-									horizontal: 'right',
-								}}
-								open={Boolean(anchorElUser)}
-								onClose={handleCloseUserMenu}
-							>
-								{settings.map((item) => (
-									<MenuItem key={item.name} onClick={() => {item.click(); handleCloseUserMenu();}}>
-										<Typography textAlign="center">{item.name}</Typography>
-									</MenuItem>
-								))}
-							</Menu>
-							</> 
-							: <Button 
+								<Tooltip title="Open settings">
+									<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+										<Avatar alt="Remy Sharp" src="https://www.w3schools.com/howto/img_avatar.png" />
+									</IconButton>
+								</Tooltip>
+								<Menu
+									sx={{ mt: '45px' }}
+									id="menu-appbar"
+									anchorEl={anchorElUser}
+									anchorOrigin={{
+										vertical: 'top',
+										horizontal: 'right',
+									}}
+									keepMounted
+									transformOrigin={{
+										vertical: 'top',
+										horizontal: 'right',
+									}}
+									open={Boolean(anchorElUser)}
+									onClose={handleCloseUserMenu}
+								>
+									{settings.map((item) => (
+										<MenuItem key={item.name} onClick={() => { item.click(); handleCloseUserMenu(); }}>
+											<Typography textAlign="center">{item.name}</Typography>
+										</MenuItem>
+									))}
+								</Menu>
+							</>
+								: <Button
 									variant="text"
 									href="/login"
 								>
-									<div style={{color: 'white'}}>Login</div>
+									<div style={{ color: 'white' }}>Login</div>
 								</Button>
 							}
 						</Box>
@@ -251,7 +251,7 @@ function Navbar() {
 					open={mobileOpen}
 					onClose={handleDrawerToggle}
 					ModalProps={{
-						keepMounted: true, 
+						keepMounted: true,
 					}}
 					sx={{
 						display: { xs: 'block', sm: 'none' },
