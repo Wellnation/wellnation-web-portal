@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
+import Image from 'next/image';
 
 function Copyright() {
   return (
@@ -32,9 +33,32 @@ export default function Footer() {
       }}
     >
       <Container maxWidth="sm">
-        <Typography variant="body1">
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 1
+          }}
+        >
+        <Image
+          src="/icon-light-2.svg"
+          width={40}
+          height={40}
+          alt="Hospital Logo"
+          style={{
+            paddingRight: '10px',
+          }}
+        />
+        <Typography 
+          variant="body1"
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
           WELLNATION
         </Typography>
+        </div>
         <Copyright />
       </Container>
     </Box>
