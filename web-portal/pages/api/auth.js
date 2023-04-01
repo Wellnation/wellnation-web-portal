@@ -7,7 +7,7 @@ import {
 	sendPasswordResetEmail,
 	confirmPasswordReset
 } from "firebase/auth";
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, where,setDoc,doc } from "firebase/firestore";
 
 const register = async (name, email, password, setOpen, setErrorMessage, setType) => {
 	try {
@@ -22,7 +22,7 @@ const register = async (name, email, password, setOpen, setErrorMessage, setType
 
 		console.log(user);
 
-		await addDoc(collection(db, "users"), {
+		await setDoc(doc(db, "users", user.uid), {
 			name: name,
 			email: email,
 			uid: user.uid,
