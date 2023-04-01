@@ -196,7 +196,8 @@ const Dashboard = () => {
         <h3>Logged in as: {user.displayName}</h3>
         <div>
           <h1>Doctors</h1>
-          {data.doctors.map((doc) => (
+          { !data.doctors ? <h3>No Doctors Added</h3> :
+            data.doctors.map((doc) => (
             <ListItem
               key={doc.id}
               secondaryAction={
