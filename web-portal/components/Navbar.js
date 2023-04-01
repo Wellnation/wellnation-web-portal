@@ -97,7 +97,7 @@ function Navbar() {
 				}}
 			>
 				<Image
-					src="/plus-black.svg"
+					src="/icon-light-2.svg"
 					width={40}
 					height={40}
 					alt="Hospital Logo"
@@ -127,7 +127,7 @@ function Navbar() {
 					<Toolbar disableGutters>
 						<Image
 							className='logo-large'
-							src="/plus.svg"
+							src="/icon-light-2.svg"
 							width={40}
 							height={40}
 							alt="Hospital Logo"
@@ -166,7 +166,7 @@ function Navbar() {
 						</Box>
 						<Image
 							className='logo-small'
-							src="/plus.svg"
+							src="/icon-light-2.svg"
 							width={40}
 							height={40}
 							alt="Hospital Logo"

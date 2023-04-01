@@ -1,6 +1,6 @@
 import * as React from 'react';
-import CircularProgress from '@mui/material/CircularProgress';
 import { useRouter } from 'next/router'
+import Image from 'next/image';
 
 function Loader() {
   return (
@@ -12,7 +12,12 @@ function Loader() {
         height: '100vh',
       }}
     >
-      <CircularProgress/>
+      <Image
+        src="/web-loader.gif"
+        alt="Loader"
+        width={100}
+        height={100}
+      />
     </div>
   );
 }
@@ -24,9 +29,9 @@ function NotUser() {
   }
   return (
     <>
-    {handleredirect()}
+      {handleredirect()}
     </>
   );
 }
 
-export {Loader, NotUser}
+export { Loader, NotUser }
