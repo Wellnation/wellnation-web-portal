@@ -7,23 +7,11 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import MedicationLiquidRoundedIcon from '@mui/icons-material/MedicationLiquidRounded';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { login } from './api/auth.hospital';
 import Notifications from '@/components/Notifications';
-
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="/">
-        WellNation
-      </Link>{' '}
-      {new Date().getFullYear()}
-    </Typography>
-  );
-}
 
 const Login = () => {
   const [email, setEmail] = React.useState('');
@@ -54,8 +42,8 @@ const Login = () => {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
+          <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+            <MedicationLiquidRoundedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign in
@@ -87,10 +75,6 @@ const Login = () => {
                 setPassword(e.target.value);
               }}
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
             <Button
               type="submit"
               fullWidth
@@ -112,9 +96,15 @@ const Login = () => {
                 </Link>
               </Grid>
             </Grid>
+            <Grid style={{paddingTop: '20px', textAlign: 'center'}}>
+              <Grid item>
+                <Link href="/doctors/login" variant="body2" onClick={() => window.location.href="/doctors/login"}>
+                  Doctor Login
+                </Link>
+              </Grid>
+            </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
   );
 }

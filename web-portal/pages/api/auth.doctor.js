@@ -1,13 +1,13 @@
 import { auth, db } from "@/lib/firebase.config";
-import { 
-	createUserWithEmailAndPassword, 
-	signInWithEmailAndPassword, 
-	signOut, 
+import {
+	createUserWithEmailAndPassword,
+	signInWithEmailAndPassword,
+	signOut,
 	updateProfile,
 	sendPasswordResetEmail,
 	confirmPasswordReset
 } from "firebase/auth";
-import { addDoc, collection, getDocs, query, where,setDoc,doc } from "firebase/firestore";
+import { collection, getDocs, query, where, setDoc, doc } from "firebase/firestore";
 
 const register = async (name, email, password, setOpen, setErrorMessage, setType) => {
 	try {
@@ -22,11 +22,14 @@ const register = async (name, email, password, setOpen, setErrorMessage, setType
 
 		console.log(user);
 
-		await setDoc(doc(db, "users", user.uid), {
+		await setDoc(doc(db, "doctors", user.uid), {
 			name: name,
 			email: email,
 			uid: user.uid,
 			createdOn: new Date(),
+			phone: '',
+			speciality: '',
+			ratings: 0,
 		});
 
 		await updateProfile(user, {
@@ -34,7 +37,7 @@ const register = async (name, email, password, setOpen, setErrorMessage, setType
 			photoURL: "https://healthcaredesignmagazine.com/wp-content/uploads/2017/03/EwingCole-Entrance_Page_01_620x380.jpg",
 		});
 
-		window.location.href = "/";
+		window.location.href = "/doctors/" + user.uid;
 	} catch (error) {
 		console.error(error);
 		setType("error");
@@ -45,7 +48,7 @@ const register = async (name, email, password, setOpen, setErrorMessage, setType
 
 const login = async (email, password, setOpen, setErrorMessage, setType) => {
 	try {
-		const usersRef = collection(db, 'users');
+		const usersRef = collection(db, 'doctors');
 		const q = query(usersRef, where('email', '==', email));
 		const querySnapshot = await getDocs(q);
 		if (querySnapshot.empty) {
@@ -56,7 +59,7 @@ const login = async (email, password, setOpen, setErrorMessage, setType) => {
 		const user = res.user;
 
 		console.log(user);
-		window.location.href="/";
+		window.location.href = "/doctors/" + user.uid;
 	} catch (error) {
 		console.log(error);
 		setType("error");
@@ -68,7 +71,7 @@ const login = async (email, password, setOpen, setErrorMessage, setType) => {
 const logout = async (setOpen, setErrorMessage, setType) => {
 	try {
 		signOut(auth);
-		window.location.href="/";
+		window.location.href = "/login";
 	} catch (error) {
 		console.log(error);
 		setType("error");
