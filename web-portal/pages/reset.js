@@ -10,7 +10,7 @@ import {
   Container,
 } from '@mui/material'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
-import { resetPassword } from './api/auth'
+import { resetPassword } from './api/auth.hospital'
 import Notifications from '@/components/Notifications'
 import { useRouter } from 'next/router'
 

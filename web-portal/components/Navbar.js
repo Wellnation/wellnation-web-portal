@@ -21,7 +21,7 @@ import Image from 'next/image';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '@/lib/zustand.config';
 import { useRouter } from 'next/router';
-import { logout } from '@/pages/api/auth';
+import { logout } from '@/pages/api/auth.hospital';
 
 const drawerWidth = 240;
 const navItems = [

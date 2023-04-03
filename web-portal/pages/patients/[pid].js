@@ -28,26 +28,26 @@ const Item = styled(Paper)(({ theme }) => ({
 }))
 
 export default function SimpleContainer() {
-    const router = useRouter()
+  const router = useRouter()
   const { pid } = router.query
-    const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = React.useState(false);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
-    };
-    
-    const {
-        data: userData,
-        isLoading,
-        error,
-      } = useQuery("userData", async () => {
-        const querySnapshot = await getDoc(doc(db, "publicusers", pid))
-          const queryData = querySnapshot.data()
-          console.log(queryData)
-        return { ...queryData }
-      })
-    
-if (isLoading) return <Loader/>
+  };
+
+  const {
+    data: userData,
+    isLoading,
+    error,
+  } = useQuery("userData", async () => {
+    const querySnapshot = await getDoc(doc(db, "publicusers", pid))
+    const queryData = querySnapshot.data()
+    console.log(queryData)
+    return { ...queryData }
+  })
+
+  if (isLoading) return <Loader />
 
   return (
     <React.Fragment>
@@ -73,16 +73,16 @@ if (isLoading) return <Loader/>
                 <Item>Name: {userData.name}</Item>
               </Grid>
               <Grid xs="6">
-                      <Item>Email: {userData.email}</Item>
+                <Item>Email: {userData.email}</Item>
               </Grid>
               <Grid xs="6">
-                      <Item>Phone: {userData.phone}</Item>
+                <Item>Phone: {userData.phone}</Item>
               </Grid>
               <Grid xs="6">
-                      <Item>Emergency no.: {userData.emergencyNumber}</Item>
+                <Item>Emergency no.: {userData.emergencyNumber}</Item>
               </Grid>
               <Grid xs="6">
-                      <Item>DOB: { userData.dob}</Item>
+                <Item>DOB: {userData.dob}</Item>
               </Grid>
               <Grid xs="6">
                 <Item>Gender: {userData.gender} </Item>
@@ -96,7 +96,7 @@ if (isLoading) return <Loader/>
                 <Item>Locality:{userData.address.locality} </Item>
               </Grid>
               <Grid xs="6">
-                      <Item>District: {userData.address.district}</Item>
+                <Item>District: {userData.address.district}</Item>
               </Grid>
               <Grid xs="6">
                 <Item>State:{userData.address.state} </Item>
@@ -120,20 +120,20 @@ if (isLoading) return <Loader/>
               </Grid>
               <Grid xs="6">
                 <Item>Weight: </Item>
-                  </Grid>
-                  <Grid xs="12">
-              <Accordion expanded={expanded === "panel1"} onChange={handleChange("panel1")} style={{backgroundColor: "transparent"}}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1bh-content" id="panel1bh-header">
-                  <Typography sx={{ width: "33%", flexShrink: 0, textAlign: "center" }}><b>Diseases History</b></Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Typography>
-                              1.
-                              2.
-                  </Typography>
-                </AccordionDetails>
-                      </Accordion>
-                      </Grid>
+              </Grid>
+              <Grid xs="12">
+                <Accordion expanded={expanded === "panel1"} onChange={handleChange("panel1")} style={{ backgroundColor: "transparent" }}>
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1bh-content" id="panel1bh-header">
+                    <Typography sx={{ width: "33%", flexShrink: 0, textAlign: "center" }}><b>Diseases History</b></Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Typography>
+                      1.
+                      2.
+                    </Typography>
+                  </AccordionDetails>
+                </Accordion>
+              </Grid>
             </Grid>
           }
         />
