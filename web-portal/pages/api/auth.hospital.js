@@ -1,13 +1,13 @@
 import { auth, db } from "@/lib/firebase.config";
-import { 
-	createUserWithEmailAndPassword, 
-	signInWithEmailAndPassword, 
-	signOut, 
+import {
+	createUserWithEmailAndPassword,
+	signInWithEmailAndPassword,
+	signOut,
 	updateProfile,
 	sendPasswordResetEmail,
 	confirmPasswordReset
 } from "firebase/auth";
-import { addDoc, collection, getDocs, query, where,setDoc,doc } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, where, setDoc, doc } from "firebase/firestore";
 
 const register = async (name, email, password, setOpen, setErrorMessage, setType) => {
 	try {
@@ -56,7 +56,7 @@ const login = async (email, password, setOpen, setErrorMessage, setType) => {
 		const user = res.user;
 
 		console.log(user);
-		window.location.href="/";
+		window.location.href = "/";
 	} catch (error) {
 		console.log(error);
 		setType("error");
@@ -68,7 +68,7 @@ const login = async (email, password, setOpen, setErrorMessage, setType) => {
 const logout = async (setOpen, setErrorMessage, setType) => {
 	try {
 		signOut(auth);
-		window.location.href="/";
+		window.location.href = "/";
 	} catch (error) {
 		console.log(error);
 		setType("error");

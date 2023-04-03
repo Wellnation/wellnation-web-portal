@@ -14,6 +14,19 @@ const Layout = ({ children }) => {
   React.useEffect(() => {
     if (loading) {
       setIsLoading(true)
+    } else if (window.location.pathname.startsWith('/doctors')) {
+      async function setDoctorId() {
+        const querySnap = await getDocs(
+          query(
+            collection(db, 'doctors'),
+            where('email', '==', user.email)
+          )
+        );
+        const doctorId = querySnap.docs[0].id;
+        localStorage.setItem('dId', doctorId);
+      }
+      user && setDoctorId();
+      setIsLoading(false);
     } else {
       async function setId() {
         const querySnap = await getDocs(
@@ -23,9 +36,7 @@ const Layout = ({ children }) => {
           )
         );
         const hospitalId = querySnap.docs[0].id;
-        // save to localestorage
         localStorage.setItem('hId', hospitalId);
-        // console.log(hospitalId);
       }
       user && setId();
       setIsLoading(false);
