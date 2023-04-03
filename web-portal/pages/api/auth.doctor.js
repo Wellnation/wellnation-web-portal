@@ -71,6 +71,8 @@ const login = async (email, password, setOpen, setErrorMessage, setType) => {
 const logout = async (setOpen, setErrorMessage, setType) => {
 	try {
 		signOut(auth);
+		localStorage.removeItem('hId');
+		localStorage.removeItem('dId');
 		window.location.href = "/login";
 	} catch (error) {
 		console.log(error);
