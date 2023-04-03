@@ -28,27 +28,27 @@ const Item = styled(Paper)(({ theme }) => ({
 }))
 
 export default function SimpleContainer() {
-    const router = useRouter()
+  const router = useRouter()
   const { pid } = router.query
-    const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = React.useState(false);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
-    };
-    
-    const {
-        data: userData,
-        isLoading,
-        error,
-      } = useQuery("userData", async () => {
-        const patient = await getDoc(doc(db, "publicusers", pid))
-        const vitals = await getDoc(doc(doc(db, "publicusers", pid), "vitals", "info"))
-            return { ...patient.data(), ...vitals.data()}
-          })
+  };
 
-    
+  const {
+    data: userData,
+    isLoading,
+    error,
+  } = useQuery("userData", async () => {
+    const patient = await getDoc(doc(db, "publicusers", pid))
+    const vitals = await getDoc(doc(doc(db, "publicusers", pid), "vitals", "info"))
+    return { ...patient.data(), ...vitals.data() }
+  })
+
+
   if (isLoading) return <Loader />
-  if(error) return <div>Error</div>
+  if (error) return <div>Error</div>
 
   return (
     <React.Fragment>
@@ -74,16 +74,16 @@ export default function SimpleContainer() {
                 <Item>Name: {userData.name}</Item>
               </Grid>
               <Grid xs="6">
-                      <Item>Email: {userData.email}</Item>
+                <Item>Email: {userData.email}</Item>
               </Grid>
               <Grid xs="6">
-                      <Item>Phone: {userData.phone}</Item>
+                <Item>Phone: {userData.phone}</Item>
               </Grid>
               <Grid xs="6">
-                      <Item>Emergency no.: {userData.emergencyNumber}</Item>
+                <Item>Emergency no.: {userData.emergencyNumber}</Item>
               </Grid>
               <Grid xs="6">
-                      <Item>DOB: { userData.dob}</Item>
+                <Item>DOB: {userData.dob}</Item>
               </Grid>
               <Grid xs="6">
                 <Item>Gender: {userData.gender} </Item>
@@ -97,7 +97,7 @@ export default function SimpleContainer() {
                 <Item>Locality:{userData.address.locality} </Item>
               </Grid>
               <Grid xs="6">
-                      <Item>District: {userData.address.district}</Item>
+                <Item>District: {userData.address.district}</Item>
               </Grid>
               <Grid xs="6">
                 <Item>State:{userData.address.state} </Item>
@@ -117,29 +117,29 @@ export default function SimpleContainer() {
                 <Item>Blood Group:{userData.bloodgroup} </Item>
               </Grid>
               <Grid xs="6">
-                <Item>Height: { userData.height}</Item>
+                <Item>Height: {userData.height}</Item>
               </Grid>
               <Grid xs="6">
                 <Item>Weight:{userData.weight} </Item>
-                  </Grid>
-                  <Grid xs="12">
-              <Accordion expanded={expanded === "panel1"} onChange={handleChange("panel1")} style={{backgroundColor: "transparent"}}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1bh-content" id="panel1bh-header">
-                  <Typography sx={{ width: "33%", flexShrink: 0, textAlign: "center" }}><b>Diseases History</b></Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Typography>
+              </Grid>
+              <Grid xs="12">
+                <Accordion expanded={expanded === "panel1"} onChange={handleChange("panel1")} style={{ backgroundColor: "transparent" }}>
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1bh-content" id="panel1bh-header">
+                    <Typography sx={{ width: "33%", flexShrink: 0, textAlign: "center" }}><b>Diseases History</b></Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Typography>
                       {
                         <ol>
-                          {userData.diseases.map((disease) => ( 
+                          {userData.diseases.map((disease) => (
                             <li>{disease}</li>
                           ))}
                         </ol>
                       }
-                  </Typography>
-                </AccordionDetails>
-                      </Accordion>
-                      </Grid>
+                    </Typography>
+                  </AccordionDetails>
+                </Accordion>
+              </Grid>
             </Grid>
           }
         />

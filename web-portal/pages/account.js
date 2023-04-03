@@ -9,7 +9,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload"
 import CancelIcon from "@mui/icons-material/Cancel"
 import AddLocationIcon from '@mui/icons-material/AddLocation';
 import AttachFileIcon from "@mui/icons-material/AttachFile"
-import { logout } from "./api/auth"
+import { logout } from "./api/auth.hospital"
 import { Loader } from "@/components/utils"
 import { useRouter } from "next/router"
 import { useQuery } from "react-query"
@@ -33,7 +33,10 @@ const Account = () => {
   const hospitalId = localStorage.getItem("hId")
   const [displayName, setDisplayName] = React.useState("")
   const [phone, setPhone] = React.useState("")
-  const [address, setAddress] = React.useState("")
+  const [locality, setLocality] = React.useState("")
+  const [district, setDistrict] = React.useState("")
+  const [state, setState] = React.useState("")
+  const [pincode, setPincode] = React.useState("")
   const [open, setOpen] = React.useState(false)
   const [type, setType] = React.useState("error")
   const [errorMessage, setErrorMessage] = React.useState("")
@@ -64,7 +67,12 @@ const Account = () => {
     try {
       e.preventDefault()
       await updateDoc(doc(db, "users", hospitalId), {
-        address,
+        address: {
+          locality,
+          state,
+          district,
+          pincode
+        },
         phone,
         name: displayName,
       })
@@ -125,7 +133,7 @@ const Account = () => {
   }
 
   const handleCancel = () => {
-    setAddress("")
+    setLocality("")
     setPhone("")
     setDisplayName("")
     setPass("")
@@ -252,21 +260,58 @@ const Account = () => {
                   />
                   <TextField
                     id="outlined-textarea"
-                    label="Address"
-                    placeholder={userData.address}
+                    label="Locality"
+                    placeholder={userData.address.locality}
                     multiline
                     variant="outlined"
-                    value={address}
+                    value={locality}
                     onChange={(e) => {
-                      setAddress(e.target.value)
+                      setLocality(e.target.value)
                     }}
                   />
+                  <Grid>
+                  <TextField
+                    id="outlined-textarea"
+                    label="State"
+                    placeholder={userData.address.state}
+                    multiline
+                    variant="outlined"
+                    value={state}
+                    onChange={(e) => {
+                      setState(e.target.value)
+                    }}
+                    style={{ paddingRight: '10px'}}
+                    />
+                  <TextField
+                    id="outlined-textarea"
+                    label="District"
+                    placeholder={userData.address.district}
+                    multiline
+                    variant="outlined"
+                    value={district}
+                    onChange={(e) => {
+                      setDistrict(e.target.value)
+                    }}
+                    style={{ paddingRight: '10px'}}
+                    />
+                  <TextField
+                    id="outlined-textarea"
+                    label="Pincode"
+                    placeholder={userData.address.pincode}
+                    multiline
+                    variant="outlined"
+                    value={pincode}
+                    onChange={(e) => {
+                      setPincode(e.target.value)
+                    }}
+                  />
+                  </Grid>
                   <div
                     style={{
                       display: "flex",
                       justifyContent: "center",
                     }}
-                  >
+                    >
                     <Button variant="text" color="primary" startIcon={<CloudUploadIcon />} onClick={handleSubmit}>
                       Update
                     </Button>
@@ -280,6 +325,12 @@ const Account = () => {
             </Item>
           </Grid>
         </Grid>
+        <div
+          style={{
+            margin: "auto",
+            maxWidth: "500px",
+          }}
+        >
         <Item>
           <div
             style={{
@@ -348,6 +399,7 @@ const Account = () => {
             </div>
           </div>
         </Item>
+        </div>
       </Box>
     </div>
   )
