@@ -14,7 +14,7 @@ import Typography from "@mui/material/Typography"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import { useQuery } from "react-query"
 import { useRouter } from "next/router"
-import { getDoc, doc } from "firebase/firestore"
+import { getDoc, doc, collection } from "firebase/firestore"
 import { db } from "@/lib/firebase.config"
 import { Loader } from "@/components/utils"
 
@@ -41,13 +41,14 @@ export default function SimpleContainer() {
         isLoading,
         error,
       } = useQuery("userData", async () => {
-        const querySnapshot = await getDoc(doc(db, "publicusers", pid))
-          const queryData = querySnapshot.data()
-          console.log(queryData)
-        return { ...queryData }
-      })
+        const patient = await getDoc(doc(db, "publicusers", pid))
+        const vitals = await getDoc(doc(doc(db, "publicusers", pid), "vitals", "info"))
+            return { ...patient.data(), ...vitals.data()}
+          })
+
     
-if (isLoading) return <Loader/>
+  if (isLoading) return <Loader />
+  if(error) return <div>Error</div>
 
   return (
     <React.Fragment>
@@ -110,16 +111,16 @@ if (isLoading) return <Loader/>
                 </Item>
               </Grid>
               <Grid xs="6">
-                <Item>Birthmark: </Item>
+                <Item>Birthmark:{userData.birthmark} </Item>
               </Grid>
               <Grid xs="6">
-                <Item>Blood Group: </Item>
+                <Item>Blood Group:{userData.bloodgroup} </Item>
               </Grid>
               <Grid xs="6">
-                <Item>Height: </Item>
+                <Item>Height: { userData.height}</Item>
               </Grid>
               <Grid xs="6">
-                <Item>Weight: </Item>
+                <Item>Weight:{userData.weight} </Item>
                   </Grid>
                   <Grid xs="12">
               <Accordion expanded={expanded === "panel1"} onChange={handleChange("panel1")} style={{backgroundColor: "transparent"}}>
@@ -128,8 +129,13 @@ if (isLoading) return <Loader/>
                 </AccordionSummary>
                 <AccordionDetails>
                   <Typography>
-                              1.
-                              2.
+                      {
+                        <ol>
+                          {userData.diseases.map((disease) => ( 
+                            <li>{disease}</li>
+                          ))}
+                        </ol>
+                      }
                   </Typography>
                 </AccordionDetails>
                       </Accordion>

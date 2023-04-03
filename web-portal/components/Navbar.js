@@ -40,6 +40,10 @@ const navItems = [
 	{
 		name: 'Contact',
 		link: '/contact',
+	},
+	{
+		name: 'Emergency',
+		link: '/emergency',
 	}
 ];
 
