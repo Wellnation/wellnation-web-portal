@@ -16,6 +16,7 @@ import {
 	Toolbar,
 	Tooltip,
 	Typography,
+	Badge,
 } from '@mui/material';
 import Image from 'next/image';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -42,7 +43,7 @@ const navItems = [
 		link: '/contact',
 	},
 	{
-		name: 'Emergency',
+		name: <Badge color="success" badgeContent="2">Emergency</Badge>,
 		link: '/emergency',
 	}
 ];

@@ -19,7 +19,7 @@ import { collection, getDocs, where, query, getDoc, doc as firestoreDoc } from "
 import { db } from "@/lib/firebase.config"
 import { useAuth } from "@/lib/zustand.config"
 import { NotUser, Loader } from "@/components/utils"
-;``
+
 function Row(props) {
   const { row } = props
   const [open, setOpen] = React.useState(false)
@@ -39,7 +39,6 @@ function Row(props) {
 }
 
 const columns = [
-  // { id: "patientHist", label: "Patient history", minWidth: 10 },
   { id: "name", label: "Patient name", minWidth: 100 },
   { id: "phone", label: "Patient phone", minWidth: 100 },
   {
