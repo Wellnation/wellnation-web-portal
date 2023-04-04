@@ -6,6 +6,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { useAuth } from '@/lib/zustand.config';
 import {Loader, NotUser} from '@/components/utils';
 import DataUpdate from '@/components/DataUpdate';
+import Appointments from '@/components/Appointments';
 
 const columns = [
   { 
@@ -110,36 +111,12 @@ const Home = () => {
           alignItems: 'center',
           paddingTop: '50px',
           fontWeight: 900,
-          fontSize: '2.5rem'
+          fontSize: '1.5rem'
         }}
       >
-        Appointments
+        Approve Appointments
       </div>
-      <div 
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          paddingTop: '50px'
-        }}
-      >
-        <Box sx={{ height: 300, width: '80%' }}>
-          <DataGrid
-            rows={appointmentData}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 5,
-                },
-              },
-            }}
-            pageSizeOptions={[5]}
-            // checkboxSelection
-            disableRowSelectionOnClick
-          />
-        </Box>
-      </div>
+      <Appointments/>
       <DataUpdate/>
     </>
   )
