@@ -15,7 +15,7 @@ import TablePagination from "@mui/material/TablePagination"
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp"
 import { useQuery } from "react-query"
-import { collection, getDocs, where, query, getDoc } from "firebase/firestore"
+import { collection, getDocs, where, query, getDoc, doc as firestoreDoc} from "firebase/firestore"
 import { db } from "@/lib/firebase.config"
 import { useAuth } from "@/lib/zustand.config"
 import { NotUser, Loader } from "@/components/utils"
@@ -78,19 +78,6 @@ function Row(props) {
   )
 }
 
-// Row.propTypes = {
-//   row: PropTypes.shape({
-//     PatientName: PropTypes.string.isRequired,
-//     date: PropTypes.string.isRequired,
-
-//     type: PropTypes.arrayOf(
-//       PropTypes.shape({
-//         type: PropTypes.number.isRequired,
-//       })
-//     ).isRequired,
-//   }).isRequired,
-// }
-
 const columns = [
   { id: "patientHist", label: "Patient history", minWidth: 10 },
   { id: "patient", label: "Patient name", minWidth: 10 },
@@ -133,7 +120,7 @@ export default function History() {
     const tests = await getDocs(query(collection(db, "testHistory"), where("hId", "==", hId)))
     await Promise.all(
       tests.docs.map(async (doc) => {
-        const patient = await getDoc(doc.data().patientId)
+        const patient = await getDoc(firestoreDoc(db, "publicusers", doc.data().patientId))
         d.push({ ...doc.data(), PatientName: patient.data().name })
       })
     )

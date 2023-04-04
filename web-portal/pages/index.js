@@ -71,9 +71,9 @@ const Home = () => {
         const appointmentsData = await Promise.all(
           querySnapshot.docs.map(async (doc) => {
             const appointmentData = doc.data();
-            const userDoc = await getDoc(firestoreDoc(db, 'users', appointmentData.hospital));
-            const doctorName = userDoc.data().doctors.find((doctor) => doctor.id === appointmentData.doctor).name;
-            return { id: doc.id, ...appointmentData, hospitalName: userDoc.data().name, doctorName: doctorName };
+            const doctor = await getDoc(firestoreDoc(db, 'doctors', appointmentData.doctor));
+            const hospital = await getDoc(firestoreDoc(db, 'users', appointmentData.hospital));
+            return { id: doc.id, ...appointmentData, hospitalName: hospital.data().name, doctorName: doctor.data().name };
           })
         );
         setAppointmentData(appointmentsData);
