@@ -23,49 +23,11 @@ import MenuIcon from "@mui/icons-material/Menu"
 import { useAuth } from "@/lib/zustand.config"
 import { useRouter } from "next/router"
 import { logout } from "@/pages/api/auth.hospital"
+import { collection, getDocs } from "firebase/firestore"
+import { db } from "@/lib/firebase.config"
+import { useQuery } from "react-query"
 
 const drawerWidth = 240
-const navItems = [
-  {
-    name: "Home",
-    link: "/",
-  },
-  {
-    name: "History",
-    link: "/history",
-  },
-  {
-    name: "About",
-    link: "/about",
-  },
-  {
-    name: "Contact",
-    link: "/contact",
-  },
-  {
-    name: (
-      <Badge color="success" badgeContent="2">
-        Emergency
-      </Badge>
-    ),
-    link: "/emergency",
-  },
-]
-
-const navForDoctors = [
-  {
-    name: "Home",
-    link: "/",
-  },
-  {
-    name: (
-      <Badge color="success" badgeContent="2">
-        Emergency
-      </Badge>
-    ),
-    link: "/emergency",
-  },
-]
 
 function Navbar() {
   const [anchorElUser, setAnchorElUser] = React.useState(null)
@@ -73,11 +35,45 @@ function Navbar() {
   const [doctor, setDoctor] = React.useState(false)
   const { user, loading } = useAuth()
   const router = useRouter()
+  const dId = localStorage.getItem('dId');
 
+  const { data: badge, isLoading, error } = useQuery('badge', async () => {
+    const colSnap = collection(db, 'emergency');
+    const snap = await getDocs(colSnap);
+    return snap.docs.length;
+  });
+  
   React.useEffect(() => {
     if (window.location.pathname.startsWith("/doctors")) setDoctor(true)
   }, [])
 
+  const navItems = [
+    {
+      name: "Home",
+      link: "/",
+    },
+    {
+      name: "History",
+      link: "/history",
+    },
+    {
+      name: "About",
+      link: "/about",
+    },
+    {
+      name: "Contact",
+      link: "/contact",
+    },
+    {
+      name: (
+        <Badge color="success" badgeContent={Number(badge)}>
+          Emergency
+        </Badge>
+      ),
+      link: "/emergency",
+    },
+  ]
+  
   const settings = [
     {
       name: "Account",
@@ -100,11 +96,26 @@ function Navbar() {
     },
   ]
 
+  const navForDoctors = [
+    {
+      name: "Home",
+      link: `/doctors/${dId}`,
+    },
+    {
+      name: (
+        <Badge color="success" badgeContent={Number(badge)}>
+          Emergency
+        </Badge>
+      ),
+      link: "/emergency",
+    },
+  ]
+  
   const setForDoctor = [
     {
       name: "Account",
       click: () => {
-        router.push("/account")
+        router.push(`/doctors/${dId}/account`)
       },
     },
     {

@@ -10,7 +10,7 @@ import {
   TextField,
   Button,
   Typography,
-  IconButton
+  IconButton,
 } from '@mui/material';
 import { MailRounded } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
