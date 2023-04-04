@@ -35,6 +35,10 @@ import {
   Button,
 } from "@mui/material"
 import Notifications from "@/components/Notifications"
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import dayjs from 'dayjs';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -45,8 +49,34 @@ const Item = styled(Paper)(({ theme }) => ({
 }))
 
 function Row(props) {
-  const { row } = props
+  const { row, rowid, func} = props
   const [open, setOpen] = React.useState(false)
+  const [testTime, setTestTime] = React.useState(dayjs())
+  const [openNotif, setOpenNotif] = React.useState(false)
+  const [type, setType] = React.useState("success")
+  const [message, setMessage] = React.useState("")
+  const handleCloseNotif = (event, reason) => {
+    if (reason === "clickaway") {
+      return
+    }
+    setOpenNotif(false)
+  }
+
+  function scheduleTest() {
+    try {
+      const testRef = firestoreDoc(db, "testHistory", rowid)
+      setDoc(testRef, { shldtime: testTime.toDate(), status: true }, { merge: true })
+      setType("success")
+      setMessage("Test scheduled successfully")
+      setOpenNotif(true)
+      func()
+    }
+    catch (err) {
+      setType("error")
+      setMessage("Error scheduling test")
+      setOpenNotif(true)
+    }
+  }
 
   return (
     <React.Fragment>
@@ -65,9 +95,26 @@ function Row(props) {
         <TableCell align="right">
           {row.reqtime.toDate().toDateString() + " at " + row.reqtime.toDate().toLocaleTimeString("en-us")}
         </TableCell>
-        <TableCell align="right">{}</TableCell>
-        <TableCell align="right">{row.status ? "Scheduled" : "Not scheduled"}</TableCell>
+        <TableCell align="right">
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DateTimePicker
+            label="Test Time"
+            value={testTime}
+            onChange={(newValue) => {
+              setTestTime(newValue);
+            }}
+          />
+        </LocalizationProvider>
+        </TableCell>
+        <TableCell align="right">{row.status ? "Scheduled" : <Button
+            variant="text"
+            onClick={scheduleTest}
+            startIcon={<CloudUploadIcon />}
+          >
+            Update schedule
+          </Button>}</TableCell>
       </TableRow>
+      <Notifications type={type} message={message} open={openNotif} handleClose={handleCloseNotif} />
     </React.Fragment>
   )
 }
@@ -105,7 +152,7 @@ export default function History() {
   const hId = localStorage.getItem("hId")
 
   const { user, loading, userError } = useAuth()
-  const { isLoading, error, data } = useQuery({
+  const { isLoading, error, data, refetch } = useQuery({
     queryKey: ["tests"],
     queryFn: fetchtests,
   })
@@ -160,7 +207,7 @@ export default function History() {
                   </TableHead>
                   <TableBody>
                     {data.testHist.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                      return <Row key={index} row={row.data()} />
+                      return <Row key={index} row={row.data()} rowid={row.id} func={refetch} />
                     })}
                   </TableBody>
                 </Table>
@@ -238,7 +285,7 @@ export default function History() {
             >
               <AddIcon />
             </Fab>
-            <AddTestDialog open={openTest} onClose={() => setOpenTest(false)} func={fetchtests}/>
+            <AddTestDialog open={openTest} onClose={() => setOpenTest(false)} func={refetch}/>
           </div>
         </>
       )}
@@ -288,6 +335,7 @@ const AddTestDialog = (props) => {
       setTestName("")
       func()
       setTimeout(() => {
+        setOpenNotif(false)
         onClose(selectedValue)
       }, 2000)
     } catch (error) {
