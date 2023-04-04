@@ -91,7 +91,7 @@ const DataUpdate = () => {
           alignItems: "center",
           paddingTop: "50px",
           fontWeight: 900,
-          fontSize: "2.5rem",
+          fontSize: "1.5rem",
         }}
       >
         Rooms

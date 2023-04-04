@@ -53,8 +53,8 @@ function Navbar() {
       link: "/",
     },
     {
-      name: "History",
-      link: "/history",
+      name: "Tests",
+      link: "/tests",
     },
     {
       name: "About",
