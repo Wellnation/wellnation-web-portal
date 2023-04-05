@@ -1,21 +1,14 @@
 import * as React from "react"
-import PropTypes from "prop-types"
-import Box from "@mui/material/Box"
-import Collapse from "@mui/material/Collapse"
-import IconButton from "@mui/material/IconButton"
 import Table from "@mui/material/Table"
 import TableBody from "@mui/material/TableBody"
 import TableCell from "@mui/material/TableCell"
 import TableContainer from "@mui/material/TableContainer"
 import TableHead from "@mui/material/TableHead"
 import TableRow from "@mui/material/TableRow"
-import Typography from "@mui/material/Typography"
 import Paper from "@mui/material/Paper"
 import TablePagination from "@mui/material/TablePagination"
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp"
 import { useQuery } from "react-query"
-import { collection, getDocs, where, query, getDoc, doc as firestoreDoc } from "firebase/firestore"
+import { collection, getDocs, onSnapshot, getDoc, doc as firestoreDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase.config"
 import { useAuth } from "@/lib/zustand.config"
 import { NotUser, Loader } from "@/components/utils"
@@ -74,20 +67,49 @@ export default function History() {
   const hId = localStorage.getItem("hId")
 
   const { user, loading, userError } = useAuth()
-  const { data, isLoading, error } = useQuery("emergency", async () => {
-    const q = getDocs(collection(db, "emergency"))
-    const data = []
-    const user = await Promise.all(
-      (
-        await q
-      ).docs.map(async (doc) => {
-        const pt = await getDoc(firestoreDoc(db, "publicusers", doc.data().pid))
-        data.push({ ...doc.data(), ...pt.data(), id: doc.id })
-      })
-    )
-    console.log(data)
-    return data
-  })
+  // const { data, isLoading, error, refetch } = useQuery("emergency", async () => {
+  //   const q = getDocs(collection(db, "emergency"))
+  //   const data = []
+  //   const user = await Promise.all(
+  //     (
+  //       await q
+  //     ).docs.map(async (doc) => {
+  //       const pt = await getDoc(firestoreDoc(db, "publicusers", doc.data().pid))
+  //       data.push({ ...doc.data(), ...pt.data(), id: doc.id })
+  //     })
+  //   )
+  //   console.log(data)
+  //   return data
+  // })
+  const [data, setData] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const emergencyCollection = collection(db, 'emergency');
+        const data = [];
+        const unsubscribe = onSnapshot(emergencyCollection, async (snapshot) => {
+          await Promise.all(
+            snapshot.docs.map(async (doc) => {
+              const pt = await getDoc(firestoreDoc(db, 'publicusers', doc.data().pid));
+              data.push({ ...doc.data(), ...pt.data(), id: doc.id });
+            })
+          );
+          setData(data);
+          setIsLoading(false);
+        });
+        return () => unsubscribe();
+      } catch (err) {
+        setError(err);
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
