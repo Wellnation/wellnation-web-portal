@@ -3,6 +3,9 @@
 # Use the official Node.js 14.15.4 alpine3.12 image as a parent image
 FROM node:14.15.4-alpine3.12
 
+# debian image without node
+# FROM debian:buster-slim
+
 # Create app directory
 WORKDIR /app
 
@@ -27,4 +30,4 @@ ENV NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-3X5JZR2CW6
 EXPOSE 3000
 
 # Run the app
-CMD [ "npm", "start" ]
+CMD [ "npm", "run", "build" ]
