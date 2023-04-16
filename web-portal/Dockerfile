@@ -1,6 +1,4 @@
 # Description: Dockerfile for the WellNation web app
-# how to deploy the container on GCP
-# https://cloud.google.com/run/docs/quickstarts/build-and-deploy/nodejs
 
 # Use the official Node.js 14.15.4 alpine3.12 image as a parent image
 FROM node:14.15.4-alpine3.12
