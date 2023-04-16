@@ -1,23 +1,28 @@
-FROM --platform=$BUILDPLATFORM node:14-alpine as build
+FROM node:14-alpine as build
 
 RUN apk update
+RUN apk --no-cache --virtual build-dependencies add \
+  jpeg-dev \
+  cairo-dev \
+  giflib-dev \
+  pango-dev \
+  python3 \
+  make \
+  g++
 
 WORKDIR /app
 
-COPY ./package.json ./package-lock.json ./
+COPY . /app
 
 RUN npm ci
 
-COPY . .
-
 RUN npm run build
 
-FROM --platform=$BUILDPLATFORM node:14-alpine AS runner
+FROM node:14-alpine AS runner
 
 WORKDIR /app
 
 RUN addgroup -g 1001 -S nodejs
-
 RUN adduser -S nextjs -u 1001
 
 COPY --from=build /app/next.config.js ./
