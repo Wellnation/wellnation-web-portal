@@ -12,9 +12,9 @@ RUN apk --no-cache --virtual build-dependencies add \
 
 WORKDIR /app
 
-COPY . /app
+COPY . ./
 
-RUN npm ci
+RUN npm i
 
 RUN npm run build
 
@@ -30,6 +30,7 @@ COPY --from=build /app/public ./public
 COPY --from=build --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/package-lock.json ./package-lock.json
 
 ENV NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyAj4ZrCjW4dadI3C3NqThB8PoYYEf74B6Q
 ENV NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=wellnation-cc1b2.firebaseapp.com
