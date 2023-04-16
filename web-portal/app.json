@@ -1,0 +1,10 @@
+{
+  "name": "wellnation-web",
+  "options": {
+    "allow-unauthenticated": true,
+    "cpu": "2",
+    "memory": "8Gi",
+    "port": 3000,
+    "http2": false
+  }
+}
