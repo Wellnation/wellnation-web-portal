@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { auth } from './firebase.config';
 import { onAuthStateChanged } from 'firebase/auth';
+import { io } from 'socket.io-client';
 
 const useAuth = create((set) => ({
   user: null,
@@ -17,4 +18,12 @@ onAuthStateChanged(auth, (user) => {
   useAuth.setState({ error, loading: false });
 });
 
-export { useAuth };
+// zustand object for socket connection storing the io object
+const useSocket = create((set) => ({
+  io: null,
+  setIo: (io) => set({ io }),
+}));
+
+useSocket.setState({ io: io('http://localhost:8001') });
+
+export { useAuth, useSocket };

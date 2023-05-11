@@ -30,4 +30,4 @@ ENV NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-3X5JZR2CW6
 EXPOSE 3000
 
 # Run the app
-CMD [ "npm", "run", "build" ]
+CMD [ "npm", "run", "dev" ]
