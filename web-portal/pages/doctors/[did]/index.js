@@ -8,10 +8,12 @@ import {
   AccordionDetails,
   ListItem,
   ListItemText,
+  Button,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { useAuth } from '@/lib/zustand.config';
 import { useQuery } from 'react-query';
+import { useRouter } from 'next/router';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { Loader } from '@/components/utils';
 import { db } from '@/lib/firebase.config';
@@ -26,8 +28,11 @@ const Item = styled(Paper)(({ theme }) => ({
   height: '100%',
 }));
 
+const roomId = Math.random().toString(36).substring(2, 9);
+
 const DoctorHome = () => {
   const { user, loading } = useAuth();
+  const router = useRouter();
   const [expanded, setExpanded] = React.useState(false);
 
   const handleChange = (panel) => (event, isExpanded) => {
@@ -143,6 +148,12 @@ const DoctorHome = () => {
           )}
         </div>
       </Item>
+      <div style={{ paddingTop: "30px" }}>
+        <Item elevation={2} style={{padding: "30px"}}>
+          <h1>Video Chat with Patient</h1>
+          <Button onClick={async() => router.push(`/doctors/${user.uid}/${roomId}`)}>Start Video Chat</Button>
+        </Item>
+      </div>
     </div>
   )
 }
