@@ -1,32 +1,55 @@
-const express = require('express');
-const bodyParser = require('body-parser');
 const { Server } = require('socket.io');
+// const express = require('express');
+// const bodyParser = require('body-parser');
 
-const io = new Server({
+const io = new Server(8001, {
   cors: true,
 });
-const app = express();
+// const app = express();
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(express.static('public'));
+// app.use(express.static('public'));
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
-});
+// app.get('/', (req, res) => {
+//   res.sendFile(__dirname + '/public/index.html');
+// });
 
 const userToSocketMap = new Map();
+const socketToUserMap = new Map();
 
 io.on('connection', (socket) => {
-  console.log("new connection");
-  socket.on('join-room', (room) => {
-    const { roomId, userId } = room;
+  console.log("Socket connected", socket.id);
+
+  socket.on('room:join', (data) => {
+    const { roomId, userId } = data;
     console.log(userId, 'joined room', roomId);
     userToSocketMap.set(userId, socket.id);
+    socketToUserMap.set(socket.id, userId);
+    io.to(roomId).emit('user:joined', { userId, id: socket.id });
     socket.join(roomId);
-    socket.emit('joined-room', { roomId });
-    socket.broadcast.to(roomId).emit('user-connected', userId);
+    io.to(socket.id).emit('room:join', data);
+  });
+
+  socket.on('user:call', (data) => {
+    const { to, offer } = data;
+    io.to(to).emit('incoming:call', { from: socket.id, offer });
+  });
+
+  socket.on('call:accepted', (data) => {
+    const { to, ans } = data;
+    io.to(to).emit('call:accepted', { from: socket.id, ans });
+  });
+
+  socket.on('peer:nego:needed', (data) => {
+    const { to, offer } = data;
+    io.to(to).emit('peer:nego:needed', { from: socket.id, offer });
+  });
+
+  socket.on('peer:nego:done', (data) => {
+    const { to, ans } = data;
+    io.to(to).emit('peer:nego:final', { from: socket.id, ans });
   });
 });
 
@@ -34,8 +57,6 @@ io.on('disconnect', () => {
   console.log('user disconnected');
 });
 
-app.listen(8000, () => {
-  console.log('listening on *:8000');
-});
-
-io.listen(8001);
+// app.listen(8000, () => {
+//   console.log('listening on *:8000');
+// });
