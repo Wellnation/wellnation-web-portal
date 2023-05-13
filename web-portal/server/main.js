@@ -1,20 +1,8 @@
 const { Server } = require('socket.io');
-// const express = require('express');
-// const bodyParser = require('body-parser');
 
 const io = new Server(8001, {
   cors: true,
 });
-// const app = express();
-
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
-
-// app.use(express.static('public'));
-
-// app.get('/', (req, res) => {
-//   res.sendFile(__dirname + '/public/index.html');
-// });
 
 const userToSocketMap = new Map();
 const socketToUserMap = new Map();
@@ -56,7 +44,3 @@ io.on('connection', (socket) => {
 io.on('disconnect', () => {
   console.log('user disconnected');
 });
-
-// app.listen(8000, () => {
-//   console.log('listening on *:8000');
-// });
