@@ -49,11 +49,13 @@ const VideoRoom = () => {
 		async ({ offer, from }) => {
 			console.log("Incoming call", from, offer);
 			setRemoteSocketId(from);
-			const stream = await navigator.mediaDevices.getUserMedia({
-				video: true,
-				audio: true,
-			});
-			setMyStream(stream);
+			navigator.mediaDevices
+				.getUserMedia({
+					video: true,
+					audio: true,
+				})
+				.then((stream) => setMyStream(stream))
+				.catch((err) => alert(err));
 			const ans = await peer.getAnswer(offer);
 			socket.emit("call:accepted", { to: from, ans });
 		},

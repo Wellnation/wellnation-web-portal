@@ -13,6 +13,7 @@ import {
 	IconButton,
 	InputAdornment,
 	Tooltip,
+	MenuItem,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { useAuth } from "@/lib/zustand.config";
@@ -41,6 +42,7 @@ const DoctorHome = () => {
 	const { user, loading } = useAuth();
 	const [roomId, setRoomId] = React.useState("");
 	const [expanded, setExpanded] = React.useState(false);
+	const [videoDevices, setVideoDevices] = React.useState([]);
 
 	const handleChange = (panel) => (event, isExpanded) => {
 		setExpanded(isExpanded ? panel : false);
@@ -80,6 +82,14 @@ const DoctorHome = () => {
 		return appointmentData;
 	});
 
+	const getCameraSelection = async () => {
+		const devices = await navigator.enumerateDevices();
+		const videoDevices = devices.filter(
+			(device) => device.kind === "videoinput"
+		);
+		setVideoDevices(videoDevices);
+	};
+
 	if (isLoading || loading) {
 		return <Loader />;
 	}
@@ -87,6 +97,7 @@ const DoctorHome = () => {
 	if (error) {
 		return <div>Something went wrong: {error.message}</div>;
 	}
+
 
 	return (
 		<div
@@ -225,6 +236,19 @@ const DoctorHome = () => {
 					>
 						Join Video Chat
 					</Button>
+					<Button
+						variant="text"
+						onClick={() => {
+							getCameraSelection();
+						}}
+					>
+						Select Camera
+					</Button>
+					{videoDevices.map((device) => (
+						<MenuItem key={device.deviceId} value={device.deviceId}>
+							{device.label}
+						</MenuItem>
+					))}
 				</Item>
 			</div>
 		</div>
