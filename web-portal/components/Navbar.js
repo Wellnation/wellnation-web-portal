@@ -26,6 +26,7 @@ import { logout } from "@/pages/api/auth.hospital"
 import { collection, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase.config"
 import { useQuery } from "react-query"
+import { Loader } from "./utils"
 
 const drawerWidth = 240
 
@@ -177,6 +178,8 @@ function Navbar() {
       </List>}
     </Box>
   )
+
+  if (isLoading) return <Loader />
 
   return (
     <>

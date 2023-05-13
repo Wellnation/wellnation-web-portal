@@ -1,0 +1,15 @@
+{
+	"name": "video-chat-wellnation",
+	"version": "1.0.0",
+	"description": "Video Chat Application endpoints and socet server for doctor and patient portals",
+	"main": "main.js",
+	"scripts": {
+		"dev": "nodemon main.js",
+		"start": "node main.js"
+	},
+	"license": "MIT",
+	"dependencies": {
+		"nodemon": "^2.0.22",
+		"socket.io": "^4.6.1"
+	}
+}

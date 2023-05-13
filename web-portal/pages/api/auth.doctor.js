@@ -20,8 +20,6 @@ const register = async (name, email, password, setOpen, setErrorMessage, setType
 		const res = await createUserWithEmailAndPassword(auth, email, password);
 		const user = res.user;
 
-		console.log(user);
-
 		await setDoc(doc(db, "doctors", user.uid), {
 			name: name,
 			email: email,
@@ -61,7 +59,7 @@ const login = async (email, password, setOpen, setErrorMessage, setType) => {
 		console.log(user);
 		window.location.href = "/doctors/" + user.uid;
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		setType("error");
 		setErrorMessage(error.message);
 		setOpen(true);
