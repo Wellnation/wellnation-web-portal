@@ -83,7 +83,7 @@ const DoctorHome = () => {
 	});
 
 	const getCameraSelection = async () => {
-		const devices = await navigator.enumerateDevices();
+		const devices = await navigator.mediaDevices.enumerateDevices();
 		const videoDevices = devices.filter(
 			(device) => device.kind === "videoinput"
 		);
