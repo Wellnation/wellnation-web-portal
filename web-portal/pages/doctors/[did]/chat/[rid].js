@@ -20,7 +20,6 @@ const VideoRoom = () => {
 	const { socket } = useSocket();
 	const roomId = router.query.rid;
 	const [mute, setMute] = React.useState(true);
-	const [show, setShow] = React.useState(false);
 	const [video, setVideo] = React.useState(true);
 	const [myStream, setMyStream] = React.useState(null);
 	const [remoteUID, setRemoteUID] = React.useState("");
@@ -37,7 +36,6 @@ const VideoRoom = () => {
 	);
 
 	const handleCallUser = useCallback(async () => {
-		setShow(true);
 		const stream = await navigator.mediaDevices.getUserMedia({
 			video: true,
 			audio: true,
@@ -62,7 +60,7 @@ const VideoRoom = () => {
 		[socket]
 	);
 
-	const sendStream = useCallback(async () => {
+	const sendStream = useCallback(() => {
 		for (const track of myStream.getTracks()) {
 			peer.peer.addTrack(track, myStream);
 		}
@@ -71,7 +69,7 @@ const VideoRoom = () => {
 	const handleCallAccepted = useCallback(
 		async ({ from, ans }) => {
 			console.log("Call accepted", ans, "from", from);
-			peer.setLocalDescription(ans);
+			await peer.setLocalDescription(ans);
 			sendStream();
 		},
 		[sendStream]
@@ -106,20 +104,14 @@ const VideoRoom = () => {
 	const handleNegotiationFinal = useCallback(async ({ ans }) => {
 		console.log("Negotiation final", ans);
 		await peer.setLocalDescription(ans);
-		// for (const track of myStream.getTracks()) {
-		// 	peer.peer.addTrack(track, myStream);
-		// }
 	}, []);
 
 	React.useEffect(() => {
-		peer.peer.addEventListener("track", async (event) => {
+		peer.peer.addEventListener("track", (event) => {
 			const remoteStream = event.streams[0];
+			console.log("Got Remote stream", remoteStream);
 			setRemoteStream(remoteStream);
 		});
-
-		// return () => {
-		// 	peer.peer.removeEventListener("track", () => {});
-		// };
 	}, []);
 
 	React.useEffect(() => {
@@ -127,14 +119,14 @@ const VideoRoom = () => {
 		socket.on("incoming:call", handleIncomingCall);
 		socket.on("call:accepted", handleCallAccepted);
 		socket.on("peer:nego:needed", handleNegotiation);
-		socket.on("peer:nego:done", handleNegotiationFinal);
+		socket.on("peer:nego:final", handleNegotiationFinal);
 
 		return () => {
 			socket.off("user:joined", handleUserJoined);
 			socket.off("incoming:call", handleIncomingCall);
 			socket.off("call:accepted", handleCallAccepted);
 			socket.off("peer:nego:needed", handleNegotiation);
-			socket.off("peer:nego:done", handleNegotiationFinal);
+			socket.off("peer:nego:final", handleNegotiationFinal);
 		};
 	}, [
 		socket,
@@ -183,8 +175,13 @@ const VideoRoom = () => {
 							>
 								Call {remoteUID}
 							</Button>
-							{show && (
-								<>
+							{myStream && (
+								<div
+									style={{
+										margin: "auto",
+										marginTop: "20px",
+									}}
+								>
 									<ReactPlayer
 										url={myStream}
 										playing={video}
@@ -216,16 +213,19 @@ const VideoRoom = () => {
 											{video ? <Videocam /> : <VideocamOff color="error" />}
 										</IconButton>
 									</div>
-									<div style={{ paddingTop: 0, marginTop: 0 }}>
-										<ReactPlayer
-											url={remoteStream}
-											playing
-											muted
-											width="500px"
-										/>
-										<div>{remoteUID ? remoteUID : ""}</div>
-									</div>
-								</>
+								</div>
+							)}
+							{remoteStream && (
+								<div
+									style={{
+										paddingTop: 0,
+										marginTop: 0,
+										textAlign: "center",
+									}}
+								>
+									<h2>{remoteUID ? remoteUID + " Stream" : ""}</h2>
+									<ReactPlayer url={remoteStream} playing muted width="500px" />
+								</div>
 							)}
 						</div>
 					) : (

@@ -10,6 +10,9 @@ import {
 	ListItemText,
 	Button,
 	TextField,
+	IconButton,
+	InputAdornment,
+	Tooltip,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { useAuth } from "@/lib/zustand.config";
@@ -21,6 +24,7 @@ import { Loader } from "@/components/utils";
 import { db } from "@/lib/firebase.config";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
 
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -187,6 +191,24 @@ const DoctorHome = () => {
 							label="Room ID"
 							value={roomId}
 							onChange={(e) => setRoomId(e.target.value)}
+							InputProps={{
+								endAdornment: (
+									<InputAdornment position="end">
+										<Tooltip title="Generate Random Room ID">
+											<IconButton
+												onClick={() => {
+													let randomRoomId = Math.random()
+														.toString(36)
+														.substring(2, 9);
+													setRoomId(randomRoomId);
+												}}
+											>
+												<AutorenewIcon color="primary" />
+											</IconButton>
+										</Tooltip>
+									</InputAdornment>
+								),
+							}}
 						/>
 					</div>
 					<Button
