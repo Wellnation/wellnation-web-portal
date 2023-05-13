@@ -1,7 +1,7 @@
 class PeerService {
   constructor() {
     if (!this.peer) {
-      this.peer = new RTCPeerConnection({
+      this.peer = new RTCPeerConnection({ 
         iceServers: [
           {
             urls: [

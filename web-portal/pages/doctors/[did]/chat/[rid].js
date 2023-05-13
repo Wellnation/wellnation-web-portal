@@ -1,11 +1,14 @@
 import React, { useCallback } from "react";
 import { Button, IconButton, Paper, styled } from "@mui/material";
-import peer from "@/service/peer";
+// import peer from "@/service/peer";
 import { useSocket } from "@/providers/Socket.provider";
 import { useRouter } from "next/router";
 import ReactPlayer from "react-player";
 import MicIcon from "@mui/icons-material/Mic";
 import { MicOffRounded, Videocam, VideocamOff } from "@mui/icons-material";
+import dynamic from "next/dynamic";
+
+const peer = dynamic(() => import("@/service/peer"), { ssr: false });
 
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
