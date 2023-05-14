@@ -26,6 +26,7 @@ import { db } from "@/lib/firebase.config";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
+import ChatForm from "@/components/ChatForm";
 
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -97,7 +98,6 @@ const DoctorHome = () => {
 	if (error) {
 		return <div>Something went wrong: {error.message}</div>;
 	}
-
 
 	return (
 		<div
@@ -251,6 +251,7 @@ const DoctorHome = () => {
 					))}
 				</Item>
 			</div>
+			<ChatForm />
 		</div>
 	);
 };
