@@ -84,11 +84,22 @@ const DoctorHome = () => {
 	});
 
 	const getCameraSelection = async () => {
-		const devices = await navigator.mediaDevices.enumerateDevices();
-		const videoDevices = devices.filter(
-			(device) => device.kind === "videoinput"
-		);
-		setVideoDevices(videoDevices);
+		const constraints = {
+			audio: true,
+			video: true,
+		};
+		navigator.mediaDevices
+			.getUserMedia(constraints)
+			.then(async (stream) => {
+				const devices = await navigator.mediaDevices.enumerateDevices();
+				const videoDevices = devices.filter(
+					(device) => device.kind === "videoinput"
+				);
+				setVideoDevices(videoDevices);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
 	};
 
 	if (isLoading || loading) {
@@ -161,7 +172,7 @@ const DoctorHome = () => {
 													<ListItemText
 														primary="Medicines Prescribed"
 														secondary={appointment.medicine.map((medicine) => (
-															<div key={medicine.name}>
+															<p key={medicine.name}>
 																<p
 																	style={{
 																		fontWeight: "bold",
@@ -180,7 +191,7 @@ const DoctorHome = () => {
 																>
 																	<RadioButtonCheckedIcon /> {medicine.remark}
 																</p>
-															</div>
+															</p>
 														))}
 													/>
 												</ListItem>

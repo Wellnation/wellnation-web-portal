@@ -117,7 +117,7 @@ const VideoRoom = () => {
 			console.log("Got Remote stream", remoteStream);
 			setRemoteStream(remoteStream);
 		});
-	}, []);
+	}, [peer]);
 
 	React.useEffect(() => {
 		socket.on("user:joined", handleUserJoined);
