@@ -46,7 +46,7 @@ function Navbar() {
   
   React.useEffect(() => {
     if (window.location.pathname.startsWith("/doctors")) setDoctor(true)
-  }, [])
+  }, [doctor])
 
   const navItems = [
     {

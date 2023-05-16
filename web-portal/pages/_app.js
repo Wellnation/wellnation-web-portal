@@ -6,15 +6,25 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Head from "next/head";
 import { QueryClient, QueryClientProvider } from "react-query";
 import SocketProvider from "@/providers/Socket.provider";
+import { useRouter } from "next/router";
 
 export default function MyApp({ Component, pageProps }) {
-	const [mode, setMode] = React.useState("light");
+	const router = useRouter();
 	const queryClient = new QueryClient();
+	const [mode, setMode] = React.useState("light");
 	const theme = createTheme({
 		palette: {
 			mode: mode,
 		},
 	});
+
+	React.useEffect(() => {
+		if (localStorage.getItem("dId")) {
+			router.push(`/doctors/${localStorage.getItem("dId")}`);
+		} else if (localStorage.getItem("hId")) {
+			router.push("/");
+		}
+	}, []);
 
 	return (
 		<>
