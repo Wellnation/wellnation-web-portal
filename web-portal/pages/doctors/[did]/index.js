@@ -26,6 +26,7 @@ import { db } from "@/lib/firebase.config";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
+import ChatForm from "@/components/ChatForm";
 
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -83,11 +84,22 @@ const DoctorHome = () => {
 	});
 
 	const getCameraSelection = async () => {
-		const devices = await navigator.enumerateDevices();
-		const videoDevices = devices.filter(
-			(device) => device.kind === "videoinput"
-		);
-		setVideoDevices(videoDevices);
+		const constraints = {
+			audio: true,
+			video: true,
+		};
+		navigator.mediaDevices
+			.getUserMedia(constraints)
+			.then(async (stream) => {
+				const devices = await navigator.mediaDevices.enumerateDevices();
+				const videoDevices = devices.filter(
+					(device) => device.kind === "videoinput"
+				);
+				setVideoDevices(videoDevices);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
 	};
 
 	if (isLoading || loading) {
@@ -97,7 +109,6 @@ const DoctorHome = () => {
 	if (error) {
 		return <div>Something went wrong: {error.message}</div>;
 	}
-
 
 	return (
 		<div
@@ -161,7 +172,7 @@ const DoctorHome = () => {
 													<ListItemText
 														primary="Medicines Prescribed"
 														secondary={appointment.medicine.map((medicine) => (
-															<div key={medicine.name}>
+															<p key={medicine.name}>
 																<p
 																	style={{
 																		fontWeight: "bold",
@@ -180,7 +191,7 @@ const DoctorHome = () => {
 																>
 																	<RadioButtonCheckedIcon /> {medicine.remark}
 																</p>
-															</div>
+															</p>
 														))}
 													/>
 												</ListItem>
@@ -251,6 +262,7 @@ const DoctorHome = () => {
 					))}
 				</Item>
 			</div>
+			<ChatForm />
 		</div>
 	);
 };
