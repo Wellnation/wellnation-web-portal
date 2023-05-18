@@ -1,17 +1,21 @@
 class PeerService {
   constructor() {
-    if (!this.peer) {
-      this.peer = new RTCPeerConnection({ 
-        iceServers: [
-          {
-            urls: [
-              "stun:stun1.l.google.com:19302",
-              "stun:stun2.l.google.com:19302",
-              "stun:global,stun.twilio.com:3478",
-            ],
-          },
-        ],
-      });
+    if (typeof window !== 'undefined' && window.RTCPeerConnection) {
+      if (!this.peer) {
+        this.peer = new RTCPeerConnection({
+          iceServers: [
+            {
+              urls: [
+                "stun:stun1.l.google.com:19302",
+                "stun:stun2.l.google.com:19302",
+                "stun:global,stun.twilio.com:3478",
+              ],
+            },
+          ],
+        });
+      }
+    } else {
+      window.alert("WebRTC is not supported in your browser");
     }
   }
 
@@ -39,4 +43,5 @@ class PeerService {
   }
 }
 
-export default new PeerService();
+export default (typeof window !== "undefined") ? new PeerService() : null;
+// export default new PeerService();

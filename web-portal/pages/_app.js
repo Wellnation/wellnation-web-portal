@@ -7,9 +7,11 @@ import Head from "next/head";
 import { QueryClient, QueryClientProvider } from "react-query";
 import SocketProvider from "@/providers/Socket.provider";
 import { useRouter } from "next/router";
+import { useLoad } from "@/lib/zustand.config";
 
 export default function MyApp({ Component, pageProps }) {
 	const router = useRouter();
+	const { setLoad } = useLoad((state) => state);
 	const queryClient = new QueryClient();
 	const [mode, setMode] = React.useState("light");
 	const theme = createTheme({
@@ -19,10 +21,22 @@ export default function MyApp({ Component, pageProps }) {
 	});
 
 	React.useEffect(() => {
-		if (localStorage.getItem("dId")) {
+		if (
+			localStorage.getItem("dId") &&
+			!router.pathname.includes("patients")
+		) {
 			router.push(`/doctors/${localStorage.getItem("dId")}`);
-		} else if (localStorage.getItem("hId")) {
+			setLoad(false);
+		} else if (
+			localStorage.getItem("hId") &&
+			!router.pathname.includes("patients")
+		) {
 			router.push("/");
+			setLoad(false);
+		} else if (router.pathname.includes("patients")) {
+			setLoad(false);
+		} else {
+			setLoad(false);
 		}
 	}, []);
 

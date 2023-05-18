@@ -1,6 +1,5 @@
 import * as React from "react"
 import CssBaseline from "@mui/material/CssBaseline"
-import Box from "@mui/material/Box"
 import Container from "@mui/material/Container"
 import Paper from "@mui/material/Paper"
 import Grid from "@mui/material/Grid"
@@ -132,7 +131,7 @@ export default function SimpleContainer() {
                       {
                         <ol>
                           {userData.diseases.map((disease) => (
-                            <li>{disease}</li>
+                            <li>{disease.nameofdisease}</li>
                           ))}
                         </ol>
                       }

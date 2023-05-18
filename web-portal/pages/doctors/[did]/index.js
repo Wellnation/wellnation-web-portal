@@ -13,20 +13,25 @@ import {
 	IconButton,
 	InputAdornment,
 	Tooltip,
-	MenuItem,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { useAuth } from "@/lib/zustand.config";
 import { useQuery } from "react-query";
 import { useRouter } from "next/router";
 import { useSocket } from "@/providers/Socket.provider";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+	collection,
+	getDocs,
+	query,
+	where,
+	getDoc,
+	doc as fireStoreDoc,
+} from "firebase/firestore";
 import { Loader } from "@/components/utils";
 import { db } from "@/lib/firebase.config";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
+import LabelIcon from "@mui/icons-material/Label";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
-import ChatForm from "@/components/ChatForm";
 
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -43,7 +48,6 @@ const DoctorHome = () => {
 	const { user, loading } = useAuth();
 	const [roomId, setRoomId] = React.useState("");
 	const [expanded, setExpanded] = React.useState(false);
-	const [videoDevices, setVideoDevices] = React.useState([]);
 
 	const handleChange = (panel) => (event, isExpanded) => {
 		setExpanded(isExpanded ? panel : false);
@@ -77,30 +81,20 @@ const DoctorHome = () => {
 		);
 		const querySnapshot = await getDocs(q);
 		const appointmentData = [];
-		querySnapshot.docs.map((doc) => {
-			appointmentData.push({ id: doc.id, ...doc.data() });
-		});
+		await Promise.all(
+			querySnapshot.docs.map(async (doc) => {
+				const patientDoc = await getDoc(
+					fireStoreDoc(db, "publicusers", doc.data().pid)
+				);
+				appointmentData.push({
+					id: doc.id,
+					patient: patientDoc.data(),
+					...doc.data(),
+				});
+			})
+		);
 		return appointmentData;
 	});
-
-	const getCameraSelection = async () => {
-		const constraints = {
-			audio: true,
-			video: true,
-		};
-		navigator.mediaDevices
-			.getUserMedia(constraints)
-			.then(async (stream) => {
-				const devices = await navigator.mediaDevices.enumerateDevices();
-				const videoDevices = devices.filter(
-					(device) => device.kind === "videoinput"
-				);
-				setVideoDevices(videoDevices);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
 
 	if (isLoading || loading) {
 		return <Loader />;
@@ -142,7 +136,7 @@ const DoctorHome = () => {
 										id="panel1bh-header"
 									>
 										<Typography sx={{ width: "50%", flexShrink: 0 }}>
-											Patient Name: {appointment.pid}
+											Patient Name: {appointment.patient.name}
 										</Typography>
 										<Typography sx={{ color: "text.secondary" }}>
 											Scheduled Time:{" "}
@@ -172,97 +166,82 @@ const DoctorHome = () => {
 													<ListItemText
 														primary="Medicines Prescribed"
 														secondary={appointment.medicine.map((medicine) => (
-															<p key={medicine.name}>
-																<p
+															<span key={medicine.name}>
+																<span
 																	style={{
 																		fontWeight: "bold",
 																		display: "flex",
 																		alignItems: "center",
 																	}}
 																>
-																	<RadioButtonCheckedIcon /> {medicine.name}
-																</p>
-																<p
+																	<LabelIcon
+																		color="primary"
+																		style={{ paddingRight: "10px" }}
+																	/>{" "}
+																	{medicine.name}
+																</span>
+																<span
 																	style={{
 																		fontWeight: "bold",
 																		display: "flex",
 																		alignItems: "center",
 																	}}
 																>
-																	<RadioButtonCheckedIcon /> {medicine.remark}
-																</p>
-															</p>
+																	<LabelIcon
+																		color="primary"
+																		style={{ paddingRight: "10px" }}
+																	/>{" "}
+																	{medicine.remark}
+																</span>
+															</span>
 														))}
 													/>
 												</ListItem>
 											</Grid>
 										</Grid>
+										<div style={{ marginLeft: "10px" }}>
+											<h3>Video Chat with {appointment.patient.name}</h3>
+											<div style={{ marginBottom: "10px" }}>
+												<TextField
+													style={{ width: "300px" }}
+													label="Room ID"
+													value={roomId}
+													onChange={(e) => setRoomId(e.target.value)}
+													InputProps={{
+														endAdornment: (
+															<InputAdornment position="end">
+																<Tooltip title="Generate Random Room ID">
+																	<IconButton
+																		onClick={() => {
+																			let randomRoomId = Math.random()
+																				.toString(36)
+																				.substring(2, 9);
+																			setRoomId(randomRoomId);
+																		}}
+																	>
+																		<AutorenewIcon color="primary" />
+																	</IconButton>
+																</Tooltip>
+															</InputAdornment>
+														),
+													}}
+												/>
+											</div>
+											<Button
+												onClick={() => {
+													handleCreateRoom();
+												}}
+											>
+												Start Video Chat
+											</Button>
+										</div>
 									</AccordionDetails>
 								</Accordion>
 							</div>
 						))
 					)}
 				</div>
-			</Item>
-			<div style={{ paddingTop: "30px" }}>
-				<Item elevation={2} style={{ padding: "30px" }}>
-					<h1>Video Chat with Patient</h1>
-					<div style={{ marginBottom: "10px" }}>
-						<TextField
-							style={{ width: "300px" }}
-							label="Room ID"
-							value={roomId}
-							onChange={(e) => setRoomId(e.target.value)}
-							InputProps={{
-								endAdornment: (
-									<InputAdornment position="end">
-										<Tooltip title="Generate Random Room ID">
-											<IconButton
-												onClick={() => {
-													let randomRoomId = Math.random()
-														.toString(36)
-														.substring(2, 9);
-													setRoomId(randomRoomId);
-												}}
-											>
-												<AutorenewIcon color="primary" />
-											</IconButton>
-										</Tooltip>
-									</InputAdornment>
-								),
-							}}
-						/>
-					</div>
-					<Button
-						onClick={() => {
-							handleCreateRoom();
-						}}
-					>
-						Start Video Chat
-					</Button>
-					<Button
-						onClick={() => {
-							handleCreateRoom();
-						}}
-					>
-						Join Video Chat
-					</Button>
-					<Button
-						variant="text"
-						onClick={() => {
-							getCameraSelection();
-						}}
-					>
-						Select Camera
-					</Button>
-					{videoDevices.map((device) => (
-						<MenuItem key={device.deviceId} value={device.deviceId}>
-							{device.label}
-						</MenuItem>
-					))}
-				</Item>
-			</div>
-			<ChatForm />
+			</Item>	
 		</div>
 	);
 };

@@ -22,7 +22,12 @@ io.on('connection', (socket) => {
 
   socket.on('user:call', (data) => {
     const { to, offer } = data;
-    io.to(to).emit('incoming:call', { from: socket.id, offer });
+    console.log(socketToUserMap.get(socket.id), 'called', socketToUserMap.get(to));
+    io.to(to).emit("incoming:call", {
+			from: socket.id,
+			offer,
+			sender: socketToUserMap.get(socket.id),
+		});
   });
 
   socket.on('call:accepted', (data) => {

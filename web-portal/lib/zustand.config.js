@@ -11,10 +11,20 @@ const useAuth = create((set) => ({
   setError: (error) => set({ error }),
 }));
 
+const useLoad = create((set) => ({
+  load: true,
+  setLoad: (load) => set({ load }),
+}));
+
+const useNavbarState = create((set) => ({
+  render: true,
+  setRender: (render) => set({ render }),
+}));
+
 onAuthStateChanged(auth, (user) => {
   useAuth.setState({ user, loading: false });
 }, (error) => {
   useAuth.setState({ error, loading: false });
 });
 
-export { useAuth };
+export { useAuth, useLoad, useNavbarState };

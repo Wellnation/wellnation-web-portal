@@ -130,7 +130,7 @@ const ChatForm = () => {
 									<IconButton onClick={handleAddFields}>
 										<AddCircleOutlineRounded color="primary" />
 									</IconButton>
-									<IconButton onClick={handleRemoveField}>
+									<IconButton onClick={() => handleRemoveField(index)}>
 										<RemoveCircleOutlineRounded color="primary" />
 									</IconButton>
 								</div>

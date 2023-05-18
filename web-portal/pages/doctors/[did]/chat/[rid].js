@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { Button, IconButton, Paper, styled } from "@mui/material";
-// import peer from "@/service/peer";
+import peer from "@/service/peer";
 import { useSocket } from "@/providers/Socket.provider";
 import { useRouter } from "next/router";
 import ReactPlayer from "react-player";
@@ -8,7 +8,7 @@ import MicIcon from "@mui/icons-material/Mic";
 import { MicOffRounded, Videocam, VideocamOff } from "@mui/icons-material";
 import dynamic from "next/dynamic";
 
-const peer = dynamic(() => import("@/service/peer"), { ssr: false });
+// const peer = dynamic(() => import("@/service/peer"), { ssr: false });
 
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -65,19 +65,19 @@ const VideoRoom = () => {
 		[socket]
 	);
 
-	const sendStream = useCallback(() => {
-		for (const track of myStream.getTracks()) {
-			peer.peer.addTrack(track, myStream);
-		}
-	}, [myStream]);
-
 	const handleCallAccepted = useCallback(
 		async ({ from, ans }) => {
-			console.log("Call accepted", ans, "from", from);
+			console.log("Call accepted from", from);
 			await peer.setLocalDescription(ans);
-			sendStream();
+			if (myStream) {
+				for (const track of myStream.getTracks()) {
+					peer.peer.addTrack(track, myStream);
+				};
+			} else {
+				alert("No stream");
+			}
 		},
-		[sendStream]
+		[myStream]
 	);
 
 	const handleNegotiationNeeded = useCallback(async () => {
@@ -113,9 +113,9 @@ const VideoRoom = () => {
 
 	React.useEffect(() => {
 		peer.peer.addEventListener("track", (event) => {
-			const remoteStream = event.streams[0];
+			const remoteStream = event.streams;
 			console.log("Got Remote stream", remoteStream);
-			setRemoteStream(remoteStream);
+			setRemoteStream(remoteStream[0]);
 		});
 	}, [peer]);
 
@@ -164,15 +164,6 @@ const VideoRoom = () => {
 					{remoteSocketId ? (
 						<div>
 							<h4>{remoteUID} connected to Room</h4>
-							{myStream && (
-								<Button
-									variant="contained"
-									color="primary"
-									onClick={() => sendStream()}
-								>
-									Send stream
-								</Button>
-							)}
 							<Button
 								variant="contained"
 								color="primary"
