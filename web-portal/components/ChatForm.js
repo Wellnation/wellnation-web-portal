@@ -9,6 +9,17 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dayjs from "dayjs";
+import {
+	collection,
+	doc,
+	getDocs,
+	query,
+	updateDoc,
+	where,
+} from "firebase/firestore";
+import { db } from "@/lib/firebase.config";
+import { useRouter } from "next/router";
+import Notifications from "./Notifications";
 
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -18,7 +29,12 @@ const Item = styled(Paper)(({ theme }) => ({
 	height: "100%",
 }));
 
-const ChatForm = () => {
+const ChatForm = ({ pid }) => {
+	const router = useRouter();
+	const [open, setOpen] = React.useState(false);
+	const [message, setMessage] = React.useState("");
+	const [type, setType] = React.useState("success");
+	const [diagnosis, setDiagnosis] = React.useState("");
 	const [fields, setFields] = React.useState([
 		{
 			medicine: "",
@@ -32,6 +48,13 @@ const ChatForm = () => {
 			],
 		},
 	]);
+
+	const handleClose = (event, reason) => {
+		if (reason === "clickaway") {
+			return;
+		}
+		setOpen(false);
+	};
 
 	const handleFormChange = (index, event) => {
 		let data = [...fields];
@@ -72,28 +95,48 @@ const ChatForm = () => {
 		setFields(values);
 	};
 
-	//TODO: Add submit function
-	//TODO: Prop to pass in patient ID
-	//TODO: Fetch did and pid from router query and prop and query db for appointment
 	//TODO: Appointment schema add roomID? -> Optional
-	//TODO: Pass the medicines object from state to update the appointment schema
-	
-	// Schema: [
-	// 	{
-	// 		name: state.name,
-	// 		remark: state.remark,
-	// 		time: [
-	// 			{
-	// 				hr: state.meds.hr,
-	// 				min: state.meds.min,
-	// 			}
-	// 		]
-	// 	}
-	// ]
 
 	const handleSubmit = async (event) => {
-		// event.preventDefault();
-		console.log(fields);
+		event.preventDefault();
+		// console.log(fields);
+		const appointmentRef = collection(db, "appointments");
+		const appointmentSnapshot = query(
+			appointmentRef,
+			where("drid", "==", router.query.did),
+			where("pid", "===", pid)
+			// where("pid", "==", "A9FU5zycZ7NldUhJgQbn2rHs6sF3")
+		);
+
+		const allDocs = await getDocs(appointmentSnapshot);
+		const appointmentDocRef = doc(db, "appointments", allDocs.docs[0].id);
+
+		const medsArray = allDocs.docs[0].data().medicines;
+		const newData = fields.map((med) => ({
+			name: med.medicine,
+			remark: med.remark,
+			time: med.meds.map((time) => ({
+				hr: time.hr,
+				min: time.min,
+			})),
+		}));
+		medsArray.push(newData);
+
+		updateDoc(appointmentDocRef, {
+			remark: diagnosis,
+			medicines: medsArray,
+		})
+			.then(() => {
+				setOpen(true);
+				setType("success");
+				setMessage("Diagnosis and Prescription added successfully!");
+			})
+			.catch((error) => {
+				console.log("Error updating document: ", error);
+				setOpen(true);
+				setType("error");
+				setMessage(error.message);
+			});
 	};
 
 	return (
@@ -113,7 +156,12 @@ const ChatForm = () => {
 						justifyContent: "flex-start",
 					}}
 				>
-					<TextField label="Diagnosis" variant="outlined" />
+					<TextField
+						label="Diagnosis"
+						variant="outlined"
+						value={diagnosis}
+						onChange={(e) => setDiagnosis(e.target.value)}
+					/>
 				</div>
 				<h2>Prescribed Medicines</h2>
 				<div
@@ -218,14 +266,21 @@ const ChatForm = () => {
 					})}
 				</div>
 				<Button
+					type="submit"
 					variant="text"
 					color="primary"
 					style={{ marginTop: "20px" }}
-					onClick={() => handleSubmit()}
+					onClick={(e) => handleSubmit(e)}
 				>
 					Update
 				</Button>
 			</Item>
+			<Notifications
+				open={open}
+				handleClose={handleClose}
+				type={type}
+				message={message}
+			/>
 		</div>
 	);
 };

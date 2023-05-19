@@ -236,7 +236,7 @@ const DoctorHome = () => {
 												Start Video Chat
 											</Button>
 										</div>
-										<ChatForm />
+										{/* <ChatForm /> */}
 									</AccordionDetails>
 								</Accordion>
 							</div>

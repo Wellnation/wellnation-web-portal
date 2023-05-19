@@ -281,7 +281,7 @@ const VideoRoom = () => {
 									<ReactPlayer url={remoteStream} playing muted width="500px" />
 								</div>
 							)}
-							<ChatForm />
+							<ChatForm pid={remoteUID} />
 							<div
 								style={{
 									display: "flex",
