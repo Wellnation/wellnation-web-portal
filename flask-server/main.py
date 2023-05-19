@@ -1,11 +1,24 @@
 from flask import Flask, request, jsonify
 from transformers import DistilBertTokenizer, TFDistilBertForSequenceClassification
+from flask_cors import CORS
 
 app = Flask(__name__)
+app.config['CORS_HEADERS'] = 'Content-Type' 
+app.config['Access-Control-Allow-Credentials'] = True
+
+CORS(
+  app, 
+  resources={r"/*": {
+    "origins": "*",
+    "allow_headers": "*", 
+    "expose_headers": "*"
+  }},
+  supports_credentials=True
+)
 
 # Load the tokenizer and model
-tokenizer = DistilBertTokenizer.from_pretrained('dwellbert')
-model = TFDistilBertForSequenceClassification.from_pretrained('dwellbert')
+tokenizer = DistilBertTokenizer.from_pretrained('oyesaurav/dwellbert')
+model = TFDistilBertForSequenceClassification.from_pretrained('oyesaurav/dwellbert')
 
 # Define the classification labels
 labels = ['Gastroenterology' 'Neurology' 'Orthopedic' 'Radiology' 'Urology']

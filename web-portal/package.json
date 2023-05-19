@@ -16,6 +16,7 @@
     "@mui/material": "^5.11.13",
     "@mui/x-data-grid": "^6.0.3",
     "@mui/x-date-pickers": "^6.0.4",
+    "@react-google-maps/api": "^2.18.1",
     "dayjs": "^1.11.7",
     "firebase": "^9.18.0",
     "next": "13.2.4",
