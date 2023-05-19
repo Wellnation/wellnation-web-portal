@@ -1,10 +1,13 @@
 import React from "react";
-import { IconButton, Paper, TextField, Button } from "@mui/material";
+import { IconButton, Paper, TextField, Button, Tooltip } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { AddCircleOutlineRounded, RemoveCircleOutlineRounded } from "@mui/icons-material";
+import {
+	AddCircleOutlineRounded,
+	RemoveCircleOutlineRounded,
+} from "@mui/icons-material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dayjs from "dayjs";
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -17,7 +20,17 @@ const Item = styled(Paper)(({ theme }) => ({
 
 const ChatForm = () => {
 	const [fields, setFields] = React.useState([
-		{ medicine: "", dosage: "", startTime: dayjs(), endTime: dayjs() },
+		{
+			medicine: "",
+			remark: "",
+			meds: [
+				{
+					medTime: "",
+					hr: "",
+					min: "",
+				},
+			],
+		},
 	]);
 
 	const handleFormChange = (index, event) => {
@@ -26,29 +39,61 @@ const ChatForm = () => {
 		setFields(data);
 	};
 
-	const handleFormStartDate = (index, value) => {
+	const handleFormTime = (index, medIndex, value) => {
 		let data = [...fields];
-		data[index]["startTime"] = value;
-		setFields(data);
-	};
-
-	const handleFormEndDate = (index, value) => {
-		let data = [...fields];
-		data[index]["endTime"] = value;
+		data[index]["meds"][medIndex]["medTime"] = value;
+		data[index]["meds"][medIndex]["hr"] = dayjs(value).format("HH");
+		data[index]["meds"][medIndex]["min"] = dayjs(value).format("mm");
 		setFields(data);
 	};
 
 	const handleAddFields = () => {
 		setFields([
 			...fields,
-			{ medicine: "", dosage: "", startTime: "", endTime: "" },
+			{ medicine: "", remark: "", meds: [{ medTime: "", hr: "", min: "" }] },
 		]);
+	};
+
+	const handleAddMeds = (index) => {
+		let data = [...fields];
+		data[index]["meds"].push({ medTime: "", hr: "", min: "" });
+		setFields(data);
+	};
+
+	const handleRemoveMeds = (index, medIndex) => {
+		let data = [...fields];
+		data[index]["meds"].splice(medIndex, 1);
+		setFields(data);
 	};
 
 	const handleRemoveField = (index) => {
 		const values = [...fields];
 		values.splice(index, 1);
 		setFields(values);
+	};
+
+	//TODO: Add submit function
+	//TODO: Prop to pass in patient ID
+	//TODO: Fetch did and pid from router query and prop and query db for appointment
+	//TODO: Appointment schema add roomID? -> Optional
+	//TODO: Pass the medicines object from state to update the appointment schema
+	
+	// Schema: [
+	// 	{
+	// 		name: state.name,
+	// 		remark: state.remark,
+	// 		time: [
+	// 			{
+	// 				hr: state.meds.hr,
+	// 				min: state.meds.min,
+	// 			}
+	// 		]
+	// 	}
+	// ]
+
+	const handleSubmit = async (event) => {
+		// event.preventDefault();
+		console.log(fields);
 	};
 
 	return (
@@ -98,41 +143,75 @@ const ChatForm = () => {
 										onChange={(event) => handleFormChange(index, event)}
 									/>
 									<TextField
-										name="dosage"
+										name="remark"
 										style={{ marginRight: "10px" }}
-										label="Dosage"
+										label="Remark"
 										variant="outlined"
-										value={input.dosage}
+										value={input.remark}
 										onChange={(event) => handleFormChange(index, event)}
 									/>
-									<LocalizationProvider dateAdapter={AdapterDayjs}>
-										<div style={{ marginRight: "10px" }}>
-											<DateTimePicker
-												name="arrTime"
-												label="Start Time"
-												value={input.startTime}
-												onChange={(newValue) =>
-													handleFormStartDate(index, newValue)
-												}
-											/>
-										</div>
-										<div style={{ marginRight: "10px" }}>
-											<DateTimePicker
-												name="endTime"
-												label="End Time"
-												value={input.endTime}
-												onChange={(newValue) =>
-													handleFormEndDate(index, newValue)
-												}
-											/>
-										</div>
-									</LocalizationProvider>
-									<IconButton onClick={handleAddFields}>
-										<AddCircleOutlineRounded color="primary" />
-									</IconButton>
-									<IconButton onClick={() => handleRemoveField(index)}>
-										<RemoveCircleOutlineRounded color="primary" />
-									</IconButton>
+									<div
+										style={{
+											display: "flex",
+											flexDirection: "column",
+										}}
+									>
+										{input.meds.map((med, medIndex) => {
+											return (
+												<div
+													key={medIndex}
+													style={{
+														display: "flex",
+														alignItems: "center",
+														justifyContent: "center",
+														margin: "10px auto",
+													}}
+												>
+													<LocalizationProvider dateAdapter={AdapterDayjs}>
+														<div style={{ marginRight: "10px" }}>
+															<TimePicker
+																name="medTime"
+																label="Medicine Time"
+																ampm={false}
+																value={med.medTime}
+																onChange={(value) =>
+																	handleFormTime(index, medIndex, value)
+																}
+															/>
+														</div>
+													</LocalizationProvider>
+													<Tooltip title="Add Dosage">
+														<IconButton onClick={() => handleAddMeds(index)}>
+															<AddCircleOutlineRounded color="secondary" />
+														</IconButton>
+													</Tooltip>
+													{input.meds.length > 1 && (
+														<Tooltip title="Remove Dosage">
+															<IconButton
+																onClick={() =>
+																	handleRemoveMeds(index, medIndex)
+																}
+															>
+																<RemoveCircleOutlineRounded color="secondary" />
+															</IconButton>
+														</Tooltip>
+													)}
+												</div>
+											);
+										})}
+									</div>
+									<Tooltip title="Add Medicine">
+										<IconButton onClick={handleAddFields}>
+											<AddCircleOutlineRounded color="primary" />
+										</IconButton>
+									</Tooltip>
+									{fields.length > 1 && (
+										<Tooltip title="Remove Medicine">
+											<IconButton onClick={() => handleRemoveField(index)}>
+												<RemoveCircleOutlineRounded color="primary" />
+											</IconButton>
+										</Tooltip>
+									)}
 								</div>
 							</div>
 						);
@@ -142,7 +221,7 @@ const ChatForm = () => {
 					variant="text"
 					color="primary"
 					style={{ marginTop: "20px" }}
-					onClick={() => console.log(fields)}
+					onClick={() => handleSubmit()}
 				>
 					Update
 				</Button>

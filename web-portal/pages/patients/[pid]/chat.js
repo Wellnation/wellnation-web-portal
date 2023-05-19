@@ -127,20 +127,45 @@ const PatientChat = () => {
 		});
 	}, [peer]);
 
+	const handleEndCall = useCallback(() => {
+		socket.emit("leave");
+	}, []);
+
+	const handleLeaveRoom = useCallback((data) => {
+		const { from } = data;
+		socket.disconnect();
+		peer.peer.close();
+		navigator.mediaDevices
+			.getUserMedia({
+				video: true,
+				audio: true,
+			})
+			.then((stream) => {
+				const tracks = stream.getTracks();
+				tracks.forEach((track) => track.stop());
+			})
+			.catch((err) => alert(err));
+		router.push(`/patients/${router.query.pid}/chat`);
+	}, []);
+
 	React.useEffect(() => {
 		socket.on("incoming:call", handleIncomingCall);
 		socket.on("peer:nego:needed", handleNegotiation);
 		socket.on("peer:nego:final", handleNegotiationFinal);
+		socket.on("room:leave", handleLeaveRoom);
 
 		return () => {
 			socket.off("incoming:call", handleIncomingCall);
 			socket.off("peer:nego:needed", handleNegotiation);
 			socket.off("peer:nego:final", handleNegotiationFinal);
+			socket.off("room:leave", handleLeaveRoom);
 		};
 	}, [
 		socket,
 		handleIncomingCall,
 		handleNegotiationFinal,
+		handleNegotiation,
+		handleLeaveRoom,
 	]);
 
 	return (
@@ -149,6 +174,7 @@ const PatientChat = () => {
 				style={{
 					margin: "30px",
 					padding: "20px",
+					textAlign: "center",
 				}}
 			>
 				<h1>Chat with Doctor</h1>
@@ -189,7 +215,14 @@ const PatientChat = () => {
 						</Button>
 					</>
 				)}
-				<div>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						marginTop: "20px",
+						alignItems: "center",
+					}}
+				>
 					{myStream && (
 						<Button
 							variant="contained"
@@ -249,6 +282,24 @@ const PatientChat = () => {
 						>
 							<h2>{remoteUID ? remoteUID + " Stream" : ""}</h2>
 							<ReactPlayer url={remoteStream} playing muted width="500px" />
+							<div
+								style={{
+									display: "flex",
+									justifyContent: "center",
+									marginTop: "20px",
+									alignItems: "center",
+								}}
+							>
+								<Button
+									variant="contained"
+									color="secondary"
+									onClick={() => {
+										handleEndCall();
+									}}
+								>
+									Leave Room
+								</Button>
+							</div>
 						</div>
 					)}
 				</div>

@@ -44,6 +44,14 @@ io.on('connection', (socket) => {
     const { to, ans } = data;
     io.to(to).emit('peer:nego:final', { from: socket.id, ans });
   });
+
+  socket.on("leave", () => {
+    const userId = socketToUserMap.get(socket.id);
+    console.log(userId, 'left->', "room:", socket.id);
+    userToSocketMap.delete(userId);
+    socketToUserMap.delete(socket.id);
+    io.to(socket.id).emit('room:leave', { from: socket.id });
+  });
 });
 
 io.on('disconnect', () => {

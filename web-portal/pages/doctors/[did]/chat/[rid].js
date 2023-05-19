@@ -6,8 +6,9 @@ import { useRouter } from "next/router";
 import ReactPlayer from "react-player";
 import MicIcon from "@mui/icons-material/Mic";
 import { MicOffRounded, Videocam, VideocamOff } from "@mui/icons-material";
-import dynamic from "next/dynamic";
+import ChatForm from "@/components/ChatForm";
 
+// import dynamic from "next/dynamic";
 // const peer = dynamic(() => import("@/service/peer"), { ssr: false });
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -52,15 +53,20 @@ const VideoRoom = () => {
 		async ({ offer, from }) => {
 			console.log("Incoming call", from, offer);
 			setRemoteSocketId(from);
-			navigator.mediaDevices
-				.getUserMedia({
-					video: true,
-					audio: true,
+			peer.getAnswer(offer)
+				.then(() => {
+					navigator.mediaDevices
+						.getUserMedia({
+							video: true,
+							audio: true,
+						})
+						.then((stream) => setMyStream(stream))
+						.catch((err) => alert(err));
 				})
-				.then((stream) => setMyStream(stream))
+				.then((ans) => {
+					socket.emit("call:accepted", { to: from, ans });
+				})
 				.catch((err) => alert(err));
-			const ans = await peer.getAnswer(offer);
-			socket.emit("call:accepted", { to: from, ans });
 		},
 		[socket]
 	);
@@ -68,14 +74,33 @@ const VideoRoom = () => {
 	const handleCallAccepted = useCallback(
 		async ({ from, ans }) => {
 			console.log("Call accepted from", from);
-			await peer.setLocalDescription(ans);
-			if (myStream) {
-				for (const track of myStream.getTracks()) {
-					peer.peer.addTrack(track, myStream);
-				};
-			} else {
-				alert("No stream");
-			}
+			peer.setLocalDescription(ans)
+				.then(() => {
+					navigator.mediaDevices
+						.getUserMedia({
+							video: true,
+							audio: true,
+						})
+						.then((stream) => {
+							const tracks = stream.getTracks();
+							tracks.forEach((track) =>
+								peer.peer.addTrack(track, stream)
+							);
+						})
+						.catch((err) => alert(err));
+				})
+				.catch((err) => alert(err));
+			
+			// if (myStream) {
+			// 	// for (const track of myStream.getTracks()) {
+			// 	// 	peer.peer.addTrack(track, myStream);
+			// 	// };
+			// 	const tracks = myStream.getTracks();
+			// 	tracks.forEach((track) => peer.peer.addTrack(track, myStream));
+			// } else {
+			// 	alert("No stream");
+			// 	console.log(peer.peer);
+			// }
 		},
 		[myStream]
 	);
@@ -111,6 +136,27 @@ const VideoRoom = () => {
 		await peer.setLocalDescription(ans);
 	}, []);
 
+	const handleEndCall = useCallback(() => {
+		socket.emit("leave");
+	}, []);
+
+	const handleLeaveRoom = useCallback((data) => {
+		const { from } = data;
+		socket.disconnect();
+		peer.peer.close();
+		navigator.mediaDevices
+			.getUserMedia({
+				video: true,
+				audio: true,
+			})
+			.then((stream) => {
+				const tracks = stream.getTracks();
+				tracks.forEach((track) => track.stop());
+			})
+			.catch((err) => alert(err));
+		router.push(`/${router.query.did}`);
+	}, []);
+
 	React.useEffect(() => {
 		peer.peer.addEventListener("track", (event) => {
 			const remoteStream = event.streams;
@@ -125,6 +171,7 @@ const VideoRoom = () => {
 		socket.on("call:accepted", handleCallAccepted);
 		socket.on("peer:nego:needed", handleNegotiation);
 		socket.on("peer:nego:final", handleNegotiationFinal);
+		socket.on("room:leave", handleLeaveRoom);
 
 		return () => {
 			socket.off("user:joined", handleUserJoined);
@@ -132,6 +179,7 @@ const VideoRoom = () => {
 			socket.off("call:accepted", handleCallAccepted);
 			socket.off("peer:nego:needed", handleNegotiation);
 			socket.off("peer:nego:final", handleNegotiationFinal);
+			socket.off("room:leave", handleLeaveRoom);
 		};
 	}, [
 		socket,
@@ -140,6 +188,7 @@ const VideoRoom = () => {
 		handleCallAccepted,
 		handleNegotiation,
 		handleNegotiationFinal,
+		handleLeaveRoom,
 	]);
 
 	return (
@@ -148,6 +197,7 @@ const VideoRoom = () => {
 				display: "flex",
 				flexDirection: "column",
 				padding: "50px 30px",
+				textAlign: "center",
 			}}
 		>
 			<h1>Video Room</h1>
@@ -160,7 +210,15 @@ const VideoRoom = () => {
 					padding: "30px",
 				}}
 			>
-				<div>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "center",
+						justifyContent: "center",
+						textAlign: "center",
+					}}
+				>
 					{remoteSocketId ? (
 						<div>
 							<h4>{remoteUID} connected to Room</h4>
@@ -223,6 +281,25 @@ const VideoRoom = () => {
 									<ReactPlayer url={remoteStream} playing muted width="500px" />
 								</div>
 							)}
+							<ChatForm />
+							<div
+								style={{
+									display: "flex",
+									justifyContent: "center",
+									marginTop: "20px",
+									alignItems: "center",
+								}}
+							>
+								<Button
+									variant="contained"
+									color="secondary"
+									onClick={() => {
+										handleEndCall();
+									}}
+								>
+									Leave Room
+								</Button>
+							</div>
 						</div>
 					) : (
 						<h4>Waiting for user to join...</h4>

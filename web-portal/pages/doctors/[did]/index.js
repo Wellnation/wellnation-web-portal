@@ -32,6 +32,7 @@ import { db } from "@/lib/firebase.config";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import LabelIcon from "@mui/icons-material/Label";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
+import ChatForm from "@/components/ChatForm";
 
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -235,6 +236,7 @@ const DoctorHome = () => {
 												Start Video Chat
 											</Button>
 										</div>
+										<ChatForm />
 									</AccordionDetails>
 								</Accordion>
 							</div>
