@@ -111,7 +111,7 @@ const ChatForm = ({ pid }) => {
 		const allDocs = await getDocs(appointmentSnapshot);
 		const appointmentDocRef = doc(db, "appointments", allDocs.docs[0].id);
 
-		const medsArray = allDocs.docs[0].data().medicines;
+		const medsArray = allDocs.docs[0].data().medicine;
 		const newData = fields.map((med) => ({
 			name: med.medicine,
 			remark: med.remark,
@@ -124,7 +124,7 @@ const ChatForm = ({ pid }) => {
 
 		updateDoc(appointmentDocRef, {
 			remark: diagnosis,
-			medicines: medsArray,
+			medicine: medsArray,
 		})
 			.then(() => {
 				setOpen(true);
