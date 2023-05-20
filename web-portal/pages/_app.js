@@ -10,10 +10,14 @@ import { useRouter } from "next/router";
 import { useLoad } from "@/lib/zustand.config";
 import { messaging } from "@/lib/firebase.config";
 import { getToken } from "firebase/messaging";
+import Notifications from "@/components/Notifications";
 
 export default function MyApp({ Component, pageProps }) {
 	const router = useRouter();
 	const { setLoad } = useLoad((state) => state);
+	const [open, setOpen] = React.useState(false);
+	const [type, setType] = React.useState("success");
+	const [message, setMessage] = React.useState("");
 	const queryClient = new QueryClient();
 	const [mode, setMode] = React.useState("light");
 	const theme = createTheme({
@@ -22,6 +26,13 @@ export default function MyApp({ Component, pageProps }) {
 		},
 	});
 
+	const handleClose = (event, reason) => {
+		if (reason === "clickaway") {
+			return;
+		}
+		setOpen(false);
+	};
+
 	const requestPermission = () => {
 		try {
 			getToken(messaging, {
@@ -29,14 +40,16 @@ export default function MyApp({ Component, pageProps }) {
 			})
 				.then((currentToken) => {
 					if (currentToken) {
-						console.log("current token for client: ", currentToken);
-						// Track the token -> client mapping, by sending to backend server
-						// show on the UI that permission is secured
+						console.log("Current FCMtoken for client: ", currentToken);
+						localStorage.setItem("fcmToken", currentToken);
+						setOpen(true);
+						setType("success");
+						setMessage("Current FCMtoken set for client!");
 					} else {
-						console.log(
-							"No registration token available. Request permission to generate one."
-						);
-						// shows on the UI that permission is required
+						console.log("No registration token available. Request permission to generate one.");
+						setOpen(true);
+						setType("error");
+						setMessage("No registration token available.");
 					}
 				})
 				.catch((err) => {
@@ -45,9 +58,13 @@ export default function MyApp({ Component, pageProps }) {
 			Notification.requestPermission()
 				.then((permission) => {
 					if (permission === "granted") {
-						console.log("Notification permission granted.");
+						setOpen(true);
+						setType("success");
+						setMessage("Notification permission granted.");
 					} else {
-						console.log("Unable to get permission to notify.");
+						setOpen(true);
+						setType("error");
+						setMessage("Unable to get permission to notify.");
 					}
 				})
 				.catch((error) => {
@@ -108,6 +125,12 @@ export default function MyApp({ Component, pageProps }) {
 					<SocketProvider>
 						<Layout>
 							<Component {...pageProps} />
+							<Notifications
+								open={open}
+								type={type}
+								message={message}
+								handleClose={handleClose}
+							/>
 						</Layout>
 					</SocketProvider>
 				</QueryClientProvider>

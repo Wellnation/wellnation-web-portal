@@ -5,17 +5,31 @@ import {
 	signOut,
 	updateProfile,
 	sendPasswordResetEmail,
-	confirmPasswordReset
+	confirmPasswordReset,
 } from "firebase/auth";
-import { addDoc, collection, getDocs, query, where, setDoc, doc } from "firebase/firestore";
+import {
+	collection,
+	getDocs,
+	query,
+	where,
+	setDoc,
+	doc,
+} from "firebase/firestore";
 
-const register = async (name, email, password, setOpen, setErrorMessage, setType) => {
+const register = async (
+	name,
+	email,
+	password,
+	setOpen,
+	setErrorMessage,
+	setType
+) => {
 	try {
-		const usersRef = collection(db, 'users');
-		const q = query(usersRef, where('email', '==', email));
+		const usersRef = collection(db, "users");
+		const q = query(usersRef, where("email", "==", email));
 		const querySnapshot = await getDocs(q);
 		if (!querySnapshot.empty) {
-			throw new Error('Email already exists, please login!');
+			throw new Error("Email already exists, please login!");
 		}
 		const res = await createUserWithEmailAndPassword(auth, email, password);
 		const user = res.user;
@@ -27,11 +41,13 @@ const register = async (name, email, password, setOpen, setErrorMessage, setType
 			email: email,
 			uid: user.uid,
 			createdOn: new Date(),
+			fcmToken: localStorage.getItem("fcmToken"),
 		});
 
 		await updateProfile(user, {
 			displayName: name,
-			photoURL: "https://healthcaredesignmagazine.com/wp-content/uploads/2017/03/EwingCole-Entrance_Page_01_620x380.jpg",
+			photoURL:
+				"https://healthcaredesignmagazine.com/wp-content/uploads/2017/03/EwingCole-Entrance_Page_01_620x380.jpg",
 		});
 
 		window.location.href = "/";
@@ -45,11 +61,11 @@ const register = async (name, email, password, setOpen, setErrorMessage, setType
 
 const login = async (email, password, setOpen, setErrorMessage, setType) => {
 	try {
-		const usersRef = collection(db, 'users');
-		const q = query(usersRef, where('email', '==', email));
+		const usersRef = collection(db, "users");
+		const q = query(usersRef, where("email", "==", email));
 		const querySnapshot = await getDocs(q);
 		if (querySnapshot.empty) {
-			throw new Error('Email not found, please register!');
+			throw new Error("Email not found, please register!");
 		}
 
 		const res = await signInWithEmailAndPassword(auth, email, password);
@@ -68,6 +84,9 @@ const login = async (email, password, setOpen, setErrorMessage, setType) => {
 const logout = async (setOpen, setErrorMessage, setType) => {
 	try {
 		signOut(auth);
+		localStorage.removeItem("hId");
+		localStorage.removeItem("dId");
+		localStorage.removeItem("fcmToken");
 		window.location.href = "/";
 	} catch (error) {
 		console.log(error);
@@ -82,17 +101,25 @@ const forgotPassword = async (email, setOpen, setErrorMessage, setType) => {
 		await sendPasswordResetEmail(auth, email);
 		console.log(auth);
 		setType("success");
-		setErrorMessage("Email sent, please check your inbox and follow the instructions to reset your password.");
+		setErrorMessage(
+			"Email sent, please check your inbox and follow the instructions to reset your password."
+		);
 		setOpen(true);
 	} catch (error) {
 		console.log(error);
 		setType("error");
 		setErrorMessage(error.message);
 		setOpen(true);
-	};
+	}
 };
 
-const resetPassword = async (code, password, setOpen, setErrorMessage, setType) => {
+const resetPassword = async (
+	code,
+	password,
+	setOpen,
+	setErrorMessage,
+	setType
+) => {
 	try {
 		console.log(auth, code);
 		await confirmPasswordReset(auth, code, password);
@@ -104,7 +131,7 @@ const resetPassword = async (code, password, setOpen, setErrorMessage, setType) 
 		setType("error");
 		setErrorMessage(error.message);
 		setOpen(true);
-	};
+	}
 };
 
 export { register, login, logout, forgotPassword, resetPassword };

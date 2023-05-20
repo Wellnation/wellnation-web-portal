@@ -1,24 +1,48 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
+const functions = require("firebase-functions");
+const admin = require("firebase-admin");
+admin.initializeApp();
 
-const { logger } = require("firebase-functions");
-const { onRequest } = require("firebase-functions/v2/https");
+exports.notifyAmbulanceStatusChange = functions.firestore
+	.document("ambulance/{ambulanceId}")
+	.onUpdate((change, context) => {
+		const newValue = change.after.data();
+		const previousValue = change.before.data();
 
-const { initializeApp } = require("firebase-admin/app");
-const { getFirestore } = require("firebase-admin/firestore");
+		// Check if the status parameter changed from true to false
+		if (previousValue.status === true && newValue.status === false) {
+			const ambulanceId = context.params.ambulanceId;
 
-initializeApp();
+			// Get the recipientToken from the ambulance document
+			const recipientToken = newValue.fcmToken;
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+			// Send the notification to the recipientToken
+			// Implement your notification logic here
+			sendNotification(recipientToken);
+		}
 
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+		return null;
+	});
+
+function sendNotification(recipientToken) {
+	// Implement your notification logic here
+	// Use a third-party service or Firebase Cloud Messaging (FCM) to send the notification
+	// Example: send a push notification using FCM
+
+	const message = {
+		notification: {
+			title: "Ambulance Status Changed",
+			body: "The status of the ambulance has changed.",
+		},
+		token: recipientToken,
+	};
+
+	admin
+		.messaging()
+		.send(message)
+		.then((response) => {
+			console.log("Notification sent successfully:", response);
+		})
+		.catch((error) => {
+			console.error("Error sending notification:", error);
+		});
+}
