@@ -1,14 +1,16 @@
 import React, { useMemo } from "react"
-import { useLoadScript, GoogleMap, MarkerF } from "@react-google-maps/api"
+import { useLoadScript, GoogleMap, MarkerF, InfoBox, InfoWindow } from "@react-google-maps/api"
 import { useQuery } from "react-query"
 import { query, collection, getDocs, onSnapshot, getDoc, setDoc, doc as firestoreDoc, where } from "firebase/firestore"
 import { db } from "@/lib/firebase.config"
 import Skeleton from "@mui/material/Skeleton"
+import ambulanceMarker from "@/public/ambulance.png"
+import LocalHospitalIcon from "@mui/icons-material/LocalHospital"
 
 export default function AmbulanceMap() {
-  const [center, setCenter] = React.useState({ lat: 20.2706, lng: 85.8334})
+  const [center, setCenter] = React.useState({ lat: 20.2706, lng: 85.8334 })
   const hid = localStorage.getItem("hId")
-  const libraries = useMemo(() => ["places","routes"], [])
+  const libraries = useMemo(() => ["places", "routes"], [])
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY,
@@ -27,8 +29,8 @@ export default function AmbulanceMap() {
   const fetchHospital = async () => {
     const hospRef = firestoreDoc(db, "users", hid)
     const hospSnap = await getDoc(hospRef)
-    setCenter({ lat: hospSnap.data().location.latitude, lng: hospSnap.data().location.longitude}) 
-    return { ...hospSnap.data(), id: hospSnap.id}
+    setCenter({ lat: hospSnap.data().location.latitude, lng: hospSnap.data().location.longitude })
+    return { ...hospSnap.data(), id: hospSnap.id }
   }
 
   const ambulance = useQuery({
@@ -62,43 +64,54 @@ export default function AmbulanceMap() {
           elementType: "labels",
           stylers: [{ visibility: "on" }],
         },
-        // {
-        //   elementType: "geometry",
-        //   stylers: [
-        //     {
-        //       color: "#242f3e",
-        //     },
-        //   ],
-        // },
-        // {
-        //   elementType: "labels.text.fill",
-        //   stylers: [
-        //     {
-        //       color: "#746855",
-        //     },
-        //   ],
-        // },
-        // {
-        //   elementType: "labels.text.stroke",
-        //   stylers: [
-        //     {
-        //       color: "#242f3e",
-        //     },
-        //   ],
-        // },
-        // {
-        //   featureType: "administrative.locality",
-        //   elementType: "labels.text.fill",
-        //   stylers: [
-        //     {
-        //       color: "#d59563",
-        //     },
-        //   ],
-        // },
+        {
+          elementType: "geometry",
+          stylers: [
+            {
+              color: "#242f3e",
+            },
+          ],
+        },
+        {
+          elementType: "labels.text.fill",
+          stylers: [
+            {
+              color: "#746855",
+            },
+          ],
+        },
+        {
+          elementType: "labels.text.stroke",
+          stylers: [
+            {
+              color: "#242f3e",
+            },
+          ],
+        },
+        {
+          featureType: "administrative.locality",
+          elementType: "labels.text.fill",
+          stylers: [
+            {
+              color: "#d59563",
+            },
+          ],
+        },
       ],
     }),
     []
   )
+
+  function handleMarkerClick() {
+    return (
+      <InfoWindow position={center}>
+        {console.log("InfoWindow")}
+        <div>
+          <h1>InfoWindow</h1>
+        </div>
+      </InfoWindow>
+    )
+  }
 
   if (!isLoaded || ambulance.isLoading || hospital.isLoading) {
     return (
@@ -129,9 +142,26 @@ export default function AmbulanceMap() {
           <MarkerF
             key={amb.id}
             position={{ lat: amb.currentlocation.latitude, lng: amb.currentlocation.longitude }}
-          />  
+            icon={ambulanceMarker}
+            animation="BOUNCE"
+          />
         ))}
-        <MarkerF position={center} onLoad={() => console.log('Marker Loaded')} />
+        <MarkerF
+          position={center}
+          onLoad={() => console.log("Marker Loaded")}
+          onClick={handleMarkerClick}
+          icon={{
+            url: LocalHospitalIcon,
+            fillColor: "yellow",
+            strokeColor: "gold",
+            strokeWeight: 2,
+          }}
+        />
+        <InfoBox position={center}>
+          <div style={{ backgroundColor: "yellow", opacity: 0.75, padding: "1rem" }}>
+            <div style={{ fontSize: "1rem", fontColor: `#000` }}>Hospital location</div>
+          </div>
+        </InfoBox>
       </GoogleMap>
     </>
   )

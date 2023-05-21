@@ -62,7 +62,7 @@ function Row(props) {
         setDoc(
           amblRef,
           {
-            status: true,
+            status: false,
             pickuplocation: row.location, // location of emergency
             dropLocation: hospital.data().location, // location of hospital
           },
@@ -123,7 +123,7 @@ function Row(props) {
                   <option aria-label="None" value="" />
                   {ambllist.map((doc) => {
                     return (
-                      doc.status === false && (
+                      doc.status === true && (
                         <option value={doc.id} key={doc.id}>
                           ({doc.vechilenumber}) {doc.contact}
                         </option>
@@ -168,7 +168,7 @@ function Row(props) {
           {row.date.toDate().toDateString() + " at " + row.date.toDate().toLocaleTimeString("en-us")}
         </TableCell>
         <TableCell align="right">
-          {isLoading ? <Skeleton variant="text" /> : !row.ambulanceId ? selectAmbulance() : data.ambl.vechilenumber}
+          {isLoading && !error ? <Skeleton variant="text" /> : (!row.ambulanceId ? selectAmbulance() : data.ambl.vechilenumber)}
         </TableCell>
         <TableCell align="right">
           <a href={mapUrl} target="_blank">
