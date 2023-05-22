@@ -86,16 +86,15 @@ export default function MyApp({ Component, pageProps }) {
 					console.log("Service worker registration failed, error:", err);
 				});
 		}
-		requestPermission();
+		if(!router.pathname.includes("patients")) requestPermission();
 	}, []);
 
 	React.useEffect(() => {
-		if (localStorage.getItem("dId") && !router.pathname.includes("patients")) {
+		if (!router.pathname.includes("patients") && localStorage.getItem("dId")) {
 			router.push(`/doctors/${localStorage.getItem("dId")}`);
 			setLoad(false);
 		} else if (
-			localStorage.getItem("hId") &&
-			!router.pathname.includes("patients")
+			!router.pathname.includes("patients") && localStorage.getItem("hId")
 		) {
 			router.push("/");
 			setLoad(false);
