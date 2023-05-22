@@ -42,9 +42,9 @@ export default function MyApp({ Component, pageProps }) {
 					if (currentToken) {
 						console.log("Current FCMtoken for client: ", currentToken);
 						localStorage.setItem("fcmToken", currentToken);
-						setOpen(true);
-						setType("success");
-						setMessage("Current FCMtoken set for client!");
+						// setOpen(true);
+						// setType("success");
+						// setMessage("Current FCMtoken set for client!");
 					} else {
 						console.log("No registration token available. Request permission to generate one.");
 						setOpen(true);

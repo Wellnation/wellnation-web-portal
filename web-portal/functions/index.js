@@ -69,3 +69,19 @@ function sendNotification(recipientToken, patientToken, vehicleNo) {
 			console.error("Error sending notification:", error);
 		});
 }
+
+// const sendNotifications = (messages) => {
+// 	messages.forEach((message) => {
+// 		admin
+// 			.messaging()
+// 			.send(message)
+// 			.then((response) => {
+// 				console.log("Notification sent successfully:", response);
+// 			})
+// 			.catch((error) => {
+// 				console.error("Error sending notification:", error);
+// 			});
+// 	});
+// };
+
+// sendNotifications([ambulanceMessage, patientMessage]);
