@@ -153,7 +153,7 @@ const Account = () => {
                   <b>Email:</b> {user?.email}
                 </p>
                 <p>
-                  <b>Phone:</b> {user?.phoneNumber}
+                  <b>Phone:</b> {userData.phone}
                 </p>
                 <p>
                   <b>Speciality: </b> {userData.speciality}

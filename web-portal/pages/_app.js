@@ -60,9 +60,7 @@ export default function MyApp({ Component, pageProps }) {
 			Notification.requestPermission()
 				.then((permission) => {
 					if (permission === "granted") {
-						setOpen(true);
-						setType("success");
-						setMessage("Notification permission granted.");
+						console.log("Notification permission granted.");
 					} else {
 						setOpen(true);
 						setType("error");

@@ -32,6 +32,7 @@ import { db } from "@/lib/firebase.config";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import LabelIcon from "@mui/icons-material/Label";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
+import ChatForm from "@/components/ChatForm";
 
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -113,7 +114,7 @@ const DoctorHome = () => {
 			}}
 		>
 			<Item
-				elevation={2}
+				elevation={0}
 				style={{
 					padding: "30px",
 				}}
@@ -124,16 +125,20 @@ const DoctorHome = () => {
 					{appointments.length === 0 ? (
 						<h3>No appointments</h3>
 					) : (
-						appointments.map((appointment) => (
+						appointments.map((appointment, index) => (
 							<div key={appointment.id}>
 								<Accordion
-									expanded={expanded === "panel1"}
-									onChange={handleChange("panel1")}
+									expanded={expanded === `panel${index + 1}`}
+									onChange={handleChange(`panel${index + 1}`)}
+									style={{
+										marginBottom: "20px",
+										padding: "10px",
+									}}
 								>
 									<AccordionSummary
 										expandIcon={<ExpandMoreIcon />}
-										aria-controls="panel1bh-content"
-										id="panel1bh-header"
+										aria-controls={`panel${index + 1}bh-content`}
+										id={`panel${index + 1}bh-header`}
 									>
 										<Typography sx={{ width: "50%", flexShrink: 0 }}>
 											Patient Name: {appointment.patient.name}
@@ -156,7 +161,7 @@ const DoctorHome = () => {
 											<Grid xs={12} sm={4}>
 												<ListItem>
 													<ListItemText
-														primary="Remarks"
+														primary="Diagnosis"
 														secondary={appointment.remark}
 													/>
 												</ListItem>
@@ -196,42 +201,47 @@ const DoctorHome = () => {
 												</ListItem>
 											</Grid>
 										</Grid>
-										<div style={{ marginLeft: "10px" }}>
-											<h3>Video Chat with {appointment.patient.name}</h3>
-											<div style={{ marginBottom: "10px" }}>
-												<TextField
-													style={{ width: "300px" }}
-													label="Room ID"
-													value={roomId}
-													onChange={(e) => setRoomId(e.target.value)}
-													InputProps={{
-														endAdornment: (
-															<InputAdornment position="end">
-																<Tooltip title="Generate Random Room ID">
-																	<IconButton
-																		onClick={() => {
-																			let randomRoomId = Math.random()
-																				.toString(36)
-																				.substring(2, 9);
-																			setRoomId(randomRoomId);
-																		}}
-																	>
-																		<AutorenewIcon color="primary" />
-																	</IconButton>
-																</Tooltip>
-															</InputAdornment>
-														),
+										{appointment.onlinemode && (
+											<div style={{ marginLeft: "10px" }}>
+												<h3>Video Chat with {appointment.patient.name}</h3>
+												<div style={{ marginBottom: "10px" }}>
+													<TextField
+														style={{ width: "300px" }}
+														label="Room ID"
+														value={roomId}
+														onChange={(e) => setRoomId(e.target.value)}
+														InputProps={{
+															endAdornment: (
+																<InputAdornment position="end">
+																	<Tooltip title="Generate Random Room ID">
+																		<IconButton
+																			onClick={() => {
+																				let randomRoomId = Math.random()
+																					.toString(36)
+																					.substring(2, 9);
+																				setRoomId(randomRoomId);
+																			}}
+																		>
+																			<AutorenewIcon color="primary" />
+																		</IconButton>
+																	</Tooltip>
+																</InputAdornment>
+															),
+														}}
+													/>
+												</div>
+												<Button
+													onClick={() => {
+														handleCreateRoom();
 													}}
-												/>
+												>
+													Start Video Chat
+												</Button>
 											</div>
-											<Button
-												onClick={() => {
-													handleCreateRoom();
-												}}
-											>
-												Start Video Chat
-											</Button>
-										</div>
+										)}
+										{!appointment.onlinemode && (
+											<ChatForm pid={appointment.pid} />
+										)}
 									</AccordionDetails>
 								</Accordion>
 							</div>

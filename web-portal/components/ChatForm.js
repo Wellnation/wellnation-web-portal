@@ -143,6 +143,7 @@ const ChatForm = ({ pid }) => {
 	return (
 		<div>
 			<Item
+				elevation={0}
 				style={{
 					margin: "30px auto",
 					padding: "30px",

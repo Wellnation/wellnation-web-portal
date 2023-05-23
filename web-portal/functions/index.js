@@ -46,7 +46,6 @@ exports.notifyOnEmergency = functions
 	.onCreate((snapshot, context) => {
 		const newValue = snapshot.data();
 		const tokens = [];
-		const mapUrl = `https://www.google.com/maps/search/?api=1&query=${newValue.location.latitude},${newValue.location.longitude}`;
 		admin
 			.firestore()
 			.doc("publicusers/" + newValue.pid)
@@ -63,23 +62,143 @@ exports.notifyOnEmergency = functions
 						});
 					});
 			});
-		
-		admin.firestore().collection("users").get().then((querySnap) => {
-			querySnap.forEach((doc) => {
+
+		admin
+			.firestore()
+			.collection("users")
+			.get()
+			.then((querySnap) => {
+				querySnap.forEach((doc) => {
+					tokens.push(doc.data().fcmToken);
+				});
+			});
+
+		const msgArr = tokens.map((token) => ({
+			notification: {
+				title: "Emergency Alert!!",
+				body: "A family member has raised an emergency. Click here to see the location!",
+				// click_action: mapUrl,
+			},
+			token: token,
+		}));
+
+		sendMessages(msgArr);
+
+		return null;
+	});
+
+exports.notifyOnAppointmentCreate = functions
+	.region("asia-south1")
+	.firestore.document("appointments/{appointmentId}")
+	.onCreate((snapshot, context) => {
+		const newValue = snapshot.data();
+		const tokens = [];
+		admin
+			.firestore()
+			.doc("publicusers/" + newValue.pid)
+			.get()
+			.then((doc) => {
+				admin
+					.firestore()
+					.collection("users")
+					.where("uid", "==", doc.data().hid)
+					.get()
+					.then((querySnapshot) => {
+						querySnapshot.forEach((doc) => {
+							tokens.push(doc.data().fcmToken);
+						});
+					});
 				tokens.push(doc.data().fcmToken);
 			});
-		})
 		
-		sendMessages(
-			tokens.map((token) => ({
+		const msgArr = tokens.map((token) => ({
+			notification: {
+				title: "Appointment Booked",
+				body: "A new appointment has been booked with appointment id: " + newValue.apptId,
+			},
+			token: token,
+		}));
+
+		sendMessages(msgArr);
+
+		return null;
+	});
+
+exports.notifyOnAppointmentUpdate = functions
+	.region("asia-south1")
+	.firestore.document("appointments/{appointmentId}")
+	.onUpdate((change, context) => {
+		const newValue = change.after.data();
+		const previousValue = change.before.data();
+
+		if (previousValue.drid !== newValue.drid) {
+			const tokens = [];
+			admin
+				.firestore()
+				.doc("publicusers/" + newValue.pid)
+				.get()
+				.then((doc) => {
+					tokens.push(doc.data().fcmToken);
+				});
+			admin
+				.firestore()
+				.doc("doctors/" + newValue.drid)
+				.get()
+				.then((doc) => {
+					tokens.push(doc.data().fcmToken);
+				});
+			
+			const patientMsg = {
 				notification: {
-					title: "Emergency Alert!!",
-					body: "A family member has raised an emergency. Click here to see the location!",
-					click_action: mapUrl,
+					title: "Doctor Assigned",
+					body: "Your appointment has been updated with appointment id: " + newValue.apptId,
+				},
+				token: tokens[0],
+			};
+
+			const doctorMsg = {
+				notification: {
+					title: "Appointment Assigned",
+					body: "A new appointment has been assigned to you with appointment id: " + newValue.apptId,
+				},
+				token: tokens[1],
+			};
+
+			sendMessages([patientMsg, doctorMsg]);
+
+			return null;
+
+		} else if (previousValue.reqtime !== newValue.shldtime) {
+			const tokens = [];
+			admin
+				.firestore()
+				.doc("publicusers/" + newValue.pid)
+				.get()
+				.then((doc) => {
+					tokens.push(doc.data().fcmToken);
+				});
+			admin
+				.firestore()
+				.doc("doctors/" + newValue.drid)
+				.get()
+				.then((doc) => {
+					tokens.push(doc.data().fcmToken);
+				});
+			
+			const msgArr = tokens.map((token) => ({
+				notification: {
+					title: "Appointment Rescheduled",
+					body: "Your appointment has been rescheduled with appointment id: " + newValue.apptId,
 				},
 				token: token,
-			}))
-		);
+			}));
+
+			sendMessages(msgArr);
+
+			return null;
+		}
+
+		return null;
 	});
 
 const sendMessages = (messages) => {
