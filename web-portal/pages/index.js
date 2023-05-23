@@ -34,6 +34,11 @@ import {
   Beenhere,
   LocalHospital,
   EmergencyShare,
+  MonitorHeartSharp,
+  HealthAndSafetySharp,
+  FamilyRestroomSharp,
+  SpaSharp,
+  VaccinesSharp,
 } from "@mui/icons-material"
 import image from "@/public/icon.svg"
 import { Carousel } from "@mantine/carousel"
@@ -172,7 +177,7 @@ const Landing = () => {
     return (
       <div>
         <ThemeIcon variant="light" size={40} radius={40}>
-          <Icon size="1.1rem" stroke={1.5} />
+          <Icon size="1.5rem" stroke={1.5} />
         </ThemeIcon>
         <Text mt="sm" mb={7}>
           {title}
@@ -255,8 +260,13 @@ const Landing = () => {
 
               <Group mt={30}>
                 <a href="#features">
-                  <Button radius="xl" size="md" className={classes.control} sx={{ backgroundColor: "#6559fe" }}>
-                    See the features
+                  <Button radius="xl" size="sm" className={classes.control} sx={{ backgroundColor: "#6559fe" }}>
+                    Download Users' apk
+                  </Button>
+                </a>
+                <a href="#features">
+                  <Button radius="xl" size="sm" className={classes.control} sx={{ backgroundColor: "#597dfe" }}>
+                    Register as Hospital
                   </Button>
                 </a>
                 <a href="#contact">
@@ -317,74 +327,7 @@ const Landing = () => {
             {otherfeatures}
           </SimpleGrid>
         </Container>
-        {/* Appointment feat */}
-        <div className={classes.banwrapper} id="appointment">
-          <div className={classes.banbody}>
-            <Title className={classes.bantitle}>Wait a minute...</Title>
-            <Text fw={500} fz="lg" mb={5}>
-              Subscribe to our newsletter!
-            </Text>
-            <Text fz="sm" c="dimmed">
-              You will never miss important product updates, latest news and community QA sessions. Our newsletter is
-              once a week, every Sunday.
-            </Text>
-
-            <div className={classes.bancontrols}>
-              <TextInput
-                placeholder="Your email"
-                classNames={{ input: classes.baninput, root: classes.baninputWrapper }}
-              />
-              <Button className={classes.bancontrol}>Subscribe</Button>
-            </div>
-          </div>
-          <Image src={image.src} className={classes.banimage} />
-        </div>
-
-        {/* emergency feat */}
-        <div className={classes.banwrapper}>
-          <Image src={image.src} className={classes.banimage} />
-          <div className={classes.banbody}>
-            <Title className={classes.bantitle}>Wait a minute...</Title>
-            <Text fw={500} fz="lg" mb={5}>
-              Subscribe to our newsletter!
-            </Text>
-            <Text fz="sm" c="dimmed">
-              You will never miss important product updates, latest news and community QA sessions. Our newsletter is
-              once a week, every Sunday.
-            </Text>
-
-            <div className={classes.bancontrols}>
-              <TextInput
-                placeholder="Your email"
-                classNames={{ input: classes.baninput, root: classes.baninputWrapper }}
-              />
-              <Button className={classes.bancontrol}>Subscribe</Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Ambulancefeat */}
-        <div className={classes.banwrapper} id="ambulance">
-          <div className={classes.banbody}>
-            <Title className={classes.bantitle}>Wait a minute...</Title>
-            <Text fw={500} fz="lg" mb={5}>
-              Subscribe to our newsletter!
-            </Text>
-            <Text fz="sm" c="dimmed">
-              You will never miss important product updates, latest news and community QA sessions. Our newsletter is
-              once a week, every Sunday.
-            </Text>
-
-            <div className={classes.bancontrols}>
-              <TextInput
-                placeholder="Your email"
-                classNames={{ input: classes.baninput, root: classes.baninputWrapper }}
-              />
-              <Button className={classes.bancontrol}>Subscribe</Button>
-            </div>
-          </div>
-          <Image src={image.src} className={classes.banimage} />
-        </div>
+       
       </section>
       {/* Features */}
       {/* FAQ */}
@@ -555,39 +498,40 @@ const Landing = () => {
 
 export const otherFeatures = [
   {
-    icon: Beenhere,
+    icon: HealthAndSafetySharp,
     title: "Health Passport",
     description:
-      "Although it still can’t fly, its jumping power is outstanding, in Alola the mushrooms on Paras don’t grow up quite right",
+      "Your comprehensive medical profile, securely stored in one place, can be easily shared with a single click or effortlessly scanned by healthcare providers. Experience the seamless exchange of vital information, enabling personalized care and empowering you to take control of your health journey.",
+  },
+  {
+    icon: SpaSharp,
+    title: "WellBot and Wellcheck",
+    description:
+      "WellBot: Your Trusted Healthcare Companion. Get answers to platform and general healthcare queries with our advanced chatbot. WellCheck: Accurate Symptom Analysis. Our fine-tuned NLP model predicts the relevant medical specialty based on your symptoms, providing precise guidance.",
   },
   {
     icon: Beenhere,
     title: "Bookings and Real-time Updates",
     description:
-      "This dust is actually a powerful poison that will even make a pro wrestler sick, Regice cloaks itself with frigid air of -328 degrees Fahrenheit",
+      "Get access to real-time updates on available tests, rooms, campaigns, and doctor schedules of different hospiitals. Unlock the power of nearby services at your fingertips, transforming your healthcare journey like never before.",
   },
   {
-    icon: Beenhere,
+    icon: MonitorHeartSharp,
     title: "Vital tracking and monitoring",
     description:
-      "People say it can run at the same speed as lightning striking, Its icy body is so cold, it will not melt even if it is immersed in magma",
+      "Easily input your physique, blood pressure, sugar levels, and BMI data, and witness the power of interactive graphs showcasing your health journey over time. Gain valuable insights and make informed decisions for a healthier future with WellNation's comprehensive health analysis tools.",
   },
   {
-    icon: Beenhere,
+    icon: FamilyRestroomSharp,
     title: "Family access and support",
-    description: "They’re popular, but they’re rare. Trainers who show them off recklessly may be targeted by thieves",
+    description:
+      "Stronger Together: Unified Family Health. Seamlessly connect, support, and respond with WellNation's Family Access feature, empowering every member to book appointments, tests, and receive distress signals for comprehensive care.",
   },
   {
-    icon: Beenhere,
-    title: "Volunteer for help",
+    icon: VaccinesSharp,
+    title: "Medicine reminders based on prescriptions",
     description:
-      "Rapidash usually can be seen casually cantering in the fields and plains, Skitty is known to chase around after its own tail",
-  },
-  {
-    icon: Beenhere,
-    title: "WellBot",
-    description:
-      "Rapidash usually can be seen casually cantering in the fields and plains, Skitty is known to chase around after its own tail",
+      "Seamlessly manage your medication regimen with personalized reminders in the app, tailored to the prescriptions provided by your doctors post-appointments. WellNation empowers you to prioritize your health, ensuring adherence to your prescribed treatment plan.",
   },
 ]
 
