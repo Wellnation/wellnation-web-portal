@@ -60,7 +60,7 @@ const Layout = ({ children }) => {
 	}, [loading, load]);
 
 	React.useEffect(() => {
-		if (router.pathname.includes("patients")) {
+		if (router.pathname.includes("patients") || router.pathname.includes("landing")) {
 			setRender(false);
 		} else {
 			setRender(true);
@@ -81,7 +81,7 @@ const Layout = ({ children }) => {
 				>
 					{render && <Navbar />}
 					<main>{children}</main>
-					<Footer />
+					{render && <Footer />}
 				</Box>
 			)}
 		</>
