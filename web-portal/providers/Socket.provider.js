@@ -7,7 +7,8 @@ export const useSocket = () => React.useContext(SocketContext);
 
 const SocketProvider = (props) => {
   const socket = useMemo(
-		() => io("https://wellnationscoketserver-piyushmishra965.b4a.run/"),
+		// () => io("https://wellnationscoketserver-piyushmishra965.b4a.run/"),
+		() => io("http://wellnation-socket-server.up.railway.app"),
 		// () => io("localhost:8001"),
 		[]
 	);

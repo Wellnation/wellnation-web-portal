@@ -278,7 +278,7 @@ const VideoRoom = () => {
 									}}
 								>
 									<h2>{remoteUID ? remoteUID + " Stream" : ""}</h2>
-									<ReactPlayer url={remoteStream} playing muted width="500px" />
+									<ReactPlayer url={remoteStream} playing width="500px" />
 								</div>
 							)}
 							<ChatForm pid={remoteUID} />
