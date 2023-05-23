@@ -14,13 +14,16 @@ FROM node:14-alpine
 
 WORKDIR /app
 
+# RUN addgroup -g 1001 -S nodejs
+# RUN adduser -S nextjs -u 1001
+
 COPY --from=build /app/next.config.js ./
 COPY --from=build /app/public ./public
 COPY --from=build --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./package.json
 
-COPY package*.json ./
-
-RUN yarn install
+# RUN yarn install
 
 ENV NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyAj4ZrCjW4dadI3C3NqThB8PoYYEf74B6Q
 ENV NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=wellnation-cc1b2.firebaseapp.com
@@ -33,6 +36,7 @@ ENV NEXT_PUBLIC_FIREBASE_VAPID_KEY=BKIAhdxklewjAc294u-S6ny64gx2ivyWoeTDmiTE_Xaml
 ENV NEXT_PUBLIC_GOOGLE_MAPS_KEY=AIzaSyAOjr36nWK1pfruFvU8w49Pb_BKZSmWlYk
 
 USER root
+# USER nextjs
 
 EXPOSE 3000
 
