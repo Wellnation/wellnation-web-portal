@@ -47,6 +47,8 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"
 import dayjs from "dayjs"
 import Skeleton from "@mui/material/Skeleton"
 
+const hId = localStorage.getItem("hId")
+
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   ...theme.typography.body2,
@@ -75,7 +77,7 @@ function Row(props) {
   function scheduleTest() {
     try {
       const testRef = firestoreDoc(db, "appointments", rowid)
-      setDoc(testRef, { shldtime: testTime.toDate(), status: true }, { merge: true })
+      setDoc(testRef, { shldtime: testTime.toDate()}, { merge: true })
       setType("success")
       setMessage("Appointment scheduled successfully")
       setOpenNotif(true)
@@ -122,11 +124,12 @@ function Row(props) {
 
     const handleDocClickOpen = async () => {
       if (row.dept) {
-        const deptRef = query(collection(db, `users/${row.hid}/departments`), where("name", "==", row.dept))
-        const doctors = await getDoc(deptRef)
+        const deptRef = query(collection(db, `users/${hId}/departments`), where("name", "==", row.dept))
+        console.log(row.hid, row.dept)
+        const doctors = await getDocs(deptRef)
         const doclist = []
         await Promise.all(
-          doctors.data().doctors.map(async (doc) => {
+          doctors.docs[0].data().doctors.map(async (doc) => {
             const ref = firestoreDoc(db, "doctors", doc.uid)
             const docSnap = await getDoc(ref)
             doclist.push({ doctor: docSnap.data(), ...doc.data(), deptName: row.dept })
@@ -285,7 +288,7 @@ export default function History() {
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(10)
   const [openTest, setOpenTest] = React.useState(false)
-  const hId = localStorage.getItem("hId")
+
 
   const { user, loading, userError } = useAuth()
   const { isLoading, error, data, refetch } = useQuery({
