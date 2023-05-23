@@ -32,7 +32,6 @@ import { db } from "@/lib/firebase.config";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import LabelIcon from "@mui/icons-material/Label";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
-import ChatForm from "@/components/ChatForm";
 
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -158,7 +157,7 @@ const DoctorHome = () => {
 												<ListItem>
 													<ListItemText
 														primary="Remarks"
-														secondary={appointment.remarks}
+														secondary={appointment.remark}
 													/>
 												</ListItem>
 											</Grid>
@@ -170,7 +169,6 @@ const DoctorHome = () => {
 															<span key={medicine.name}>
 																<span
 																	style={{
-																		fontWeight: "bold",
 																		display: "flex",
 																		alignItems: "center",
 																	}}
@@ -179,7 +177,9 @@ const DoctorHome = () => {
 																		color="primary"
 																		style={{ paddingRight: "10px" }}
 																	/>{" "}
-																	{medicine.name}
+																	<Typography variant="h6">
+																		{medicine.name}
+																	</Typography>
 																</span>
 																<span
 																	style={{
@@ -188,11 +188,7 @@ const DoctorHome = () => {
 																		alignItems: "center",
 																	}}
 																>
-																	<LabelIcon
-																		color="primary"
-																		style={{ paddingRight: "10px" }}
-																	/>{" "}
-																	{medicine.remark}
+																	Remark: {medicine.remark}
 																</span>
 															</span>
 														))}
@@ -236,14 +232,13 @@ const DoctorHome = () => {
 												Start Video Chat
 											</Button>
 										</div>
-										{/* <ChatForm /> */}
 									</AccordionDetails>
 								</Accordion>
 							</div>
 						))
 					)}
 				</div>
-			</Item>	
+			</Item>
 		</div>
 	);
 };

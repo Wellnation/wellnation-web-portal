@@ -154,7 +154,7 @@ const VideoRoom = () => {
 				tracks.forEach((track) => track.stop());
 			})
 			.catch((err) => alert(err));
-		router.push(`/${router.query.did}`);
+		router.push(`/doctors/${router.query.did}`);
 	}, []);
 
 	React.useEffect(() => {

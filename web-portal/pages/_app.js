@@ -112,12 +112,12 @@ export default function MyApp({ Component, pageProps }) {
 		<>
 			<Head>
 				<title>
-					Wellnation -{" "}
+					Wellnation -
 					{router.pathname.includes("patients")
-						? "Patient Portal"
+						? " Patient Portal"
 						: router.pathname.includes("doctors")
-						? "Doctor Portal"
-						: "Hospital Portal"}
+						? " Doctor Portal"
+						: " Hospital Portal"}
 				</title>
 				<meta
 					name="description"

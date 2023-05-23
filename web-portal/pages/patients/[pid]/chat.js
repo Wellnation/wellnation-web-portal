@@ -281,7 +281,7 @@ const PatientChat = () => {
 							}}
 						>
 							<h2>{remoteUID ? remoteUID + " Stream" : ""}</h2>
-							<ReactPlayer url={remoteStream} playing muted width="500px" />
+							<ReactPlayer url={remoteStream} playing width="500px" />
 							<div
 								style={{
 									display: "flex",

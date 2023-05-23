@@ -104,15 +104,14 @@ const ChatForm = ({ pid }) => {
 		const appointmentSnapshot = query(
 			appointmentRef,
 			where("drid", "==", router.query.did),
-			where("pid", "===", pid)
-			// where("pid", "==", "A9FU5zycZ7NldUhJgQbn2rHs6sF3")
+			where("pid", "==", pid)
 		);
 
 		const allDocs = await getDocs(appointmentSnapshot);
 		const appointmentDocRef = doc(db, "appointments", allDocs.docs[0].id);
 
 		const medsArray = allDocs.docs[0].data().medicine;
-		const newData = fields.map((med) => ({
+		const newMed = fields.map((med) => ({
 			name: med.medicine,
 			remark: med.remark,
 			time: med.meds.map((time) => ({
@@ -120,11 +119,13 @@ const ChatForm = ({ pid }) => {
 				min: time.min,
 			})),
 		}));
-		medsArray.push(newData);
+		const medData = [...medsArray, ...newMed];
+		console.log(medData, newMed);
 
 		updateDoc(appointmentDocRef, {
 			remark: diagnosis,
-			medicine: medsArray,
+			medicine: medData,
+			status: true,
 		})
 			.then(() => {
 				setOpen(true);
