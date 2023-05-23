@@ -28,22 +28,22 @@ const Item = styled(Paper)(({ theme }) => ({
 }))
 
 const Account = () => {
-  const { user, loading } = useAuth()
   const router = useRouter()
-  const hospitalId = localStorage.getItem("hId")
-  const [displayName, setDisplayName] = React.useState("")
-  const [phone, setPhone] = React.useState("")
-  const [locality, setLocality] = React.useState("")
-  const [district, setDistrict] = React.useState("")
-  const [state, setState] = React.useState("")
-  const [pincode, setPincode] = React.useState("")
-  const [open, setOpen] = React.useState(false)
-  const [type, setType] = React.useState("error")
-  const [errorMessage, setErrorMessage] = React.useState("")
-  const [oldPass, setOldPass] = React.useState("")
+  const { user, loading } = useAuth()
   const [pass, setPass] = React.useState("")
+  const [phone, setPhone] = React.useState("")
+  const [state, setState] = React.useState("")
+  const [open, setOpen] = React.useState(false)
   const [rePass, setRePass] = React.useState("")
+  const hospitalId = localStorage.getItem("hId")
+  const [type, setType] = React.useState("error")
+  const [pincode, setPincode] = React.useState("")
+  const [oldPass, setOldPass] = React.useState("")
+  const [district, setDistrict] = React.useState("")
+  const [locality, setLocality] = React.useState("")
   const [checkPass, setCheckPass] = React.useState(false)
+  const [displayName, setDisplayName] = React.useState("")
+  const [errorMessage, setErrorMessage] = React.useState("")
 
   const {
     data: userData,
@@ -189,7 +189,7 @@ const Account = () => {
                   <b>Email:</b> {user?.email}
                 </p>
                 <p>
-                  <b>Phone:</b> {user?.phoneNumber}
+                  <b>Phone:</b> {userData.phone}
                 </p>
                 <p>
                   <b>Account Created On:</b> {userData.createdOn.toDate().toLocaleString()}
@@ -350,6 +350,7 @@ const Account = () => {
                 label="Current Password"
                 variant="outlined"
                 type="password"
+                value={oldPass}
                 onChange={(e) => {
                   setOldPass(e.target.value)
                 }}
@@ -359,6 +360,7 @@ const Account = () => {
                 label="New Password"
                 variant="outlined"
                 type="password"
+                value={pass}
                 onChange={(e) => {
                   setPass(e.target.value)
                 }}
@@ -368,6 +370,7 @@ const Account = () => {
                 label="Confirm Password"
                 variant="outlined"
                 type="password"
+                value={rePass}
                 onChange={(e) => {
                   setRePass(e.target.value)
                   if (e.target.value === pass) {

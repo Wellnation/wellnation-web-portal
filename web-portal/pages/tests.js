@@ -234,6 +234,7 @@ export default function History() {
               elevation={2}
               style={{
                 padding: "30px",
+                margin: "10px 50px",
               }}
             >
               <h3>Tests</h3>

@@ -14,6 +14,7 @@ import {
 	where,
 	setDoc,
 	doc,
+	GeoPoint,
 } from "firebase/firestore";
 
 const register = async (
@@ -40,6 +41,14 @@ const register = async (
 			name: name,
 			email: email,
 			uid: user.uid,
+			address: {
+				locality: "",
+				district: "",
+				state: "",
+				pincode: "",
+			},
+			phone: "",
+			location: location,
 			createdOn: new Date(),
 			fcmToken: localStorage.getItem("fcmToken"),
 		});
@@ -49,6 +58,28 @@ const register = async (
 			photoURL:
 				"https://healthcaredesignmagazine.com/wp-content/uploads/2017/03/EwingCole-Entrance_Page_01_620x380.jpg",
 		});
+
+		navigator.geolocation.getCurrentPosition(async (position) => {
+			try {
+				await updateDoc(doc(db, "users", user.uid), {
+					location: new GeoPoint(
+						position.coords.latitude,
+						position.coords.longitude
+					)
+				});
+			} catch (error) {
+				console.log(error);
+			}
+		},
+			(error) => {
+				console.log(error);
+			},
+			{	
+				enableHighAccuracy: true,
+				timeout: 5000,
+				maximumAge: 0,
+			}
+		);
 
 		window.location.href = "/";
 	} catch (error) {

@@ -38,7 +38,7 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const AddDoctorDialog = (props) => {
-  const { onClose, selectedValue, open, depId } = props;
+  const { onClose, selectedValue, open, depId, func } = props;
   const [docEmail, setDocEmail] = React.useState('');
   const [arrTime, setArrTime] = React.useState(dayjs());
   const [depTime, setDepTime] = React.useState(dayjs());
@@ -54,6 +54,7 @@ const AddDoctorDialog = (props) => {
   };
 
   const handleClose = () => {
+    func();
     setDocEmail('');
     setArrTime(dayjs());
     setDepTime(dayjs());
@@ -93,6 +94,7 @@ const AddDoctorDialog = (props) => {
       setDocEmail('');
       setArrTime(dayjs());
       setDepTime(dayjs());
+      func();
       setTimeout(() => {
         onClose(selectedValue)
       }, 2000);
@@ -173,7 +175,7 @@ const AddDoctorDialog = (props) => {
 }
 
 const AddDepDialog = (props) => {
-  const { onClose, selectedValue, open } = props;
+  const { onClose, selectedValue, open, func } = props;
   const [depName, setDepName] = React.useState('');
   const [openNotif, setOpenNotif] = React.useState(false);
   const [type, setType] = React.useState('error');
@@ -189,6 +191,7 @@ const AddDepDialog = (props) => {
   const handleClose = () => {
     setDepName('');
     onClose(selectedValue);
+    func();
   };
 
   const handleUpload = async () => {
@@ -205,6 +208,7 @@ const AddDepDialog = (props) => {
       setMessage('Department Added Successfully');
       setOpenNotif(true);
       setDepName('');
+      func();
       setTimeout(() => {
         onClose(selectedValue)
       }, 2000);
@@ -272,9 +276,9 @@ const Dashboard = () => {
   const [depId, setDepId] = React.useState('');
   const hospitalId = localStorage.getItem('hId');
 
-  const { data, isLoading, error } = useQuery(
-    'user',
-    async () => {
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ["user", hospitalId],
+    queryFn: async () => {
       const colSnap = await getDocs(collection(db, `users/${hospitalId}/departments`));
       const depData = []
       for (const doc of colSnap.docs) {
@@ -287,7 +291,7 @@ const Dashboard = () => {
       }
       return depData;
     }
-  );
+  });
 
   if (isLoading || loading) {
     return <Loader />;
@@ -397,8 +401,8 @@ const Dashboard = () => {
       >
         <AddIcon />
       </Fab>
-      <AddDoctorDialog open={open} onClose={() => setOpen(false)} depId={depId} />
-      <AddDepDialog open={openDep} onClose={() => setOpenDep(false)} />
+      <AddDoctorDialog open={open} onClose={() => setOpen(false)} depId={depId} func={refetch} />
+      <AddDepDialog open={openDep} onClose={() => setOpenDep(false)} func={refetch} />
     </div>
   )
 }
