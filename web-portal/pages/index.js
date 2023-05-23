@@ -83,10 +83,6 @@ const data = [
 ]
 
 const Landing = () => {
-  // 2. Screenshots -
-  // 3. Core Features - tab based rendered components
-  // 4. Other Features - grid of icons with details
-
   const { classes } = useStyles()
   const [input, setInput] = React.useState("")
   const [opened, { toggle, close }] = useDisclosure(false)
@@ -281,6 +277,25 @@ const Landing = () => {
         </Container>
       </section>
       {/* Hero Section */}
+			<div
+				style={{
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					borderStyle: "none",
+					padding: "30px",
+					maxHeight: "600px"
+				}}
+			>
+				<Image
+					src="/herosection.png"
+					style={{
+						height: "fit",
+						marginTop: "2rem",
+						marginBottom: "2rem",
+					}}
+				/>
+			</div>
       {/* Core features */}
       <section id="features">
         <Container size="lg" py="xl">
@@ -327,7 +342,6 @@ const Landing = () => {
             {otherfeatures}
           </SimpleGrid>
         </Container>
-       
       </section>
       {/* Features */}
       {/* FAQ */}
@@ -378,6 +392,86 @@ const Landing = () => {
         </div>
       </section>
       {/* FAQ */}
+      <section id="login">
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "#12229d",
+            borderStyle: "none",
+            padding: "30px",
+            marginTop: "50px",
+          }}
+        >
+          {localStorage.getItem("hId") ? (
+            <>
+              <Button
+                variant="default"
+                radius="xl"
+                size="md"
+                style={{
+                  backgroundColor: "black",
+                  color: "white",
+                  marginLeft: "1rem",
+                  borderStyle: "hidden",
+                }}
+                onClick={() => (window.location.href = "/home")}
+              >
+                Go to Hospital Portal
+              </Button>
+            </>
+          ) : localStorage.getItem("dId") ? (
+            <>
+              <Button
+                variant="default"
+                radius="xl"
+                size="md"
+                style={{
+                  backgroundColor: "black",
+                  color: "white",
+                  marginLeft: "1rem",
+                  borderStyle: "hidden",
+                }}
+                onClick={() => (window.location.href = `/doctors/${localStorage.getItem("dId")}`)}
+              >
+                Go to Doctor Portal
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="default"
+                radius="xl"
+                size="md"
+                style={{
+                  backgroundColor: "black",
+                  color: "white",
+                  marginLeft: "1rem",
+                  borderStyle: "hidden",
+                }}
+                onClick={() => (window.location.href = "/login")}
+              >
+                Login to Hospital Portal
+              </Button>
+              <Button
+                variant="default"
+                radius="xl"
+                size="md"
+                style={{
+                  backgroundColor: "black",
+                  color: "white",
+                  marginLeft: "1rem",
+                  borderStyle: "hidden",
+                }}
+                onClick={() => (window.location.href = "/doctors/login")}
+              >
+                Login to Doctor Portal
+              </Button>
+            </>
+          )}
+        </div>
+      </section>
       {/* Footer */}
       <footer className={classes.footer} id="contact">
         <div
