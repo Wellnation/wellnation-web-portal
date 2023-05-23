@@ -90,14 +90,20 @@ export default function MyApp({ Component, pageProps }) {
 	}, []);
 
 	React.useEffect(() => {
-		if (!router.pathname.includes("patients") && localStorage.getItem("dId")) {
+		if (
+			!router.pathname.includes("patients") &&
+			localStorage.getItem("dId") &&
+			!router.pathname.includes("doctors") &&
+			!router.pathname == "/"
+		) {
 			router.push(`/doctors/${localStorage.getItem("dId")}`);
 			setLoad(false);
 		} else if (
 			!router.pathname.includes("patients") &&
-			localStorage.getItem("hId")
+			localStorage.getItem("hId") &&
+			router.pathname.includes("doctors")
 		) {
-			// router.push("/");
+			router.push("/");
 			setLoad(false);
 		} else if (router.pathname.includes("patients")) {
 			setLoad(false);

@@ -134,11 +134,8 @@ export const useStyles = createStyles((theme) => ({
 	},
 
 	footer: {
-		marginTop: rem(120),
 		paddingBottom: `calc(${theme.spacing.xl} * 2)`,
 		backgroundColor: "#6559fe",
-		borderTop: `${rem(1)} solid ${theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[2]
-			}`,
 	},
 
 	logoFooter: {
