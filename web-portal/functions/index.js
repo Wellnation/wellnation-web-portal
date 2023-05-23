@@ -9,79 +9,91 @@ exports.notifyAmbulanceStatusChange = functions
 		const newValue = change.after.data();
 		const previousValue = change.before.data();
 
-		// Check if the status parameter changed from true to false
 		if (previousValue.status === true && newValue.status === false) {
 			const vehicleNo = newValue.vechilenumber;
-			// Get the fcmTokens from the ambulance document of patient and ambulance
 			const patientToken = newValue.pfcmToken;
 			const ambulanceToken = newValue.fcmToken;
 
-			// Send the notification to the recipientToken
-			// Implement your notification logic here
-			sendNotification(ambulanceToken, patientToken, vehicleNo);
+			const ambulanceMessage = {
+				notification: {
+					title: "Patient Booked an Ambulance",
+					body:
+						"A new ambulance booking has been made for the vehicle number: " +
+						vehicleNo,
+				},
+				token: ambulanceToken,
+			};
+
+			const patientMessage = {
+				notification: {
+					title: "Ambulance Booked",
+					body:
+						"Your ambulance booking has been confirmed for the vehicle number: " +
+						vehicleNo,
+				},
+				token: patientToken,
+			};
+
+			sendMessages([ambulanceMessage, patientMessage]);
 		}
 
 		return null;
 	});
 
-function sendNotification(recipientToken, patientToken, vehicleNo) {
-	// Implement your notification logic here
-	// Use a third-party service or Firebase Cloud Messaging (FCM) to send the notification
-	// Example: send a push notification using FCM
-
-	const ambulanceMessage = {
-		notification: {
-			title: "Patient Booked an Ambulance",
-			body:
-				"A new ambulance booking has been made for the vehicle number: " +
-				vehicleNo,
-		},
-		token: recipientToken,
-	};
-
-	const patientMessage = {
-		notification: {
-			title: "Ambulance Booked",
-			body:
-				"Your ambulance booking has been confirmed for the vehicle number: " +
-				vehicleNo,
-		},
-		token: patientToken,
-	};
-
-	admin
-		.messaging()
-		.send(ambulanceMessage)
-		.then((response) => {
-			console.log("Notification sent successfully:", response);
+exports.notifyOnEmergency = functions
+	.region("asia-south1")
+	.firestore.document("emergency/{emergencyId}")
+	.onCreate((snapshot, context) => {
+		const newValue = snapshot.data();
+		const tokens = [];
+		const mapUrl = `https://www.google.com/maps/search/?api=1&query=${newValue.location.latitude},${newValue.location.longitude}`;
+		admin
+			.firestore()
+			.doc("publicusers/" + newValue.pid)
+			.get()
+			.then((doc) => {
+				admin
+					.firestore()
+					.collection("publicusers")
+					.where("familyId", "==", doc.data().familyId)
+					.get()
+					.then((querySnapshot) => {
+						querySnapshot.forEach((doc) => {
+							tokens.push(doc.data().fcmToken);
+						});
+					});
+			});
+		
+		admin.firestore().collection("users").get().then((querySnap) => {
+			querySnap.forEach((doc) => {
+				tokens.push(doc.data().fcmToken);
+			});
 		})
-		.catch((error) => {
-			console.error("Error sending notification:", error);
-		});
+		
+		sendMessages(
+			tokens.map((token) => ({
+				notification: {
+					title: "Emergency Alert!!",
+					body: "A family member has raised an emergency. Click here to see the location!",
+					click_action: mapUrl,
+				},
+				token: token,
+			}))
+		);
+	});
 
-	admin
-		.messaging()
-		.send(patientMessage)
-		.then((response) => {
-			console.log("Notification sent successfully:", response);
-		})
-		.catch((error) => {
-			console.error("Error sending notification:", error);
-		});
-}
+const sendMessages = (messages) => {
+	messages.forEach((message) => {
+		admin
+			.messaging()
+			.send(message)
+			.then((response) => {
+				console.log("Notification sent successfully:", response);
+			})
+			.catch((error) => {
+				console.error("Error sending notification:", error);
+			});
+	});
+};
 
-// const sendNotifications = (messages) => {
-// 	messages.forEach((message) => {
-// 		admin
-// 			.messaging()
-// 			.send(message)
-// 			.then((response) => {
-// 				console.log("Notification sent successfully:", response);
-// 			})
-// 			.catch((error) => {
-// 				console.error("Error sending notification:", error);
-// 			});
-// 	});
-// };
-
-// sendNotifications([ambulanceMessage, patientMessage]);
+// sendMessages([ambulanceMessage, patientMessage]);
