@@ -55,7 +55,7 @@ function Navbar() {
 	const navItems = [
 		{
 			name: "Home",
-			link: "/",
+			link: "/home",
 		},
 		{
 			name: "Tests",

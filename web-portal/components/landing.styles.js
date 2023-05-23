@@ -83,7 +83,7 @@ export const useStyles = createStyles((theme) => ({
 	inner: {
 		display: "flex",
 		justifyContent: "space-between",
-		paddingTop: `calc(${theme.spacing.xl} * 4)`,
+		paddingTop: `calc(${theme.spacing.xl} * 2)`,
 		paddingBottom: `calc(${theme.spacing.xl} * 4)`,
 	},
 
@@ -130,7 +130,7 @@ export const useStyles = createStyles((theme) => ({
 			color: theme.primaryColor,
 		}).background,
 		borderRadius: theme.radius.sm,
-		padding: `${rem(4)} ${rem(12)}`,
+		padding: `${rem(2)} ${rem(2)}`,
 	},
 
 	footer: {
@@ -322,7 +322,9 @@ export const useStyles = createStyles((theme) => ({
 	banwrapper: {
 		display: 'flex',
 		alignItems: 'center',
-		padding: `calc(${theme.spacing.xl} * 2)`,
+    padding: `calc(${theme.spacing.xl} * 2)`,
+    marginTop: `calc(${theme.spacing.xl} * 4)`,
+		marginBottom: `calc(${theme.spacing.xl} * 4)`,
 		borderRadius: theme.radius.md,
 		marginLeft: `calc(${theme.spacing.xl} * 4)`,
 		marginRight: `calc(${theme.spacing.xl} * 4)`,

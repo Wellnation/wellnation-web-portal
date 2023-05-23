@@ -60,7 +60,7 @@ const Layout = ({ children }) => {
 	}, [loading, load]);
 
 	React.useEffect(() => {
-		if (router.pathname.includes("patients") || router.pathname.includes("landing")) {
+		if (router.pathname.includes("patients") || router.pathname == "/") {
 			setRender(false);
 		} else {
 			setRender(true);
