@@ -45,7 +45,7 @@ import { Carousel } from "@mantine/carousel";
 const HEADER_HEIGHT = rem(60);
 const links = [
 	{ label: "About", link: "#about" },
-	{ label: "Screenshots", link: "#screenshots" },
+	{ label: "Platform", link: "#screenshots" },
 	{ label: "Features", link: "#features" },
 	{ label: "FAQ", link: "#faq" },
 	{ label: "Contact Us", link: "#contact" },
@@ -134,7 +134,7 @@ const Landing = () => {
 				>
 					{feature.images.map((image, index) => (
 						<Carousel.Slide key={index}>
-							<Image src={image} height={220} />
+							<Image src={image} height={720} fit="contain" />
 						</Carousel.Slide>
 					))}
 				</Carousel>
@@ -268,7 +268,11 @@ const Landing = () => {
 							</List>
 
 							<Group mt={30}>
-								<a href="#features">
+								<a
+									href="https://github.com/Wellnation/.github/raw/main/profile/WellNation.apk"
+									target="_blank"
+									rel="noopener noreferrer"
+								>
 									<Button
 										radius="xl"
 										size="sm"
@@ -278,12 +282,12 @@ const Landing = () => {
 										Download APK for Users
 									</Button>
 								</a>
-								<a href="#features">
+								<a href="#login">
 									<Button
 										radius="xl"
 										size="sm"
 										className={classes.control}
-										sx={{ backgroundColor: "#597dfe" }}
+										sx={{ backgroundColor: "#6559fe" }}
 									>
 										Register as Hospital
 									</Button>
@@ -305,30 +309,32 @@ const Landing = () => {
 				</Container>
 			</section>
 			{/* Hero Section */}
-			<div
-        style={{
-          backgroundImage: "url(/backdrop.png)",
-          backgroundSize: "contain",
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-					borderStyle: "none",
-					padding: "30px",
-					maxHeight: "600px",
-				}}
-			>
-				<img
-					src="/herosection.png"
+			<section id="screenshots">
+				<div
 					style={{
-						width: "100%",
-						height: "auto",
-						maxWidth: "880px",
+						backgroundImage: "url(/backdrop.png)",
+						backgroundSize: "contain",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						borderStyle: "none",
+						padding: "30px",
 						maxHeight: "600px",
-						marginBottom: "2rem",
 					}}
-					alt="hero"
-				/>
-			</div>
+				>
+					<img
+						src="/herosection.png"
+						style={{
+							width: "100%",
+							height: "auto",
+							maxWidth: "880px",
+							maxHeight: "600px",
+							marginBottom: "2rem",
+						}}
+						alt="hero"
+					/>
+				</div>
+			</section>
 			{/* Core features */}
 			<section id="features">
 				<Container size="lg" py="xl">
@@ -416,9 +422,14 @@ const Landing = () => {
 										value="reset-password"
 									>
 										<Accordion.Control>
-											How can I reset my password?
+											How do hospitals use the portal?
 										</Accordion.Control>
-										<Accordion.Panel>{placeholder}</Accordion.Panel>
+										<Accordion.Panel>
+											Hospitals can register on the web portal and add their
+											necessary details like departments, doctors and
+											ambulances. This is all done easy as the login flow is
+											kept fairly simple.
+										</Accordion.Panel>
 									</Accordion.Item>
 
 									<Accordion.Item
@@ -426,31 +437,70 @@ const Landing = () => {
 										value="another-account"
 									>
 										<Accordion.Control>
-											Can I create more that one account?
+											How does the approval process for appointments and
+											ambulances work?
 										</Accordion.Control>
-										<Accordion.Panel>{placeholder}</Accordion.Panel>
+										<Accordion.Panel>
+											Once a user books an appointment or an ambulance, the
+											hospital is notified of the same. The hospital can then
+											approve and assign a doctor of that department. Once
+											approved, the user is notified of the same and the
+											appointment is confirmed.
+										</Accordion.Panel>
 									</Accordion.Item>
 
 									<Accordion.Item className={classes.item} value="newsletter">
 										<Accordion.Control>
-											How can I subscribe to monthly newsletter?
+											How can doctors access the web portal for managing
+											appointments and video chatting with patients?
 										</Accordion.Control>
-										<Accordion.Panel>{placeholder}</Accordion.Panel>
+										<Accordion.Panel>
+											Doctors can register on the web portal and add their
+											necessary details. They can view their appointments and
+											video chat with patients from the portal if a patient has
+											registered for online mode and can also prescribe
+											medicines and tests to the patient.
+										</Accordion.Panel>
 									</Accordion.Item>
 
 									<Accordion.Item className={classes.item} value="credit-card">
 										<Accordion.Control>
-											Do you store credit card information securely?
+											How can patients download and use the app to maintain
+											their information and book appointments and equipment?
 										</Accordion.Control>
-										<Accordion.Panel>{placeholder}</Accordion.Panel>
+										<Accordion.Panel>
+											Patients can download the app from the GitHub link and
+											register themselves. They can then book appointments and
+											ambulances and view their prescriptions and reports. They
+											can also view their medical history and add their
+											emergency details.
+										</Accordion.Panel>
 									</Accordion.Item>
 
 									<Accordion.Item className={classes.item} value="payment">
 										<Accordion.Control>
-											What payment systems to you work with?
+											Is there a feature for patients to track the availability
+											of ambulances in real-time?
 										</Accordion.Control>
-										<Accordion.Panel>{placeholder}</Accordion.Panel>
-									</Accordion.Item>
+                    <Accordion.Panel>
+                      Yes, the patients can issue an emergency request for an ambulance
+                      and the nearest ambulance will be assigned to them. They can also
+                      track the ambulance in real-time when the ambulance has been assigned
+                      to that emergency request by the hospital.
+                    </Accordion.Panel>
+                  </Accordion.Item>
+                  
+                  <Accordion.Item className={classes.item} value="driver">
+                    <Accordion.Control>
+                      How does the ambulance app work for ambulance operators?
+                    </Accordion.Control>
+                    <Accordion.Panel>
+                      The ambulance operators can register on the app and add their
+                      necessary details. They can view the emergency requests and accept
+                      them. Once accepted, the patient can track the ambulance in real-time
+                      and the operator can also view the patient’s details.
+                    </Accordion.Panel>
+                  </Accordion.Item>
 								</Accordion>
 							</Col>
 						</Grid>
@@ -699,14 +749,6 @@ export const otherFeatures = [
 	},
 ];
 
-// const images = [
-//   "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
-//   "https://images.unsplash.com/photo-1567767292278-a4f21aa2d36e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
-//   "https://images.unsplash.com/photo-1605774337664-7a846e9cdf17?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
-//   "https://images.unsplash.com/photo-1554995207-c18c203602cb?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
-//   "https://images.unsplash.com/photo-1616486029423-aaa4789e8c9a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
-// ]
-
 const coreFeatures = [
 	{
 		name: "appointment",
@@ -714,11 +756,7 @@ const coreFeatures = [
 		description:
 			"Experience the convenience of online and offline appointments, streamlining your healthcare journey, where symptoms can be described through voice or text and automatically classified into the right department using our advanced ML model. ",
 		icon: Beenhere,
-		images: [
-			"https://images.unsplash.com/photo-1598928506311-c55ded91a20c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
-			"https://images.unsplash.com/photo-1567767292278-a4f21aa2d36e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
-			"https://images.unsplash.com/photo-1605774337664-7a846e9cdf17?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
-		],
+		images: ["/wellcheck.png", "/appt-merged.png", "/schedule.png"],
 	},
 	{
 		name: "emergency",
@@ -726,11 +764,7 @@ const coreFeatures = [
 		description:
 			"Instant Emergency Response: One click sends distress signals to nearby hospitals and family members, providing real-time updates and push notifications for immediate assistance along with location details. WellNation: Your lifeline in critical situations",
 		icon: LocalHospital,
-		images: [
-			"https://images.unsplash.com/photo-1598928506311-c55ded91a20c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
-			"https://images.unsplash.com/photo-1567767292278-a4f21aa2d36e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
-			"https://images.unsplash.com/photo-1605774337664-7a846e9cdf17?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
-		],
+		images: ["/widget.png", "passport.png", "/emergency.png"],
 	},
 	{
 		name: "ambulance",
@@ -738,11 +772,7 @@ const coreFeatures = [
 		description:
 			"Rapid Ambulance Assistance: Book and track ambulances instantly for yourself or family members. Real-time updates ensure efficient pickup and drop-off, empowering users and hospitals with WellNation's seamless emergency response.",
 		icon: EmergencyShare,
-		images: [
-			"https://images.unsplash.com/photo-1598928506311-c55ded91a20c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
-			"https://images.unsplash.com/photo-1567767292278-a4f21aa2d36e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
-			"https://images.unsplash.com/photo-1605774337664-7a846e9cdf17?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
-		],
+		images: ["/ambulance_rad.png", "/notification.png", "/ambulance_book.png", "/ambulance_driver.png"],
 	},
 ];
 
