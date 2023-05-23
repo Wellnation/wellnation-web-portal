@@ -46,7 +46,9 @@ export default function MyApp({ Component, pageProps }) {
 						// setType("success");
 						// setMessage("Current FCMtoken set for client!");
 					} else {
-						console.log("No registration token available. Request permission to generate one.");
+						console.log(
+							"No registration token available. Request permission to generate one."
+						);
 						setOpen(true);
 						setType("error");
 						setMessage("No registration token available.");
@@ -86,7 +88,7 @@ export default function MyApp({ Component, pageProps }) {
 					console.log("Service worker registration failed, error:", err);
 				});
 		}
-		if(!router.pathname.includes("patients")) requestPermission();
+		if (!router.pathname.includes("patients")) requestPermission();
 	}, []);
 
 	React.useEffect(() => {
@@ -94,9 +96,10 @@ export default function MyApp({ Component, pageProps }) {
 			router.push(`/doctors/${localStorage.getItem("dId")}`);
 			setLoad(false);
 		} else if (
-			!router.pathname.includes("patients") && localStorage.getItem("hId")
+			!router.pathname.includes("patients") &&
+			localStorage.getItem("hId")
 		) {
-			router.push("/");
+			// router.push("/");
 			setLoad(false);
 		} else if (router.pathname.includes("patients")) {
 			setLoad(false);
@@ -108,7 +111,14 @@ export default function MyApp({ Component, pageProps }) {
 	return (
 		<>
 			<Head>
-				<title>Hospital Portal</title>
+				<title>
+					Wellnation -{" "}
+					{router.pathname.includes("patients")
+						? "Patient Portal"
+						: router.pathname.includes("doctors")
+						? "Doctor Portal"
+						: "Hospital Portal"}
+				</title>
 				<meta
 					name="description"
 					content="WellNation is a portal for hospitals to list 

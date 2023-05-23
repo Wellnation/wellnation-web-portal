@@ -156,7 +156,7 @@ const Home = () => {
 			<Item
 				elevation={2}
         style={{
-          margin: "20px 60px",
+          margin: "20px 80px",
 					padding: "30px",
 				}}
 			>
