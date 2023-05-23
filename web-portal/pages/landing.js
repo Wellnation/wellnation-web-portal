@@ -632,3 +632,5 @@ const mockdata = [
     icon: EmergencyShare,
   },
 ]
+
+export default Landing;
