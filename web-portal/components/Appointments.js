@@ -47,8 +47,6 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"
 import dayjs from "dayjs"
 import Skeleton from "@mui/material/Skeleton"
 
-
-
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   ...theme.typography.body2,
@@ -76,16 +74,16 @@ function Row(props) {
 
   function scheduleTest() {
     try {
-      const testRef = firestoreDoc(db, "appointments", rowid)
-      setDoc(testRef, { shldtime: testTime.toDate()}, { merge: true })
-      setType("success")
-      setMessage("Appointment scheduled successfully")
-      setOpenNotif(true)
-      func()
+      const testRef = firestoreDoc(db, "appointments", rowid);
+      setDoc(testRef, { shldtime: testTime.toDate() }, { merge: true });
+      func();
+      setType("success");
+      setMessage("Appointment scheduled successfully");
+      setOpenNotif(true);
     } catch (err) {
-      setType("error")
-      setMessage("Error scheduling Appointment")
-      setOpenNotif(true)
+      setType("error");
+      setMessage("Error scheduling Appointment");
+      setOpenNotif(true);
     }
   }
 
@@ -203,56 +201,73 @@ function Row(props) {
   }
 
   return (
-    <React.Fragment>
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-        <TableCell component="th" scope="row">
-          {isLoading ? (
-            <Skeleton animation="wave" />
-          ) : (
-            <a href={"/patients/" + row.pid} target="_blank">
-              {data.pat.name}
-            </a>
-          )}
-        </TableCell>
-        <TableCell component="th" scope="row">
-          {isLoading ? <Skeleton animation="wave" /> : data.pat.phone}
-        </TableCell>
-        <TableCell component="th" scope="row">
-          {row.symptoms}
-        </TableCell>
-        <TableCell component="th" scope="row">
-          {row.dept ? row.dept : "NA"}
-        </TableCell>
-        <TableCell component="th" scope="row">
-          {isLoading ? <Skeleton animation="wave" /> : row.drid.length > 0 ? data.doc.name : selectDoc()}
-        </TableCell>
-        <TableCell align="right">
-          {row.reqtime.toDate().toDateString() + " at " + row.reqtime.toDate().toLocaleTimeString("en-us")}
-        </TableCell>
-        <TableCell align="right">
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              label="Test Time"
-              value={testTime}
-              onChange={(newValue) => {
-                setTestTime(newValue)
-              }}
-            />
-          </LocalizationProvider>
-        </TableCell>
-        <TableCell align="right">
-          {row.status ? (
-            "Scheduled"
-          ) : (
-            <Button variant="text" onClick={scheduleTest} startIcon={<CloudUploadIcon />}>
-              Update schedule
-            </Button>
-          )}
-        </TableCell>
-      </TableRow>
-      <Notifications type={type} message={message} open={openNotif} handleClose={handleCloseNotif} />
-    </React.Fragment>
-  )
+		<React.Fragment>
+			<TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+				<TableCell component="th" scope="row">
+					{isLoading ? (
+						<Skeleton animation="wave" />
+					) : (
+						<a href={"/patients/" + row.pid} target="_blank">
+							{data.pat.name}
+						</a>
+					)}
+				</TableCell>
+				<TableCell component="th" scope="row">
+					{isLoading ? <Skeleton animation="wave" /> : data.pat.phone}
+				</TableCell>
+				<TableCell component="th" scope="row">
+					{row.symptoms}
+				</TableCell>
+				<TableCell component="th" scope="row">
+					{row.dept ? row.dept : "NA"}
+				</TableCell>
+				<TableCell component="th" scope="row">
+					{isLoading ? (
+						<Skeleton animation="wave" />
+					) : row.drid.length > 0 ? (
+						data.doc.name
+					) : (
+						selectDoc()
+					)}
+				</TableCell>
+				<TableCell align="right">
+					{row.shldtime.toDate().toDateString() +
+						" at " +
+						row.shldtime.toDate().toLocaleTimeString("en-us")}
+				</TableCell>
+				<TableCell align="right">
+					<LocalizationProvider dateAdapter={AdapterDayjs}>
+						<DateTimePicker
+							label="Test Time"
+							value={testTime}
+							onChange={(newValue) => {
+								setTestTime(newValue);
+							}}
+						/>
+					</LocalizationProvider>
+				</TableCell>
+				<TableCell align="right">
+					{row.status ? (
+						"Scheduled"
+					) : (
+						<Button
+							variant="text"
+							onClick={scheduleTest}
+							startIcon={<CloudUploadIcon />}
+						>
+							Update schedule
+						</Button>
+					)}
+				</TableCell>
+			</TableRow>
+			<Notifications
+				type={type}
+				message={message}
+				open={openNotif}
+				handleClose={handleCloseNotif}
+			/>
+		</React.Fragment>
+	);
 }
 
 const columns = [

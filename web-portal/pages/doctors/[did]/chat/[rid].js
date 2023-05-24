@@ -8,9 +8,6 @@ import MicIcon from "@mui/icons-material/Mic";
 import { MicOffRounded, Videocam, VideocamOff } from "@mui/icons-material";
 import ChatForm from "@/components/ChatForm";
 
-// import dynamic from "next/dynamic";
-// const peer = dynamic(() => import("@/service/peer"), { ssr: false });
-
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
 	...theme.typography.body2,

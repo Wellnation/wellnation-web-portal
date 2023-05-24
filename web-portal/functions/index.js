@@ -100,13 +100,10 @@ exports.notifyOnAppointmentCreate = functions
 			.then((doc) => {
 				admin
 					.firestore()
-					.collection("users")
-					.where("uid", "==", doc.data().hid)
+					.doc("users/" + newValue.hid)
 					.get()
-					.then((querySnapshot) => {
-						querySnapshot.forEach((doc) => {
-							tokens.push(doc.data().fcmToken);
-						});
+					.then((doc) => {
+						tokens.push(doc.data().fcmToken);
 					});
 				tokens.push(doc.data().fcmToken);
 			});
@@ -131,7 +128,7 @@ exports.notifyOnAppointmentUpdate = functions
 		const newValue = change.after.data();
 		const previousValue = change.before.data();
 
-		if (previousValue.drid !== newValue.drid) {
+		if (previousValue.drid === "" && newValue.drid !== "") {
 			const tokens = [];
 			admin
 				.firestore()

@@ -75,26 +75,43 @@ const DoctorHome = () => {
 		data: appointments,
 		isLoading,
 		error,
-	} = useQuery("appointments", async () => {
-		const q = query(
-			collection(db, "appointments"),
-			where("drid", "==", user.uid)
-		);
-		const querySnapshot = await getDocs(q);
-		const appointmentData = [];
-		await Promise.all(
-			querySnapshot.docs.map(async (doc) => {
-				const patientDoc = await getDoc(
-					fireStoreDoc(db, "publicusers", doc.data().pid)
-				);
-				appointmentData.push({
-					id: doc.id,
-					patient: patientDoc.data(),
-					...doc.data(),
-				});
-			})
-		);
-		return appointmentData;
+	} = useQuery({
+		queryKey: ["appointments"],
+		queryFn: async () => {
+			const q = query(
+				collection(db, "appointments"),
+				where("drid", "==", user.uid)
+			);
+			const querySnapshot = await getDocs(q);
+			const appointmentData = {
+				upcoming: [],
+				past: [],
+			};
+			const upcoming = [];
+			const past = [];
+			await Promise.all(
+				querySnapshot.docs.map(async (doc) => {
+					const patientDoc = await getDoc(
+						fireStoreDoc(db, "publicusers", doc.data().pid)
+					);
+					doc.status
+						? past.push({
+								id: doc.id,
+								patient: patientDoc.data(),
+								...doc.data(),
+						  })
+						: upcoming.push({
+								id: doc.id,
+								patient: patientDoc.data(),
+								...doc.data(),
+						  });
+				})
+			);
+			appointmentData.upcoming = upcoming;
+			appointmentData.past = past;
+			return appointmentData;
+		},
+		refetchInterval: 5000,
 	});
 
 	if (isLoading || loading) {
@@ -125,11 +142,146 @@ const DoctorHome = () => {
 					{appointments.length === 0 ? (
 						<h3>No appointments</h3>
 					) : (
-						appointments.map((appointment, index) => (
+						<div>
+							<h2>Upcoming appointments</h2>
+							{appointments.upcoming.length === 0 ? (
+								<h3>No upcoming appointments</h3>
+							) : (
+								appointments.upcoming.map((appointment, index) => (
+									<div key={appointment.id}>
+										<Accordion
+											expanded={expanded === `panel${index + 1}`}
+											onChange={handleChange(`panel${index + 1}`)}
+											style={{
+												marginBottom: "20px",
+												padding: "10px",
+											}}
+										>
+											<AccordionSummary
+												expandIcon={<ExpandMoreIcon />}
+												aria-controls={`panel${index + 1}bh-content`}
+												id={`panel${index + 1}bh-header`}
+											>
+												<Typography sx={{ width: "50%", flexShrink: 0 }}>
+													Patient Name: {appointment.patient.name}
+												</Typography>
+												<Typography sx={{ color: "text.secondary" }}>
+													Scheduled Time:{" "}
+													{appointment.shldtime.toDate().toLocaleString()}
+												</Typography>
+											</AccordionSummary>
+											<AccordionDetails>
+												<Grid container spacing={2}>
+													<Grid xs={12} sm={4}>
+														<ListItem>
+															<ListItemText
+																primary="Symptoms"
+																secondary={appointment.symptoms}
+															/>
+														</ListItem>
+													</Grid>
+													<Grid xs={12} sm={4}>
+														<ListItem>
+															<ListItemText
+																primary="Diagnosis"
+																secondary={appointment.remark}
+															/>
+														</ListItem>
+													</Grid>
+													<Grid xs={12} sm={4}>
+														<ListItem>
+															<ListItemText
+																primary="Medicines Prescribed"
+																secondary={appointment.medicine.map(
+																	(medicine) => (
+																		<span key={medicine.name}>
+																			<span
+																				style={{
+																					display: "flex",
+																					alignItems: "center",
+																				}}
+																			>
+																				<LabelIcon
+																					color="primary"
+																					style={{ paddingRight: "10px" }}
+																				/>{" "}
+																				<Typography variant="h6">
+																					{medicine.name}
+																				</Typography>
+																			</span>
+																			<span
+																				style={{
+																					fontWeight: "bold",
+																					display: "flex",
+																					alignItems: "center",
+																				}}
+																			>
+																				Remark: {medicine.remark}
+																			</span>
+																		</span>
+																	)
+																)}
+															/>
+														</ListItem>
+													</Grid>
+												</Grid>
+												{appointment.onlinemode && (
+													<div style={{ marginLeft: "10px" }}>
+														<h3>Video Chat with {appointment.patient.name}</h3>
+														<div style={{ marginBottom: "10px" }}>
+															<TextField
+																style={{ width: "300px" }}
+																label="Room ID"
+																value={roomId}
+																onChange={(e) => setRoomId(e.target.value)}
+																InputProps={{
+																	endAdornment: (
+																		<InputAdornment position="end">
+																			<Tooltip title="Generate Random Room ID">
+																				<IconButton
+																					onClick={() => {
+																						let randomRoomId = Math.random()
+																							.toString(36)
+																							.substring(2, 9);
+																						setRoomId(randomRoomId);
+																					}}
+																				>
+																					<AutorenewIcon color="primary" />
+																				</IconButton>
+																			</Tooltip>
+																		</InputAdornment>
+																	),
+																}}
+															/>
+														</div>
+														<Button
+															onClick={() => {
+																handleCreateRoom();
+															}}
+														>
+															Start Video Chat
+														</Button>
+													</div>
+												)}
+												{!appointment.onlinemode && (
+													<ChatForm pid={appointment.pid} />
+												)}
+											</AccordionDetails>
+										</Accordion>
+									</div>
+								))
+							)}
+						</div>
+					)}
+					<h2>Past Appointments</h2>
+					{appointments.past.length === 0 ? (
+						<h3>No past appointments</h3>
+					) : (
+						appointments.past.map((appointment, index) => (
 							<div key={appointment.id}>
 								<Accordion
-									expanded={expanded === `panel${index + 1}`}
-									onChange={handleChange(`panel${index + 1}`)}
+									expanded={expanded === `panel2${index + 1}`}
+									onChange={handleChange(`panel2${index + 1}`)}
 									style={{
 										marginBottom: "20px",
 										padding: "10px",
@@ -137,8 +289,8 @@ const DoctorHome = () => {
 								>
 									<AccordionSummary
 										expandIcon={<ExpandMoreIcon />}
-										aria-controls={`panel${index + 1}bh-content`}
-										id={`panel${index + 1}bh-header`}
+										aria-controls={`panel2${index + 1}bh-content`}
+										id={`panel2${index + 1}bh-header`}
 									>
 										<Typography sx={{ width: "50%", flexShrink: 0 }}>
 											Patient Name: {appointment.patient.name}
@@ -201,47 +353,6 @@ const DoctorHome = () => {
 												</ListItem>
 											</Grid>
 										</Grid>
-										{appointment.onlinemode && (
-											<div style={{ marginLeft: "10px" }}>
-												<h3>Video Chat with {appointment.patient.name}</h3>
-												<div style={{ marginBottom: "10px" }}>
-													<TextField
-														style={{ width: "300px" }}
-														label="Room ID"
-														value={roomId}
-														onChange={(e) => setRoomId(e.target.value)}
-														InputProps={{
-															endAdornment: (
-																<InputAdornment position="end">
-																	<Tooltip title="Generate Random Room ID">
-																		<IconButton
-																			onClick={() => {
-																				let randomRoomId = Math.random()
-																					.toString(36)
-																					.substring(2, 9);
-																				setRoomId(randomRoomId);
-																			}}
-																		>
-																			<AutorenewIcon color="primary" />
-																		</IconButton>
-																	</Tooltip>
-																</InputAdornment>
-															),
-														}}
-													/>
-												</div>
-												<Button
-													onClick={() => {
-														handleCreateRoom();
-													}}
-												>
-													Start Video Chat
-												</Button>
-											</div>
-										)}
-										{!appointment.onlinemode && (
-											<ChatForm pid={appointment.pid} />
-										)}
 									</AccordionDetails>
 								</Accordion>
 							</div>

@@ -43,6 +43,7 @@ function Row(props) {
   const { isLoading, error, data } = useQuery({
     queryKey: [row.id],
     queryFn: fetchDetails,
+    refetchInterval: 2000,
   })
 
   async function fetchDetails() {

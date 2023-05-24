@@ -81,7 +81,7 @@ const register = async (
 			}
 		);
 
-		window.location.href = "/";
+		window.location.href = "/home";
 	} catch (error) {
 		console.error(error);
 		setType("error");
@@ -103,7 +103,7 @@ const login = async (email, password, setOpen, setErrorMessage, setType) => {
 		const user = res.user;
 
 		console.log(user);
-		window.location.href = "/";
+		window.location.href = "/home";
 	} catch (error) {
 		console.log(error);
 		setType("error");
