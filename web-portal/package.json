@@ -26,11 +26,13 @@
     "firebase-admin": "^11.8.0",
     "firebase-functions": "^4.4.0",
     "next": "13.2.4",
+    "pdfjs-dist": "^3.7.107",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-player": "^2.12.0",
     "react-query": "^3.39.3",
     "socket.io-client": "^4.6.1",
+    "tesseract.js": "^4.1.0",
     "zustand": "^4.3.6"
   }
 }
