@@ -18,14 +18,7 @@ import { db } from "@/lib/firebase.config"
 import Notifications from "@/components/Notifications"
 import { updatePassword, updateProfile } from "firebase/auth"
 import { auth } from "@/lib/firebase.config"
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  color: theme.palette.text.secondary,
-  height: "100%",
-}))
+import { Item } from "./home"
 
 const Account = () => {
   const router = useRouter()

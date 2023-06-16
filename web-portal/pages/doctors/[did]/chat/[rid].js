@@ -7,14 +7,7 @@ import ReactPlayer from "react-player";
 import MicIcon from "@mui/icons-material/Mic";
 import { MicOffRounded, Videocam, VideocamOff } from "@mui/icons-material";
 import ChatForm from "@/components/ChatForm";
-
-const Item = styled(Paper)(({ theme }) => ({
-	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-	...theme.typography.body2,
-	padding: theme.spacing(1),
-	color: theme.palette.text.secondary,
-	height: "100%",
-}));
+import { Item } from "@/pages/home";
 
 const VideoRoom = () => {
 	const router = useRouter();

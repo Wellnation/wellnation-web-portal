@@ -12,7 +12,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import DataUpdate from "@/components/DataUpdate";
+import RoomHandler from "@/components/RoomHandler";
 import Appointments from "@/components/Appointments";
 import { useQuery } from "react-query";
 import {
@@ -51,7 +51,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import Notifications from "@/components/Notifications";
 
-const Item = styled(Paper)(({ theme }) => ({
+export const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
 	...theme.typography.body2,
 	padding: theme.spacing(1),
@@ -217,7 +217,7 @@ const Home = () => {
 					))
 				)}
 			</Item>
-			<DataUpdate />
+			<RoomHandler />
 			<Fab
 				color="primary"
 				aria-label="add"

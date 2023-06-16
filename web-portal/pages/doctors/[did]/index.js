@@ -33,14 +33,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import LabelIcon from "@mui/icons-material/Label";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import ChatForm from "@/components/ChatForm";
-
-const Item = styled(Paper)(({ theme }) => ({
-	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-	...theme.typography.body2,
-	padding: theme.spacing(1),
-	color: theme.palette.text.secondary,
-	height: "100%",
-}));
+import { Item } from "@/pages/home";
 
 const DoctorHome = () => {
 	const router = useRouter();

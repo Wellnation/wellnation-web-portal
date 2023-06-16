@@ -3,14 +3,7 @@ import { styled } from "@mui/material/styles";
 import { Button, IconButton, Paper, Typography } from "@mui/material";
 import Image from "next/image";
 import { GitHub, LinkedIn } from "@mui/icons-material";
-
-const Item = styled(Paper)(({ theme }) => ({
-	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-	...theme.typography.body2,
-	padding: theme.spacing(1),
-	color: theme.palette.text.secondary,
-	height: "100%",
-}));
+import { Item } from "./home";
 
 const members = [
 	{
