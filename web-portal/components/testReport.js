@@ -2,13 +2,15 @@ import React, { useState } from "react"
 import { FileInput, rem } from "@mantine/core"
 import { FileUpload } from "@mui/icons-material"
 import Tesseract from "tesseract.js"
-import * as PDFJS from 'pdfjs-dist'
-import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.entry'
+import * as PDFJS from "pdfjs-dist"
+import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry"
+import { StringStream } from "pdfjs-dist/build/pdf.worker"
 PDFJS.GlobalWorkerOptions.workerSrc = pdfjsWorker
 
 export default function TestReport() {
   const [text, setText] = useState("")
   const [images, setImages] = useState([])
+  const [llmOutput, setLlmOutput] = useState("")
 
   const convertPDFToImages = async (file) => {
     const reader = new FileReader()
@@ -37,10 +39,23 @@ export default function TestReport() {
   }
 
   const performOCR = (imageUrls) => {
-    Tesseract.recognize(imageUrls[0], "eng", { tessjs_create_hocr: false }) 
-      .then((result) => {
-        console.log(result.data.text)
+    Tesseract.recognize(imageUrls[0], "eng", { tessjs_create_hocr: false })
+      .then(async (result) => {
+        console.log(String(result.data.text))
         setText(result.data.text)
+        fetch("http://localhost:8000/analyze-report", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: { text: result.data.text.toString() },
+        })
+          .then((res) => res.json())
+          .then((output) => {
+            setLlmOutput(output.report)
+            console.log(output)
+          })
+          .catch((err) => console.log(err))
       })
       .catch((error) => {
         console.error("Error during OCR:", error)
@@ -69,10 +84,10 @@ export default function TestReport() {
           ))}
         </div>
       )}
-      {text && (
+      {llmOutput && (
         <div>
           <h2>Extracted Text:</h2>
-          <pre>{text}</pre>
+          <pre>{llmOutput}</pre>
         </div>
       )}
     </div>

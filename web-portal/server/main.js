@@ -1,4 +1,40 @@
 const { Server } = require('socket.io');
+const express = require('express');
+const cors = require('cors');
+
+const ReportAnalysis = require('./reportAnalysis')
+
+require("dotenv").config();
+const app = express();
+const port = process.env.PORT || 8000;
+app.use(
+  cors({
+    origin: "*",
+    credentials: true,
+  })
+);
+app.use(express.json());
+
+app.post("/analyze-report", async (req, res) => {
+  try {
+    console.log(req.body.text)
+    const report = req.body.text;
+    // console.log(report)
+    const analysisResult = await ReportAnalysis(report);
+    console.log(analysisResult)
+    res.json(analysisResult);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      report: "Sorry, an error occurred while analyzing the report.",
+      status: "error",
+    });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
 
 const io = new Server(8001, {
   cors: true,

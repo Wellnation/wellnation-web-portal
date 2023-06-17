@@ -8,6 +8,7 @@ import { db } from "@/lib/firebase.config"
 import { useAuth } from "@/lib/zustand.config"
 import { Loader } from "@/components/utils"
 import AdmissionLogs from "@/components/AdmissionLogs"
+import { PlaylistAdd } from "@mui/icons-material"
 
 export const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -22,6 +23,7 @@ export default function VerticalLinearStepper() {
   const hId = router.query.hId
   const bedId = router.query.bedId
   const [activeStep, setActiveStep] = React.useState(0)
+  const [logsize, setLogsize] = React.useState(0)
 
   const bedInfo = useQuery({
     queryKey: ["bedInfo", bedId],
@@ -47,8 +49,11 @@ export default function VerticalLinearStepper() {
     // logs
     const logsRef = collection(db, "admissions", admissionSnapshot.docs[0].id, "logs")
     const logsSnapshot = await getDocs(logsRef)
-    const logs = logsSnapshot.docs.map((doc) => { return { ...doc.data(), id: doc.id } })
+    const logs = logsSnapshot.docs.map((doc) => {
+      return { ...doc.data(), id: doc.id }
+    })
     setActiveStep(logs.length - 1)
+    setLogsize(logs.length - 1)
     // patient
     const patientRef = firestoreDoc(db, "publicusers", admissionSnapshot.docs[0].data().pId)
     const patientDoc = await getDoc(patientRef)
@@ -61,19 +66,22 @@ export default function VerticalLinearStepper() {
     }
   }
 
-  const handleStep = (index) => {
-    event.preventDefault()
-    setActiveStep(index)
+  async function addLogs() {
+    const logRef = collection(db, "admissions", admissionInfo.data.admissionId, "logs")
+    const newid = firestoreDoc(logRef).id
+    await setDoc(firestoreDoc(db, `admissions${admissionInfo.data.admissionId}/logs`, newid), {
+      logDate: new Date(),
+      doctors: [],
+      meds: [],
+      tests: [],
+    })
+      .then(() => {
+        admissionInfo.refetch()
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   }
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1)
-  }
-
-  const handleReset = () => {
-    setActiveStep(0)
-  }
-
   return (
     <>
       {bedInfo.isLoading || admissionInfo.isLoading ? (
@@ -119,27 +127,32 @@ export default function VerticalLinearStepper() {
               This bed is not occupied yet.
             </Typography>
           ) : (
-            <Stepper nonLinear activeStep={activeStep} orientation="vertical">
-              {admissionInfo.data.logs.map((log, index) => (
-                <Step key={index}>
-                  <StepButton color="inherit" onClick={() => setActiveStep(index)}>
-                    {log.logDate.toDate().toDateString()}
-                  </StepButton>
-                  <StepContent>
-                    <AdmissionLogs log={log} admissionId={admissionInfo.data.admissionId} refetchFunc={admissionInfo.refetch} hId={hId} />
-                  </StepContent>
-                </Step>
-              ))}
-            </Stepper>
+            <>
+              <Stepper nonLinear activeStep={activeStep} orientation="vertical">
+                {admissionInfo.data.logs.map((log, index) => (
+                  <Step key={index}>
+                    <StepButton color="inherit" onClick={() => setActiveStep(index)}>
+                      {log.logDate.toDate().toDateString()}
+                    </StepButton>
+                    <StepContent>
+                      <AdmissionLogs
+                        log={log}
+                        admissionId={admissionInfo.data.admissionId}
+                        refetchFunc={admissionInfo.refetch}
+                        hId={hId}
+                      />
+                    </StepContent>
+                  </Step>
+                ))}
+              </Stepper>
+              {logsize != -1 &&
+              admissionInfo.data.logs[logsize].logDate.toDate().toDateString() === new Date().toDateString() ? null : (
+                <Button onClick={addLogs} sx={{ mt: 1, mr: 1 }} startIcon={<PlaylistAdd />} color="secondary">
+                  Add new logs
+                </Button>
+              )}
+            </>
           )}
-          {/* {activeStep === steps.length && (
-            <Paper square elevation={0} sx={{ p: 3 }}>
-              <Typography>All steps completed - you&apos;re finished</Typography>
-              <Button onClick={handleReset} sx={{ mt: 1, mr: 1 }}>
-                Reset
-              </Button>
-            </Paper>
-          )} */}
         </Box>
       )}
     </>

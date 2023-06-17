@@ -214,7 +214,7 @@ export default function AlignItemsList(props) {
                   variant="standard"
                   value={medprice}
                   onChange={(e) => setMedprice(e.target.value)}
-                />
+                /><br/>
                 <Button startIcon={<AddCircleOutline />} color="success" onClick={() => addMeds()}>
                   Meds
                 </Button>
