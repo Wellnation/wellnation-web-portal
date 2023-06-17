@@ -126,7 +126,7 @@ export default function VerticalLinearStepper() {
                     {log.logDate.toDate().toDateString()}
                   </StepButton>
                   <StepContent>
-                    <AdmissionLogs log={log} admissionId={admissionInfo.data.admissionId} refetchFunc={admissionInfo.refetch} />
+                    <AdmissionLogs log={log} admissionId={admissionInfo.data.admissionId} refetchFunc={admissionInfo.refetch} hId={hId} />
                   </StepContent>
                 </Step>
               ))}
