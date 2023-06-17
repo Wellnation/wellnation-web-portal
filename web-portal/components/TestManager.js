@@ -9,6 +9,7 @@ import {
 	Button,
 	TextField,
 	Autocomplete,
+	Divider,
 } from "@mui/material";
 import Notifications from "./Notifications";
 import { doc, updateDoc } from "firebase/firestore";
@@ -57,7 +58,7 @@ const TestManager = ({ data }) => {
 		await updateDoc(testDoc, {
 			testname: testname,
 			testprice: testprice,
-			type: type,
+			type: type.toLowerCase(),
 			description: description,
 		})
 			.then(() => {
@@ -108,6 +109,8 @@ const TestManager = ({ data }) => {
 									textAlign: "left",
 									padding: "20px",
 									cursor: "pointer",
+									display: "flex",
+									flexDirection: "column",
 								}}
 								onClick={() =>
 									handleTestOpen(
@@ -119,20 +122,32 @@ const TestManager = ({ data }) => {
 									)
 								}
 							>
-								<Typography variant="h5" style={{ fontWeight: "bold" }}>
-									{tests.data().testname}
-								</Typography>
-								<Typography variant="h6" style={{ fontWeight: "bold" }}>
-									Price: {tests.data().testprice}
-								</Typography>
-								<Typography variant="h6" style={{ fontWeight: "bold" }}>
-									Type: {tests.data().type.toUpperCase()}
-								</Typography>
-								<Typography variant="body1">
-									{tests.data().description
-										? tests.data().description
-										: "No description provided"}
-								</Typography>
+								<div>
+									<Typography variant="h5" style={{ fontWeight: "bold" }}>
+										{tests.data().testname}
+									</Typography>
+									<Typography variant="h6" style={{ fontWeight: "bold" }}>
+										Type: {tests.data().type.toUpperCase()}
+									</Typography>
+									<Typography variant="body1">
+										{tests.data().description
+											? tests.data().description
+											: "No description provided"}
+									</Typography>
+								</div>
+								<div
+									style={{
+										marginTop: "auto",
+									}}
+								>
+									<Divider />
+									<Typography
+										variant="h5"
+										style={{ fontWeight: "bold", marginTop: "10px" }}
+									>
+										Price: ₹{tests.data().testprice}
+									</Typography>
+								</div>
 							</Item>
 						))}
 					</div>

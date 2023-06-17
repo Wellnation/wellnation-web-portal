@@ -13,6 +13,7 @@ import {
 	getDoc,
 	doc as firestoreDoc,
 	setDoc,
+	orderBy,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase.config";
 import { useAuth } from "@/lib/zustand.config";
@@ -25,7 +26,6 @@ import {
 	TableContainer,
 	TableHead,
 	TableRow,
-	Paper,
 	TablePagination,
 	Dialog,
 	DialogTitle,
@@ -41,6 +41,8 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
 import TestReport from "@/components/testReport";
 import TestManager from "@/components/TestManager";
+import TestHistory from "@/components/TestHistory";
+import { Item } from "./home";
 
 // TODO's:
 // TODO-1. Requested tests DataGrid
@@ -54,6 +56,7 @@ function Row(props) {
 	const [openNotif, setOpenNotif] = React.useState(false);
 	const [type, setType] = React.useState("success");
 	const [message, setMessage] = React.useState("");
+
 	const handleCloseNotif = (event, reason) => {
 		if (reason === "clickaway") {
 			return;
@@ -149,13 +152,13 @@ const columns = [
 		align: "right",
 		format: (value) => value.toLocaleString("en-US"),
 	},
-	// {
-	// 	id: "shldtime",
-	// 	label: "Scheduled Time",
-	// 	minWidth: 180,
-	// 	align: "right",
-	// 	format: (value) => value.toLocaleString("en-US"),
-	// },
+	{
+		id: "shldtime",
+		label: "Schedule Time",
+		minWidth: 180,
+		align: "right",
+		format: (value) => value.toLocaleString("en-US"),
+	},
 	{
 		id: "status",
 		label: "Status",
@@ -179,7 +182,12 @@ export default function History() {
 	async function fetchtests() {
 		const data = {};
 		const testHist = await getDocs(
-			query(collection(db, "testHistory"), where("hId", "==", hId))
+			query(
+				collection(db, "testHistory"),
+				where("hid", "==", hId),
+				where("status", "==", false)
+				// orderBy("reqtime", "desc")
+			)
 		);
 		const alltests = await getDocs(
 			query(collection(db, "tests"), where("hid", "==", hId))
@@ -208,17 +216,8 @@ export default function History() {
 				<Loader />
 			) : (
 				<>
-					<div
-						style={{
-							display: "flex",
-							justifyContent: "center",
-							alignItems: "center",
-						}}
-					>
-						<Paper
-							sx={{ width: "80%", overflow: "hidden" }}
-							style={{ margin: "1rem 5rem 1rem 5rem" }}
-						>
+					<div>
+						<Item style={{ margin: "30px 80px", padding: "30px" }}>
 							<TableContainer sx={{ maxHeight: 440 }}>
 								<Table stickyHeader aria-label="collapsible table">
 									<TableHead>
@@ -262,9 +261,10 @@ export default function History() {
 								onPageChange={handleChangePage}
 								onRowsPerPageChange={handleChangeRowsPerPage}
 							/>
-						</Paper>
+						</Item>
 					</div>
-					<TestReport />
+					{/* <TestReport /> */}
+					<TestHistory />
 					<div
 						style={{
 							display: "flex",
@@ -402,8 +402,8 @@ const AddTestDialog = (props) => {
 							value={testType}
 							InputProps={{ ...params.InputProps, type: "search" }}
 						/>
-          )}
-          onChange={(e, value) => setTestType(value)}
+					)}
+					onChange={(e, value) => setTestType(value)}
 				/>
 				<TextField
 					id="outlined-basic"
