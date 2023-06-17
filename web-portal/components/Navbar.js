@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import MenuIcon from "@mui/icons-material/Menu";
-import { useAuth } from "@/lib/zustand.config";
+import { useAuth, useAdminMode } from "@/lib/zustand.config";
 import { useRouter } from "next/router";
 import { logout } from "@/pages/api/auth.hospital";
 import { collection, getDocs } from "firebase/firestore";
@@ -37,6 +37,7 @@ function Navbar() {
 	const [doctor, setDoctor] = React.useState(false);
 	const [mobileOpen, setMobileOpen] = React.useState(false);
 	const [anchorElUser, setAnchorElUser] = React.useState(null);
+	const { adminMode } = useAdminMode();
 
 	const {
 		data: badge,
@@ -62,12 +63,12 @@ function Navbar() {
 			link: "/tests",
 		},
 		{
-			name: "About",
-			link: "/about",
+			name: "Admins",
+			link: "/admins",
 		},
 		{
-			name: "Contact",
-			link: "/contact",
+			name: "About",
+			link: "/about",
 		},
 		{
 			name: (
@@ -136,6 +137,24 @@ function Navbar() {
 		},
 	];
 
+	const adminSettings = [
+		{
+			name: "Account",
+			click: () => {
+				window.location.href = window.location.origin + "/account";
+			},
+		},
+		{
+			name: "Logout",
+			click: () => {
+				localStorage.removeItem("hId");
+				localStorage.removeItem("aId");
+				localStorage.removeItem("scopes");
+				window.location.href = window.location.origin + "/";
+			},
+		},
+	];
+
 	const handleDrawerToggle = () => {
 		setMobileOpen((prevState) => !prevState);
 	};
@@ -173,20 +192,41 @@ function Navbar() {
 				WELLNATION
 			</Typography>
 			<Divider />
-			{user && (
+			{!adminMode ? (
+				user && (
+					<List>
+						{(doctor ? navForDoctors : navItems).map((item) => (
+							<MenuItem
+								key={item.name}
+								onClick={() => router.push(`/${item.link}`)}
+							>
+								<ListItemButton sx={{ textAlign: "center" }}>
+									<ListItemText primary={item.name} />
+								</ListItemButton>
+							</MenuItem>
+						))}
+					</List>
+				)
+			) : localStorage.getItem("scopes").split(",").length > 1 ? (
 				<List>
-					{(doctor ? navForDoctors : navItems).map((item) => (
-						<MenuItem
-							key={item.name}
-							onClick={() => router.push(`/${item.link}`)}
-						>
-							<ListItemButton sx={{ textAlign: "center" }}>
-								<ListItemText primary={item.name} />
-							</ListItemButton>
-						</MenuItem>
-					))}
+					<MenuItem
+						onClick={() => (window.location.href = window.location.origin)}
+					>
+						<ListItemButton sx={{ textAlign: "center" }}>
+							<ListItemText primary="Home" />
+						</ListItemButton>
+					</MenuItem>
+					<MenuItem
+						onClick={() =>
+							(window.location.href = window.location.origin + "/tests")
+						}
+					>
+						<ListItemButton sx={{ textAlign: "center" }}>
+							<ListItemText primary="Tests" />
+						</ListItemButton>
+					</MenuItem>
 				</List>
-			)}
+			) : null}
 		</Box>
 	);
 
@@ -264,7 +304,8 @@ function Navbar() {
 							WELLNATION
 						</Typography>
 						<Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-							{user &&
+							{!adminMode ? (
+								user &&
 								(doctor ? navForDoctors : navItems).map((page) => (
 									<Button
 										key={page.name}
@@ -273,11 +314,78 @@ function Navbar() {
 									>
 										{page.name}
 									</Button>
-								))}
+								))
+							) : localStorage.getItem("scopes").split(",").length > 1 ? (
+								<>
+									<Button
+										onClick={() =>
+											(window.location.href = window.location.origin)
+										}
+										sx={{ my: 2, color: "white", display: "block" }}
+									>
+										Home
+									</Button>
+									<Button
+										onClick={() =>
+											(window.location.href = window.location.origin + "/tests")
+										}
+										sx={{ my: 2, color: "white", display: "block" }}
+									>
+										Tests
+									</Button>
+								</>
+							) : null}
 						</Box>
 
 						<Box sx={{ flexGrow: 0 }}>
-							{user ? (
+							{!adminMode ? (
+								user ? (
+									<>
+										<Tooltip title="Open settings">
+											<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+												<Avatar
+													alt="Remy Sharp"
+													src="https://www.w3schools.com/howto/img_avatar.png"
+												/>
+											</IconButton>
+										</Tooltip>
+										<Menu
+											sx={{ mt: "45px" }}
+											id="menu-appbar"
+											anchorEl={anchorElUser}
+											anchorOrigin={{
+												vertical: "top",
+												horizontal: "right",
+											}}
+											keepMounted
+											transformOrigin={{
+												vertical: "top",
+												horizontal: "right",
+											}}
+											open={Boolean(anchorElUser)}
+											onClose={handleCloseUserMenu}
+										>
+											{(doctor ? setForDoctor : settings).map((item) => (
+												<MenuItem
+													key={item.name}
+													onClick={() => {
+														item.click();
+														handleCloseUserMenu();
+													}}
+												>
+													<Typography textAlign="center">
+														{item.name}
+													</Typography>
+												</MenuItem>
+											))}
+										</Menu>
+									</>
+								) : (
+									<Button variant="text" href="/login">
+										<div style={{ color: "white" }}>Login</div>
+									</Button>
+								)
+							) : localStorage.getItem("aId") ? (
 								<>
 									<Tooltip title="Open settings">
 										<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -303,7 +411,7 @@ function Navbar() {
 										open={Boolean(anchorElUser)}
 										onClose={handleCloseUserMenu}
 									>
-										{(doctor ? setForDoctor : settings).map((item) => (
+										{adminSettings.map((item) => (
 											<MenuItem
 												key={item.name}
 												onClick={() => {
@@ -317,7 +425,12 @@ function Navbar() {
 									</Menu>
 								</>
 							) : (
-								<Button variant="text" href="/login">
+								<Button
+									variant="text"
+									onClick={
+										(window.location.href = window.location.origin + "/login")
+									}
+								>
 									<div style={{ color: "white" }}>Login</div>
 								</Button>
 							)}

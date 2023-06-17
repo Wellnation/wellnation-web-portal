@@ -85,8 +85,6 @@ const RoomHandler = () => {
 	};
 
 	const fetchRooms = (type) => {
-		// setRoomTypeSelect(type);
-		console.log(type);
 		const bedsQuery = query(
 			collection(db, `users/${hId}/beds`),
       where("type", "==", String(type)),

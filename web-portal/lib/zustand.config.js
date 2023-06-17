@@ -27,4 +27,9 @@ onAuthStateChanged(auth, (user) => {
   useAuth.setState({ error, loading: false });
 });
 
-export { useAuth, useLoad, useNavbarState };
+const useAdminMode = create((set) => ({
+  adminMode: false,
+  setAdminMode: (adminMode) => set({ adminMode }),
+}));
+
+export { useAuth, useLoad, useNavbarState, useAdminMode };
