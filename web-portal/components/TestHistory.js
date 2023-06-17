@@ -217,9 +217,9 @@ const TestHistory = () => {
 											</TableRow>
 										</TableHead>
 										<TableBody>
-											{patientHist.map((row, index) => {
+											{patientHist.map((row) => {
 												return (
-													<TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+													<TableRow key={row.id} sx={{ "& > *": { borderBottom: "unset" } }}>
 														<TableCell component="th" scope="row">
 															{row.data().tname}
 														</TableCell>
