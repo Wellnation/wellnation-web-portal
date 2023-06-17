@@ -48,6 +48,7 @@ const register = async (
 				pincode: "",
 			},
 			phone: "",
+			domain: "",
 			location: location,
 			createdOn: new Date(),
 			fcmToken: localStorage.getItem("fcmToken"),

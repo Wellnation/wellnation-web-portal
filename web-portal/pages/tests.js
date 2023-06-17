@@ -38,6 +38,13 @@ import dayjs from 'dayjs';
 import TestReport from "@/components/testReport"
 import { Item } from "./home"
 
+// TODO's:
+// TODO-1. Requested tests DataGrid
+// TODO-2. Scheduled tests(History) DataGrid
+// TODO-3. View Test Report
+// TODO-4. Tests Grid + Dialog for updating
+// TODO-5. Add Test Dialog
+
 function Row(props) {
   const { row, rowid, func} = props
   const [open, setOpen] = React.useState(false)

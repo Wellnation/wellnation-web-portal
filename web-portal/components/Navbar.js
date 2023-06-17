@@ -62,12 +62,12 @@ function Navbar() {
 			link: "/tests",
 		},
 		{
-			name: "About",
-			link: "/about",
+			name: "Admins",
+			link: "/admins",
 		},
 		{
-			name: "Contact",
-			link: "/contact",
+			name: "About",
+			link: "/about",
 		},
 		{
 			name: (
