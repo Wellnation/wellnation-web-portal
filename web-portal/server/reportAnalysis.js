@@ -29,7 +29,7 @@ module.exports = async function ReportAnalysis(report) {
   const input = await prompt.format({
     question: report
   })
-
+  console.log(report)
   try {
     const result = await palm.call(input)
     // const output = sparser.parse(result)

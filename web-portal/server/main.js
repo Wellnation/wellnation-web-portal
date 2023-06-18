@@ -1,6 +1,7 @@
 const { Server } = require('socket.io');
 const express = require('express');
 const cors = require('cors');
+const bodyParser = require('express');
 
 const ReportAnalysis = require('./reportAnalysis')
 
@@ -13,16 +14,17 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
+// app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ encoded: true, extended: true }))
 
 app.post("/analyze-report", async (req, res) => {
   try {
-    console.log(req.body.text)
     const report = req.body.text;
     // console.log(report)
-    const analysisResult = await ReportAnalysis(report);
-    console.log(analysisResult)
-    res.json(analysisResult);
+    ReportAnalysis(report).then((analysisResult) => {
+      res.status(200).json(analysisResult);
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({

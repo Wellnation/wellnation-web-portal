@@ -22,6 +22,7 @@ import {
 } from "@mui/material";
 import { Item } from "@/pages/home";
 import Link from "next/link";
+import TestReport from "./testReport";
 
 const columns = [
 	{ id: "pname", label: "Patient name", minWidth: 180 },
@@ -36,7 +37,7 @@ const columns = [
 	},
 	{
 		id: "attachment",
-		label: "View report",
+		label: "Report",
 		minWidth: 150,
 		align: "right",
 	},
@@ -325,10 +326,10 @@ function Row(props) {
 						row.shldtime.toDate().toLocaleTimeString("en-us")}
 				</TableCell>
 				<TableCell align="right">
-					{row.attatchment === "" ? (
-						"No report"
+					{row.attachment === "" ? (
+						<TestReport testId={rowid} refetchFunc={func} />
 					) : (
-						<a href={row.attatchment} target="_blank">
+						<a href={row.attachment} target="_blank">
 							View Report
 						</a>
 					)}
