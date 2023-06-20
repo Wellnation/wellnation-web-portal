@@ -1,16 +1,27 @@
 import React, { useState } from "react"
 import { FileInput, rem } from "@mantine/core"
 import LoadingButton from "@mui/lab/LoadingButton"
-import { FileUpload, BubbleChart } from "@mui/icons-material"
+import { FileUpload, BubbleChart, CheckCircle } from "@mui/icons-material"
+import {
+	Button,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
+  Typography,
+  Box,
+} from "@mui/material";
 import Tesseract from "tesseract.js"
 import * as PDFJS from "pdfjs-dist"
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry"
 import { StringStream } from "pdfjs-dist/build/pdf.worker"
-PDFJS.GlobalWorkerOptions.workerSrc = pdfjsWorker
 import axios from "axios"
 import { collection, getDocs, where, query, getDoc, doc as firestoreDoc, setDoc } from "firebase/firestore"
 import { db, storage } from "@/lib/firebase.config"
 import { uploadBytes, ref } from "firebase/storage"
+import { set } from "zod"
+
+PDFJS.GlobalWorkerOptions.workerSrc = pdfjsWorker
 
 export default function TestReport(props) {
   const [text, setText] = useState("")
@@ -18,6 +29,7 @@ export default function TestReport(props) {
   const [llmOutput, setLlmOutput] = useState("")
   const [file, setFile] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [open, setOpen] = useState(false)
 
   const convertPDFToImages = async (file) => {
     const reader = new FileReader()
@@ -53,20 +65,19 @@ export default function TestReport(props) {
         axios
           .post("http://localhost:8000/analyze-report", { text: result.data.text })
           .then((output) => {
-            console.log(output.data.report)
             setLlmOutput(output.data.report)
-          })
-          .then(() => {
             const testsRef = ref(storage, "test-reports/" + file.name)
             uploadBytes(testsRef, file)
               .then((snapshot) => {
                 console.log(snapshot)
                 const testdocRef = firestoreDoc(db, "testHistory", props.testId)
-                setDoc(testdocRef, { llmOutput: llmOutput, attachment: snapshot.metadata.fullPath, status: true }, { merge: true })
+                setDoc(testdocRef, { llmOutput: output.data.report, attachment: snapshot.metadata.fullPath, status: true }, { merge: true })
               })
               .then(() => {
-                props.refetchFunc()
+                setOpen(true)
+                console.log("doen")
                 setLoading(false)
+                // props.refetchFunc()
               })
               .catch((err) => console.log(err))
           })
@@ -75,6 +86,15 @@ export default function TestReport(props) {
       .catch((error) => {
         console.error("Error during OCR:", error)
       })
+  }
+
+  // https://firebasestorage.googleapis.com/v0/b/wellnation-cc1b2.appspot.com/o/test-reports%2FTest_17_06.pdf?alt=media&token=c43d88e2-22f1-4daf-b4a9-49cf87c6aa90
+ 
+  const handleDocClose = (event, reason) => {
+    if (reason !== "backdropClick") {
+      props.refetchFunc()
+      setOpen(false)
+    }
   }
 
   return (
@@ -100,7 +120,30 @@ export default function TestReport(props) {
         variant="contained"
       >
         <span>Analyze</span>
-      </LoadingButton>
+        </LoadingButton>
+        <Dialog disableEscapeKeyDown open={open} onClose={handleDocClose}>
+          <DialogTitle>Test Report summary</DialogTitle>
+          <DialogContent>
+            <Box component="form" sx={{ display: "flex", flexWrap: "wrap" }}>
+            <Typography variant="h6" style={{ margin: "20px" }}>
+                <CheckCircle color="success" fontSize="large" />
+                Test report uploaded and analyzed successfully
+            </Typography>
+            <Typography variant="h5" style={{ margin: "20px" }}>
+              Test Report Summary: 
+            </Typography>
+            <Typography variant="caption" style={{ margin: "10px" }}>
+              {llmOutput}
+              </Typography>
+            <Typography variant="h5" style={{ margin: "20px" }}>
+              Critical status: Critical
+            </Typography>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleDocClose}>Ok</Button>
+          </DialogActions>
+        </Dialog>
     </div>
   )
 }
