@@ -30,6 +30,7 @@ export default function TestReport(props) {
   const [file, setFile] = useState(null)
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
+  const [critical, setCritical] = useState(false)
 
   const convertPDFToImages = async (file) => {
     const reader = new FileReader()
@@ -74,8 +75,13 @@ export default function TestReport(props) {
                 setDoc(testdocRef, { llmOutput: output.data.report, attachment: snapshot.metadata.fullPath, status: true }, { merge: true })
               })
               .then(() => {
+                query({"inputs": output.data.report}).then((response) => {
+                  console.log(JSON.stringify(response));
+                });
+              })
+              .then(() => {
                 setOpen(true)
-                console.log("doen")
+                console.log("done")
                 setLoading(false)
                 // props.refetchFunc()
               })
@@ -88,6 +94,18 @@ export default function TestReport(props) {
       })
   }
 
+  async function query(data) {
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english",
+      {
+        headers: { Authorization: "Bearer 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" },
+        method: "POST",
+        body: JSON.stringify(data),
+      }
+    );
+    const result = await response.json();
+    return result;
+  }
   // https://firebasestorage.googleapis.com/v0/b/wellnation-cc1b2.appspot.com/o/test-reports%2FTest_17_06.pdf?alt=media&token=c43d88e2-22f1-4daf-b4a9-49cf87c6aa90
  
   const handleDocClose = (event, reason) => {
