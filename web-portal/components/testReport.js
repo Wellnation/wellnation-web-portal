@@ -75,9 +75,10 @@ export default function TestReport(props) {
                 setDoc(testdocRef, { llmOutput: output.data.report, attachment: snapshot.metadata.fullPath, status: true }, { merge: true })
               })
               .then(() => {
-                query({"inputs": output.data.report}).then((response) => {
-                  console.log(JSON.stringify(response));
-                });
+                query({ inputs: output.data.report }).then((response) => {
+                  console.log(response)
+                  setCritical(response[0].label === "NEGATIVE" ? false : true)
+                })
               })
               .then(() => {
                 setOpen(true)
@@ -154,7 +155,7 @@ export default function TestReport(props) {
               {llmOutput}
               </Typography>
             <Typography variant="h5" style={{ margin: "20px" }}>
-              Critical status: Critical
+              Critical status: {critical ? "Critical" : "Non-Critical"}
             </Typography>
             </Box>
           </DialogContent>

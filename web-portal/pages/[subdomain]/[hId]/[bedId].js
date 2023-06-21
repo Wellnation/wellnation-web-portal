@@ -69,7 +69,7 @@ export default function VerticalLinearStepper() {
   async function addLogs() {
     const logRef = collection(db, "admissions", admissionInfo.data.admissionId, "logs")
     const newid = firestoreDoc(logRef).id
-    await setDoc(firestoreDoc(db, `admissions${admissionInfo.data.admissionId}/logs`, newid), {
+    await setDoc(firestoreDoc(db, `admissions/${admissionInfo.data.admissionId}/logs`, newid), {
       logDate: new Date(),
       doctors: [],
       meds: [],
@@ -146,7 +146,7 @@ export default function VerticalLinearStepper() {
                 ))}
               </Stepper>
               {logsize != -1 &&
-              admissionInfo.data.logs[logsize].logDate.toDate().toDateString() === new Date().toDateString() ? null : (
+              admissionInfo.data.logs[logsize-1].logDate.toDate().toDateString() === new Date().toDateString() ? null : (
                 <Button onClick={addLogs} sx={{ mt: 1, mr: 1 }} startIcon={<PlaylistAdd />} color="secondary">
                   Add new logs
                 </Button>
