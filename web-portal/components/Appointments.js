@@ -1,37 +1,31 @@
 import * as React from "react"
-import { styled } from "@mui/material/styles"
-import PropTypes from "prop-types"
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp"
-import EditIcon from "@mui/icons-material/Edit"
-import AddIcon from "@mui/icons-material/Add"
-import DeleteIcon from "@mui/icons-material/Delete"
-import CancelIcon from "@mui/icons-material/Cancel"
 import CloudUploadIcon from "@mui/icons-material/CloudUpload"
 import { useQuery } from "react-query"
-import { collection, getDocs, where, query, getDoc, doc as firestoreDoc, setDoc } from "firebase/firestore"
-import { db } from "@/lib/firebase.config"
+import {
+	collection,
+	getDocs,
+	where,
+	query,
+	getDoc,
+	doc as firestoreDoc,
+	setDoc,
+	orderBy,
+} from "firebase/firestore";
+import { db } from "@/lib/firebase.config";
 import { useAuth } from "@/lib/zustand.config"
 import { NotUser, Loader } from "@/components/utils"
 import {
-  ListItem,
-  ListItemText,
   Box,
-  Collapse,
-  IconButton,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
   Paper,
   TablePagination,
   Dialog,
   DialogTitle,
-  Fab,
-  TextField,
   Button,
   DialogContent,
   DialogActions,
@@ -47,16 +41,8 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"
 import dayjs from "dayjs"
 import Skeleton from "@mui/material/Skeleton"
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  color: theme.palette.text.secondary,
-  height: "100%",
-}))
-
 function Row(props) {
-  const { row, rowid, func, key } = props
+  const { row, rowid, func, key, parentFunc } = props
   const [open, setOpen] = React.useState(false)
   const [testTime, setTestTime] = React.useState(dayjs())
   const [openNotif, setOpenNotif] = React.useState(false)
@@ -76,10 +62,11 @@ function Row(props) {
     try {
       const testRef = firestoreDoc(db, "appointments", rowid);
       setDoc(testRef, { shldtime: testTime.toDate() }, { merge: true });
-      func();
       setType("success");
       setMessage("Appointment scheduled successfully");
       setOpenNotif(true);
+      func();
+      parentFunc();
     } catch (err) {
       setType("error");
       setMessage("Error scheduling Appointment");
@@ -88,9 +75,11 @@ function Row(props) {
   }
 
   const { isLoading, error, data } = useQuery({
-    queryKey: [rowid],
-    queryFn: fetchDetails,
-  })
+		queryKey: [rowid],
+		queryFn: fetchDetails,
+		refetchInterval: 5000,
+		refetchOnWindowFocus: true,
+	});
 
   async function fetchDetails() {
     const patRef = firestoreDoc(db, "publicusers", row.pid)
@@ -299,7 +288,8 @@ const columns = [
   },
 ]
 
-export default function History() {
+export default function History(props) {
+  const { func } = props;
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(10)
   const [openTest, setOpenTest] = React.useState(false)
@@ -313,7 +303,13 @@ export default function History() {
 
   async function fetchAppointments() {
     const data = []
-    const apt = await getDocs(query(collection(db, "appointments"), where("hid", "==", hId)))
+    const apt = await getDocs(
+			query(
+				collection(db, "appointments"),
+				where("hid", "==", hId),
+				orderBy("reqtime", "desc")
+			)
+		);
     // await Promise.all(
     //     apt.docs.map(async (doc) => {
     //         const pat = await getDoc(firestoreDoc(db, "publicusers", doc.data().pid))
@@ -363,7 +359,7 @@ export default function History() {
                   </TableHead>
                   <TableBody>
                     {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                      return <Row key={index} row={row} rowid={row.id} func={refetch} />
+                      return <Row key={index} row={row} rowid={row.id} func={refetch} parentFunc={func} />
                     })}
                   </TableBody>
                 </Table>

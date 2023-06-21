@@ -86,9 +86,6 @@ const Landing = () => {
 	const [input, setInput] = React.useState("");
 	const [opened, { toggle, close }] = useDisclosure(false);
 
-	const placeholder =
-		"It can’t help but hear a pin drop from over half a mile away, so it lives deep in the mountains where there aren’t many people or Pokémon.";
-
 	const items = links.map((link) => (
 		<a
 			key={link.label}

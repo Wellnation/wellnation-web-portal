@@ -219,7 +219,10 @@ const TestHistory = () => {
 										<TableBody>
 											{patientHist.map((row) => {
 												return (
-													<TableRow key={row.id} sx={{ "& > *": { borderBottom: "unset" } }}>
+													<TableRow
+														key={row.id}
+														sx={{ "& > *": { borderBottom: "unset" } }}
+													>
 														<TableCell component="th" scope="row">
 															{row.data().tname}
 														</TableCell>
@@ -240,16 +243,23 @@ const TestHistory = () => {
 																	.toLocaleTimeString("en-us")}
 														</TableCell>
 														<TableCell align="right">
-															{row.data().status ? (
+															{row.data().status && row.data().attatchment ? (
 																<Chip
 																	label="Completed"
+																	color="primary"
+																	variant="outlined"
+																/>
+															) : row.data().status &&
+															  !row.data().attachment ? (
+																<Chip
+																	label="Scheduled"
 																	color="primary"
 																	variant="outlined"
 																/>
 															) : (
 																<Chip
 																	label="Pending"
-																	color="secondary"
+																	color="primary"
 																	variant="outlined"
 																/>
 															)}

@@ -23,7 +23,7 @@ import {
   Box,
 } from "@mui/material"
 import { useQuery } from "react-query"
-import { query, collection, getDocs, onSnapshot, getDoc, setDoc, doc as firestoreDoc, where } from "firebase/firestore"
+import { query, collection, getDocs, onSnapshot, getDoc, setDoc, doc as firestoreDoc, where, orderBy } from "firebase/firestore"
 import { db } from "@/lib/firebase.config"
 import { useAuth } from "@/lib/zustand.config"
 import { NotUser, Loader } from "@/components/utils"
@@ -118,6 +118,7 @@ function Row(props) {
                   value={amblId}
                   onChange={(event) => {
                     setAmblId(event.target.value)
+                    console.log(ambllist)
                   }}
                   input={<OutlinedInput label="Ambulances" id="demo-dialog-native" />}
                 >
@@ -251,7 +252,7 @@ export default function History() {
     try {
       setIsLoading(true)
       setError(null)
-      const emergencyCollection = collection(db, "emergency")
+      const emergencyCollection = query(collection(db, "emergency"), orderBy("date", "desc"))
       const data = []
       const unsubscribe = onSnapshot(emergencyCollection, async (snapshot) => {
         await Promise.all(

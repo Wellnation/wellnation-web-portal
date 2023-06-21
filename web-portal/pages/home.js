@@ -117,6 +117,8 @@ const Home = () => {
 	const { isLoading, error, data, refetch } = useQuery({
 		queryKey: ["camps"],
 		queryFn: fetchtests,
+		refetchInterval: 5000,
+		refetchOnWindowFocus: true,
 	});
 
 	async function fetchtests() {
@@ -152,11 +154,11 @@ const Home = () => {
 			>
 				Approve Appointments
 			</div>
-			<Appointments />
+			<Appointments func={refetch} />
 			<Item
 				elevation={2}
-        style={{
-          margin: "20px 80px",
+				style={{
+					margin: "20px 80px",
 					padding: "30px",
 				}}
 			>
