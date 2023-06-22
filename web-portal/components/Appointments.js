@@ -42,9 +42,9 @@ import dayjs from "dayjs"
 import Skeleton from "@mui/material/Skeleton"
 
 function Row(props) {
-  const { row, rowid, func, key, parentFunc } = props
+  const { row, rowid, func, key, parentFunc, shldtime } = props
   const [open, setOpen] = React.useState(false)
-  const [testTime, setTestTime] = React.useState(dayjs())
+  const [testTime, setTestTime] = React.useState(dayjs(shldtime.toDate()))
   const [openNotif, setOpenNotif] = React.useState(false)
   const [type, setType] = React.useState("success")
   const [message, setMessage] = React.useState("")
@@ -220,9 +220,9 @@ function Row(props) {
 					)}
 				</TableCell>
 				<TableCell align="right">
-					{row.shldtime.toDate().toDateString() +
+					{row.reqtime.toDate().toDateString() +
 						" at " +
-						row.shldtime.toDate().toLocaleTimeString("en-us")}
+						row.reqtime.toDate().toLocaleTimeString("en-us")}
 				</TableCell>
 				<TableCell align="right">
 					<LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -302,7 +302,6 @@ export default function History(props) {
   })
 
   async function fetchAppointments() {
-    const data = []
     const apt = await getDocs(
 			query(
 				collection(db, "appointments"),
@@ -359,7 +358,7 @@ export default function History(props) {
                   </TableHead>
                   <TableBody>
                     {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                      return <Row key={index} row={row} rowid={row.id} func={refetch} parentFunc={func} />
+                      return <Row key={index} row={row} rowid={row.id} func={refetch} parentFunc={func} shldtime={row.shldtime} />
                     })}
                   </TableBody>
                 </Table>

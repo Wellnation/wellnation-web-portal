@@ -105,12 +105,13 @@ const TestManager = ({ data }) => {
 								elevation={4}
 								style={{
 									margin: "10px",
-									minWidth: "100px",
+									minWidth: "150px",
 									textAlign: "left",
 									padding: "20px",
 									cursor: "pointer",
 									display: "flex",
 									flexDirection: "column",
+									minHeight: "250px",
 								}}
 								onClick={() =>
 									handleTestOpen(
@@ -131,7 +132,8 @@ const TestManager = ({ data }) => {
 									</Typography>
 									<Typography variant="body1">
 										{tests.data().description
-											? tests.data().description
+											? tests.data().description.length > 70 &&
+												tests.data().description.substring(0, 70) + "..."
 											: "No description provided"}
 									</Typography>
 								</div>
@@ -194,6 +196,7 @@ const TestManager = ({ data }) => {
 						onChange={(e, value) => setType(value)}
 					/>
 					<TextField
+						multiline
 						style={{ marginTop: "10px" }}
 						id="outlined-basic"
 						label="Test Description"
@@ -202,6 +205,7 @@ const TestManager = ({ data }) => {
 						onChange={(e) => {
 							setDescription(e.target.value);
 						}}
+						fullWidth
 					/>
 				</DialogContent>
 				<DialogActions>
