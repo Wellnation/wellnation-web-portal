@@ -336,7 +336,7 @@ function Row(props) {
 						row.shldtime.toDate().toLocaleTimeString("en-us")}
 				</TableCell>
 				<TableCell align="right">
-					{row.attachment === "" ? (
+					{!row.attachment || row.attachment === "" ? (
 						<TestReport testId={rowid} refetchFunc={func} />
 					) : (
 						<a href={row.attachment} target="_blank">
