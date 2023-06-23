@@ -6,9 +6,8 @@ export const getValidSubdomain = (host) => {
   }
   if (host && host.includes(".")) {
     const candidate = host.split(".")[0]
-    if (candidate && !candidate.includes("localhost")) {
-        // Valid candidate
-        
+    if (candidate == 'staffs' && !candidate.includes("localhost")) {
+      // Valid candidate
       subdomain = candidate
     }
   }
