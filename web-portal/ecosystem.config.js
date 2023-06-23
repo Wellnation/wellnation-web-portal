@@ -26,7 +26,7 @@ module.exports = {
 			ref: "origin/main",
 			repo: "git@github.com:Wellnation/wellnation-web-portal.git",
 			path: "/home/wellnation",
-			"pre-deploy-local": "cd web-portal",
+			// "pre-deploy-local": "cd web-portal",
 			"post-deploy":
 				"source ~/.nvm/nvm && npm install && npm run build && pm2 reload ecosystem.config.js --env production",
       "pre-setup": "",
