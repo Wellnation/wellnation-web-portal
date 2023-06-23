@@ -28,7 +28,7 @@ module.exports = {
 			path: "/home/wellnation",
 			// "pre-deploy-local": "cd web-portal",
 			"post-deploy":
-				"source ~/.nvm/nvm && npm install && npm run build && pm2 reload ecosystem.config.js --env production",
+				"source ~/.nvm/nvm && cd web-portal && npm install && npm run build && pm2 reload ecosystem.config.js --env production",
       "pre-setup": "",
       "ssh_options": "ForwardAgent=yes",
 		},
