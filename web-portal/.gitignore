@@ -32,3 +32,9 @@ yarn-error.log*
 # vercel
 .vercel
 wellnation.json
+
+#pm2
+ecosystem.config.js
+
+#Docker
+Dockerfile
