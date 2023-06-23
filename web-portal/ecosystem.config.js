@@ -2,7 +2,7 @@ module.exports = {
 	apps: [
 		{
       script: "npm start",
-      env: {
+      env_production: {
         "NEXT_PUBLIC_FIREBASE_API_KEY": "AIzaSyAj4ZrCjW4dadI3C3NqThB8PoYYEf74B6Q",
         "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN": "wellnation-cc1b2.firebaseapp.com",
         "NEXT_PUBLIC_FIREBASE_PROJECT_ID": "wellnation-cc1b2",
@@ -14,7 +14,7 @@ module.exports = {
         "NEXT_PUBLIC_GOOGLE_MAPS_KEY": "AIzaSyAOjr36nWK1pfruFvU8w49Pb_BKZSmWlYk",
         "NEXT_PUBLIC_VIDEOSDK_API_KEY": "0128bf9c-1372-437b-b57f-9053ee2781ef",
         "NEXT_PUBLIC_VIDEOSDK_TOKEN": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI2YTk4YmU1NS1iNTFlLTRkZmEtYWI1My1lMmUxYzcwNjIzNWIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTY4NjcyNDY2MiwiZXhwIjoxNzE4MjYwNjYyfQ.A_ZdT6l4he-GIgna_NoLPhmdx-IZ8t5afgk3ksURJGY",
-      }
+      },
 		},
 	],
 
