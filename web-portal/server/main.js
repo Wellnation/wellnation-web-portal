@@ -9,8 +9,7 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 8000;
 app.use((req, res, next) => {
-	res.header("Access-Control-Allow-Origin", "https://wellnation.live");
-	res.header("Access-Control-Allow-Origin", "https://staffs.wellnation.live");
+	res.header("Access-Control-Allow-Origin", "*");
 	res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
 	res.header("Access-Control-Allow-Headers", "Content-Type, Accept");
 	next();
@@ -52,7 +51,12 @@ app.post("/analyze-report", async (req, res) => {
 });
 
 const io = new Server(8001, {
-	cors: true,
+	cors: {
+		origin: ["https://wellnation.live", "https://staffs.wellnation.live", "https://wellnation.vercel.app", "http://localhost:3000"],
+		methods: ["GET", "POST", "OPTIONS", "DELETE", "PUT"],
+		allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Headers", "X-Requested-With"],
+		credentials: true,
+	},
 });
 
 const userToSocketMap = new Map();
