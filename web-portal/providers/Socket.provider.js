@@ -7,7 +7,10 @@ export const useSocket = () => React.useContext(SocketContext);
 
 const SocketProvider = (props) => {
   const socket = useMemo(
-		() => io("https://wellnation-socket-server.up.railway.app"),
+		() =>
+			io("https://wellnation-socket-server.up.railway.app", {
+				withCredentials: true,
+			}),
 		// () => io("localhost:8001"),
 		[]
 	);

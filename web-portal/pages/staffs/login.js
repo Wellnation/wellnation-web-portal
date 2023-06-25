@@ -45,36 +45,37 @@ const AdminLogin = () => {
 				setHId(hospitalSnapshot.docs[0].id);
 				setDomain(hospitalSnapshot.docs[0].data().domain);
 			})
+			.then(() => {
+				const adminDoc = query(
+					collection(db, `users/${hId}/admins`),
+					where("email", "==", email)
+				);
+				getDocs(adminDoc)
+					.then((adminSnapshot) => {
+						if (adminSnapshot.empty) {
+							setType("error");
+							setErrorMessage("Admin not found. Please check email");
+							setOpen(true);
+							return;
+						}
+						if (adminSnapshot.docs[0].data().password !== password) {
+							setType("error");
+							setErrorMessage("Incorrect password");
+							setOpen(true);
+							return;
+						}
+						localStorage.setItem("hId", hId);
+						localStorage.setItem("aId", adminSnapshot.docs[0].id);
+						localStorage.setItem("scopes", adminSnapshot.docs[0].data().scopes);
+					})
+					.then(() => {
+						window.location.href = window.location.origin;
+					});
+			})
 			.catch((error) => {
 				setType("error");
 				setErrorMessage(error.message);
 				setOpen(true);
-			});
-
-		const adminDoc = query(
-			collection(db, `users/${hId}/admins`),
-			where("email", "==", email)
-		);
-		getDocs(adminDoc)
-			.then((adminSnapshot) => {
-				if (adminSnapshot.empty) {
-					setType("error");
-					setErrorMessage("Admin not found. Please check email");
-					setOpen(true);
-					return;
-				}
-				if (adminSnapshot.docs[0].data().password !== password) {
-					setType("error");
-					setErrorMessage("Incorrect password");
-					setOpen(true);
-					return;
-				}
-				localStorage.setItem("hId", hId);
-				localStorage.setItem("aId", adminSnapshot.docs[0].id);
-				localStorage.setItem("scopes", adminSnapshot.docs[0].data().scopes);
-			})
-			.then(() => {
-				window.location.href = `http://${domain.split(".")[0]}.localhost:3000/`;
 			});
 	};
 

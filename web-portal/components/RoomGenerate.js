@@ -7,29 +7,38 @@ const RoomGenerate = ({ data, hId, notifType, notifMsg, notifOpen }) => {
 	const [beds, setBeds] = React.useState(0);
 	const [rooms, setRooms] = React.useState(0);
 	const [roomType, setRoomType] = React.useState("");
-  const [startingRoomNumber, setStartingRoomNumber] = React.useState(0);
-  
-  const handleCreateBeds = async () => {
-    let startingRoom = startingRoomNumber;
-    for (let i = 0; i < rooms; i++) {
-      for (let j = 0; j < beds; j++) {
-        const roomDocRef = doc(collection(db, `users/${hId}/beds`))
-        await setDoc(roomDocRef, {
-          bedNo: j + 1,
-          pid: "",
-          roomNo: startingRoom,
-          status: true,
-          type: roomType,
-          id: roomDocRef.id,
-        });
-        console.log("document:", roomDocRef.id, "created for room:", startingRoom, "bed:", j + 1);
-      }
-      startingRoom++;
-    }
-    notifType("success");
-    notifMsg("Beds created successfully!");
-    notifOpen(true);
-  };
+	const [startingRoomNumber, setStartingRoomNumber] = React.useState(0);
+
+	const handleCreateBeds = async () => {
+		let startingRoom = startingRoomNumber;
+		for (let i = 0; i < rooms; i++) {
+			let bedLetter = "A";
+			for (let j = 0; j < beds; j++) {
+				const roomDocRef = doc(collection(db, `users/${hId}/beds`));
+				await setDoc(roomDocRef, {
+					bedNo: String(j + 1).concat(bedLetter),
+					pid: "",
+					roomNo: Number(startingRoom),
+					status: true,
+					type: roomType,
+					id: roomDocRef.id,
+				});
+				console.log(
+					"document:",
+					roomDocRef.id,
+					"created for room:",
+					startingRoom,
+					"bed:",
+					String(j + 1).concat(bedLetter)
+				);
+				bedLetter = String.fromCharCode(bedLetter.charCodeAt() + 1);
+			}
+			startingRoom++;
+		}
+		notifType("success");
+		notifMsg("Beds created successfully!");
+		notifOpen(true);
+	};
 
 	return (
 		<div>
@@ -108,8 +117,8 @@ const RoomGenerate = ({ data, hId, notifType, notifMsg, notifOpen }) => {
 				<Button
 					variant="contained"
 					color="primary"
-          style={{ margin: "20px 0px" }}
-          onClick={handleCreateBeds}
+					style={{ margin: "20px 0px" }}
+					onClick={handleCreateBeds}
 				>
 					Generate Beds
 				</Button>

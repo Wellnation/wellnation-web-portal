@@ -39,7 +39,7 @@ const columns = [
 		id: "attachment",
 		label: "Report",
 		minWidth: 150,
-		align: "right",
+		align: "center",
 	},
 ];
 
@@ -265,10 +265,15 @@ const TestHistory = () => {
 																/>
 															)}
 														</TableCell>
-														<TableCell align="right">
-															{row.data().attatchment ? (
+														<TableCell align="center">
+															{row.data().attachment ? (
 																<Link
-																	href={row.data().attatchment}
+																	href={`https://firebasestorage.googleapis.com/v0/b/${
+																		process.env
+																			.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+																	}/o/${encodeURIComponent(
+																		row.data().attachment
+																	)}?alt=media`}
 																	target="_blank"
 																>
 																	View Report
@@ -335,11 +340,16 @@ function Row(props) {
 						" at " +
 						row.shldtime.toDate().toLocaleTimeString("en-us")}
 				</TableCell>
-				<TableCell align="right">
+				<TableCell align="center">
 					{!row.attachment || row.attachment === "" ? (
 						<TestReport testId={rowid} refetchFunc={func} />
 					) : (
-						<a href={row.attachment} target="_blank">
+						<a
+							href={`https://firebasestorage.googleapis.com/v0/b/${
+								process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+							}/o/${encodeURIComponent(row.attachment)}?alt=media`}
+							target="_blank"
+						>
 							View Report
 						</a>
 					)}

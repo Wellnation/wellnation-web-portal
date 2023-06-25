@@ -2,27 +2,44 @@ import TestHistory from "@/components/TestHistory";
 import { useRouter } from "next/router";
 import React from "react";
 import { useAdminMode } from "@/lib/zustand.config";
+import { useQuery } from "react-query";
+import { Loader } from "@/components/utils";
+import BedsManager from "@/components/BedsManager";
+import { Typography } from "@mui/material";
 
 export default function SubHome() {
 	const router = useRouter();
 	const { subdomain } = router.query;
-	const [scopes, setScopes] = React.useState(
-		localStorage.getItem("scopes").split(",")
-  );
-  const { adminMode, setAdminMode } = useAdminMode();
+	const [scopes, setScopes] = React.useState([]);
+	const { adminMode, setAdminMode } = useAdminMode();
 
-	React.useEffect(() => {
+	const {
+		data: staffData,
+		isLoading,
+		error,
+	} = useQuery("[staff]", () => {
 		if (!localStorage.getItem("hId") || !localStorage.getItem("aId")) {
 			window.location.href = window.location.origin + "/login";
-    }
-    setAdminMode(true);
-	}, []);
+		} else {
+			setScopes(localStorage.getItem("scopes").split(","));
+			setAdminMode(true);
+		}
+	});
+
+	if (isLoading) return <Loader />;
 
 	return (
-		<div>
-			{scopes.includes("beds") && scopes.length < 2 ? (
+		<div
+			style={{
+				margin: "auto",
+				padding: "30px",
+			}}
+		>
+			{isLoading || !localStorage.getItem("scopes") ? (
+				<Loader />
+			) : scopes.includes("beds") && scopes.length < 2 ? (
 				<div>
-					<h1>Beds</h1>
+					<BedsManager />
 				</div>
 			) : scopes.includes("tests") && scopes.length < 2 ? (
 				<div>
@@ -30,10 +47,15 @@ export default function SubHome() {
 				</div>
 			) : scopes.length === 2 ? (
 				<div>
-					<h1>Both beds and tests</h1>
+					<BedsManager />
 				</div>
 			) : (
-				<div>No scopes</div>
+				<div>
+					<Typography variant="h3" style={{ fontWeight: "bold" }}>
+						No Access scopes assigned for this account. Please contact your
+						hospital administrator for this issue.
+					</Typography>
+				</div>
 			)}
 		</div>
 	);

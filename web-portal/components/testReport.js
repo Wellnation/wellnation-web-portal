@@ -143,7 +143,14 @@ export default function TestReport(props) {
 	};
 
 	return (
-		<div>
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "row",
+				justifyContent: "center",
+				alignItems: "flex-end",
+			}}
+		>
 			<FileInput
 				accept="application/pdf"
 				onChange={(file) => {
@@ -154,7 +161,10 @@ export default function TestReport(props) {
 				icon={<FileUpload size={rem(14)} />}
 			/>
 			<LoadingButton
-				color="secondary"
+				color="primary"
+				style={{
+					marginLeft: "10px",
+				}}
 				onClick={() => {
 					setLoading(true);
 					convertPDFToImages(file);

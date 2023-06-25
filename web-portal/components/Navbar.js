@@ -72,7 +72,7 @@ function Navbar() {
 		},
 		{
 			name: (
-				<Badge color="success" badgeContent={Number(badge)}>
+				<Badge color="error" badgeContent={Number(badge)}>
 					Emergency
 				</Badge>
 			),
@@ -111,7 +111,7 @@ function Navbar() {
 		},
 		{
 			name: (
-				<Badge color="success" badgeContent={Number(badge)}>
+				<Badge color="error" badgeContent={Number(badge)}>
 					Emergency
 				</Badge>
 			),
