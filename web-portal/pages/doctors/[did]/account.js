@@ -21,8 +21,8 @@ const Account = () => {
   const router = useRouter()
   const doctorId = localStorage.getItem("dId")
   const [displayName, setDisplayName] = React.useState("")
-  const [phone, setPhone] = React.useState("")
-  const [speciality, setSpeciality] = React.useState("")
+  const [phoneNo, setPhoneNo] = React.useState("")
+  const [specialityField, setSpecialityField] = React.useState("")
   const [open, setOpen] = React.useState(false)
   const [type, setType] = React.useState("error")
   const [errorMessage, setErrorMessage] = React.useState("")
@@ -54,13 +54,13 @@ const Account = () => {
     try {
       e.preventDefault()
       await updateDoc(doc(db, "doctors", doctorId), {
-        phone,
-        name: displayName,
-        speciality,
+        phone: phoneNo !== "" ? phoneNo : userData.phone,
+        name: displayName !== "" ? displayName : userData.name,
+        speciality: specialityField !== "" ? specialityField : userData.speciality,
       })
       updateProfile(auth.currentUser, {
-        phoneNumber: phone,
-        displayName: displayName,
+        phoneNumber: phoneNo !== "" ? phoneNo : userData.phone,
+        displayName: displayName !== "" ? displayName : userData.name,
       })
       console.log(user)
       setType("success")
@@ -89,9 +89,10 @@ const Account = () => {
 
   const handleCancel = () => {
     setLocality("")
-    setPhone("")
+    setPhoneNo("")
     setDisplayName("")
     setPass("")
+    setSpecialityField("")
     setRePass("")
     setOldPass("")
   }
@@ -211,9 +212,9 @@ const Account = () => {
                     label="Phone Number"
                     variant="outlined"
                     placeholder={userData.phone}
-                    value={phone}
+                    value={phoneNo}
                     onChange={(e) => {
-                      setPhone(e.target.value)
+                      setPhoneNo(e.target.value)
                     }}
                   />
                   <TextField
@@ -221,9 +222,9 @@ const Account = () => {
                     label="Speciality"
                     variant="outlined"
                     placeholder={userData.speciality}
-                    value={speciality}
+                    value={specialityField}
                     onChange={(e) => {
-                      setSpeciality(e.target.value)
+                      setSpecialityField(e.target.value)
                     }}
                   />
                   <div

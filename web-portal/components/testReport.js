@@ -73,12 +73,14 @@ export default function TestReport(props) {
 						},
 						{
 							headers: {
+								// "Access-Control-Allow-Origin": "http://localhost:3000",
 								"Access-Control-Allow-Origin": "https://wellnation.live",
-								"Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS",
-								"Access-Control-Allow-Headers": "Content-Type, Authorization, Access-Control-Allow-Origin",
+								"Access-Control-Allow-Headers":
+									"Content-Type, Authorization, Access-Control-Allow-Origin",
+								"Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
 							},
 							withCredentials: true,
-						},
+						}
 					)
 					.then((output) => {
 						setLlmOutput(output.data.report);
