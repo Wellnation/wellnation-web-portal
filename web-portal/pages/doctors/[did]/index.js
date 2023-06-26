@@ -18,6 +18,11 @@ import {
 	Table,
 	TableBody,
 	TableCell,
+	CircularProgress,
+	Chip,
+	TableContainer,
+	TableHead,
+	TableRow,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { useAuth } from "@/lib/zustand.config";
@@ -40,14 +45,56 @@ import LabelIcon from "@mui/icons-material/Label";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import ChatForm from "@/components/ChatForm";
 import { Item } from "@/pages/home";
+import Link from "next/link";
+
+const patientColumns = [
+	{
+		id: "tname",
+		label: "Test Availed",
+		minWidth: 100,
+	},
+	{
+		id: "hospital",
+		label: "Hospital",
+		minWidth: 100,
+	},
+	{
+		id: "reqtime",
+		label: "Requested On",
+		minWidth: 150,
+		align: "right",
+	},
+	{
+		id: "shldtime",
+		label: "Scheduled On",
+		minWidth: 150,
+		align: "right",
+	},
+	{
+		id: "status",
+		label: "Status",
+		minWidth: 100,
+		align: "right",
+	},
+	{
+		id: "attachment",
+		label: "View report",
+		minWidth: 100,
+		align: "right",
+	},
+];
 
 const DoctorHome = () => {
 	const router = useRouter();
 	const { did } = router.query;
 	const { socket } = useSocket();
 	const { user, loading } = useAuth();
+	const [pid, setPid] = React.useState("");
 	const [roomId, setRoomId] = React.useState("");
 	const [expanded, setExpanded] = React.useState(false);
+	const [openDialog, setOpenDialog] = React.useState(false);
+	const [patientHist, setPatientHist] = React.useState(null);
+	const [histLoading, setHistLoading] = React.useState(false);
 
 	const handleChange = (panel) => (event, isExpanded) => {
 		setExpanded(isExpanded ? panel : false);
@@ -112,7 +159,27 @@ const DoctorHome = () => {
 			return appointmentData;
 		},
 		refetchInterval: 5000,
+		refetchOnWindowFocus: true,
 	});
+
+	const fetchPatientHist = async (id) => {
+		setHistLoading(true);
+		const patientHistoryCollection = query(
+			collection(db, "testHistory"),
+			where("patientid", "==", id),
+			orderBy("shldtime", "desc")
+		);
+		const querySnapshot = await getDocs(patientHistoryCollection);
+		let patientHistory = [];
+		querySnapshot.docs.map((doc) => {
+			patientHistory.push({
+				id: doc.id,
+				...doc.data(),
+			});
+		});
+		setPatientHist(patientHistory);
+		setHistLoading(false);
+	};
 
 	if (isLoading || loading) {
 		return <Loader />;
@@ -229,6 +296,11 @@ const DoctorHome = () => {
 													style={{
 														marginTop: "20px",
 													}}
+													onClick={() => {
+														setOpenDialog(true);
+														setPid(appointment.patient.name);
+														fetchPatientHist(appointment.pid);
+													}}
 												>
 													See Patient History
 												</Button>
@@ -290,66 +362,69 @@ const DoctorHome = () => {
 																								component="th"
 																								scope="row"
 																							>
-																								{row.data().tname}
+																								{row.tname}
+																							</TableCell>
+																							<TableCell
+																								component="th"
+																								scope="row"
+																							>
+																								{row.hname}
 																							</TableCell>
 																							<TableCell align="right">
-																								{row
-																									.data()
-																									.reqtime.toDate()
+																								{row.reqtime
+																									.toDate()
 																									.toDateString() +
 																									" at " +
-																									row
-																										.data()
-																										.reqtime.toDate()
+																									row.reqtime
+																										.toDate()
 																										.toLocaleTimeString(
 																											"en-us"
 																										)}
 																							</TableCell>
 																							<TableCell align="right">
-																								{row
-																									.data()
-																									.shldtime.toDate()
+																								{row.shldtime
+																									.toDate()
 																									.toDateString() +
 																									" at " +
-																									row
-																										.data()
-																										.shldtime.toDate()
+																									row.shldtime
+																										.toDate()
 																										.toLocaleTimeString(
 																											"en-us"
 																										)}
 																							</TableCell>
 																							<TableCell align="right">
-																								{row.data().status &&
-																								row.data().attatchment ? (
+																								{row.status &&
+																								row.attatchment ? (
 																									<Chip
 																										label="Completed"
 																										color="primary"
 																										variant="outlined"
 																									/>
-																								) : row.data().status &&
-																								  !row.data().attachment ? (
+																								) : row.status &&
+																								  !row.attachment ? (
 																									<Chip
 																										label="Scheduled"
 																										color="primary"
 																										variant="outlined"
 																									/>
-																								) : (
+																								) : !row.status ? (
 																									<Chip
 																										label="Pending"
+																										color="primary"
+																										variant="outlined"
+																									/>
+																								) : (
+																									<Chip
+																										label="Completed"
 																										color="primary"
 																										variant="outlined"
 																									/>
 																								)}
 																							</TableCell>
 																							<TableCell align="center">
-																								{row.data().attachment ? (
+																								{row.attachment ? (
 																									<Link
-																										href={`https://firebasestorage.googleapis.com/v0/b/${
-																											process.env
-																												.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-																										}/o/${encodeURIComponent(
-																											row.data().attachment
-																										)}?alt=media`}
+																										href={row.attachment}
 																										target="_blank"
 																									>
 																										View Report

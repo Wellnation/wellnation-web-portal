@@ -257,9 +257,15 @@ const TestHistory = () => {
 																	color="primary"
 																	variant="outlined"
 																/>
-															) : (
+															) : !row.status ? (
 																<Chip
 																	label="Pending"
+																	color="primary"
+																	variant="outlined"
+																/>
+															) : (
+																<Chip
+																	label="Completed"
 																	color="primary"
 																	variant="outlined"
 																/>
@@ -344,12 +350,7 @@ function Row(props) {
 					{!row.attachment || row.attachment === "" ? (
 						<TestReport testId={rowid} refetchFunc={func} />
 					) : (
-						<a
-							href={`https://firebasestorage.googleapis.com/v0/b/${
-								process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-							}/o/${encodeURIComponent(row.attachment)}?alt=media`}
-							target="_blank"
-						>
+						<a href={row.attachment} target="_blank">
 							View Report
 						</a>
 					)}

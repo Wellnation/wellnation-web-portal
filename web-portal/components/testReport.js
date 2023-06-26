@@ -14,20 +14,10 @@ import {
 import Tesseract from "tesseract.js";
 import * as PDFJS from "pdfjs-dist";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
-import { StringStream } from "pdfjs-dist/build/pdf.worker";
 import axios from "axios";
-import {
-	collection,
-	getDocs,
-	where,
-	query,
-	getDoc,
-	doc as firestoreDoc,
-	setDoc,
-} from "firebase/firestore";
+import { doc as firestoreDoc, setDoc } from "firebase/firestore";
 import { db, storage } from "@/lib/firebase.config";
 import { uploadBytes, ref } from "firebase/storage";
-import { set } from "zod";
 
 PDFJS.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
@@ -74,9 +64,13 @@ export default function TestReport(props) {
 				console.log(String(result.data.text));
 				setText(result.data.text);
 				axios
-					.post("https://wellnation-socket-server.up.railway.app/analyze-report", {
-						text: result.data.text,
-					})
+					.post(
+						// "https://wellnation-socket-server.up.railway.app/analyze-report",
+						"http://localhost:8000/analyze-report",
+						{
+							text: result.data.text,
+						}
+					)
 					.then((output) => {
 						setLlmOutput(output.data.report);
 						const testsRef = ref(storage, "test-reports/" + file.name);
@@ -92,7 +86,11 @@ export default function TestReport(props) {
 									testdocRef,
 									{
 										llmOutput: output.data.report,
-										attachment: snapshot.metadata.fullPath,
+										attachment: `https://firebasestorage.googleapis.com/v0/b/${
+											process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+										}/o/${encodeURIComponent(
+											snapshot.metadata.fullPath
+										)}?alt=media`,
 										status: true,
 									},
 									{ merge: true }
