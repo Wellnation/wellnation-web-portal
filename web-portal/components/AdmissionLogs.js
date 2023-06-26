@@ -37,6 +37,7 @@ import {
 } from "firebase/firestore"
 import { db } from "@/lib/firebase.config"
 import Notifications from "@/components/Notifications"
+import { useQuery } from "react-query"
 
 export default function AlignItemsList(props) {
   const [medname, setMedname] = React.useState("")
@@ -49,6 +50,56 @@ export default function AlignItemsList(props) {
   const [openNotif, setOpenNotif] = React.useState(false)
   const [type, setType] = React.useState("success")
   const [message, setMessage] = React.useState("")
+  const [testname, setTestname] = React.useState("")
+  const [testid, setTestid] = React.useState("")
+  const [testprice, setTestprice] = React.useState("")
+
+  const tests = useQuery(
+    "tests",
+    async () => {
+      const testRef = query(collection(db, "tests"), where("hid", "==", props.hId))
+      const testSnap = await getDocs(testRef)
+      return testSnap.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+    }
+    // {
+    //   enabled: props.hId !== "",
+    // }
+  )
+
+  const handleAddTest = async () => {
+    try {
+      await setDoc(firestoreDoc(collection(db, "testHistory")), {
+        tid: testid,
+        tname: testname,
+        reqtime: new Date(),
+        shldtime: new Date(),
+        status: false,
+        attachment: "",
+        hid: props.hId,
+        hname: props.hName,
+        patientId: props.pId,
+        pName: props.pName,
+      })
+
+      const newTest = {
+        price: testprice,
+        testid: testid,
+        type: testname,
+      }
+      const bedRef = firestoreDoc(db, `admissions/${props.admissionId}/logs`, props.log.id)
+      await updateDoc(bedRef, {
+        tests: arrayUnion(newTest),
+      })
+      setType("success")
+      setMessage("Added test successfully")
+      setOpenNotif(true)
+      props.refetchFunc()
+    } catch (err) {
+      setType("error")
+      setMessage("Error in adding test")
+      setOpenNotif(true)
+    }
+  }
 
   async function addMeds() {
     if (medname === "" || medprice === "") return
@@ -214,7 +265,8 @@ export default function AlignItemsList(props) {
                   variant="standard"
                   value={medprice}
                   onChange={(e) => setMedprice(e.target.value)}
-                /><br/>
+                />
+                <br />
                 <Button startIcon={<AddCircleOutline />} color="success" onClick={() => addMeds()}>
                   Meds
                 </Button>
@@ -232,7 +284,27 @@ export default function AlignItemsList(props) {
                 </li>
               ))}
               <li>
-                <Button startIcon={<AddCircleOutline />}>Tests</Button>
+                <Select
+                  native
+                  value={testname}
+                  onChange={(event) => {
+                    setTestid(event.target.value.split("@")[0])
+                    setTestname(event.target.value.split("@")[1])
+                    setTestprice(event.target.value.split("@")[2])
+                  }}
+                  input={<OutlinedInput label="Select Test" id="demo-dialog-native" />}
+                >
+                  <option aria-label="None" value="" />
+                  {!tests.isLoading &&
+                    tests.data.map((test) => {
+                      return (
+                        <option value={test.id + "@" + test.testname + "@" + test.testprice}>{test.testname}</option>
+                      )
+                    })}
+                </Select>
+                <Button startIcon={<AddCircleOutline />} onClick={handleAddTest}>
+                  Tests
+                </Button>
               </li>
             </ul>
           </Grid>
