@@ -14,7 +14,7 @@ const SocketProvider = (props) => {
 				extraHeaders: {
 					"Access-Control-Allow-Origin": "*",
 					"Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
-					"Access-Control-Allow-Headers": "Content-Type, Authorization",
+					"Access-Control-Allow-Headers": "Content-Type, Authorization, Access-Control-Allow-Origin",
 				}
 			}),
 		// () => io("localhost:8001"),
