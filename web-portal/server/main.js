@@ -11,7 +11,10 @@ const port = process.env.PORT || 8000;
 app.use((req, res, next) => {
 	res.header("Access-Control-Allow-Origin", "https:/wellnation.live");
 	res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-	res.header("Access-Control-Allow-Headers", "Content-Type, Accept");
+	res.header(
+		"Access-Control-Allow-Headers",
+		"Content-Type, Authorization, Access-Control-Allow-Origin"
+	);
 	next();
 });
 app.use(
@@ -22,6 +25,7 @@ app.use(
 			"Content-Type",
 			"Authorization",
 			"Access-Control-Allow-Headers",
+			"Access-Control-Allow-Origin",
 			"X-Requested-With",
 		],
 		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],

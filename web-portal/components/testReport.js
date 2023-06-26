@@ -74,7 +74,7 @@ export default function TestReport(props) {
 						{
 							headers: {
 								"Access-Control-Allow-Origin": "https://wellnation.live",
-								"Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+								"Access-Control-Allow-Methods": "GET,PUT,POST,DELETE",
 								"Access-Control-Allow-Headers": "Content-Type, Authorization, Access-Control-Allow-Origin",
 							},
 							withCredentials: true,
