@@ -428,7 +428,7 @@ export default function VerticalLinearStepper() {
 							)}
 						</Item>
 					</Popper>
-					
+					<AppointmentSelect patient={patientId}  />
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={() => handleAdmission()}>Update</Button>
