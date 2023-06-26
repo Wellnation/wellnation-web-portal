@@ -8,23 +8,28 @@ const ReportAnalysis = require("./reportAnalysis");
 require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 8000;
-app.use((req, res, next) => {
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-	res.header("Access-Control-Allow-Headers", "Content-Type, Accept");
-	next();
-});
+// app.use((req, res, next) => {
+// 	res.header("Access-Control-Allow-Origin", "https:/wellnation.live");
+// 	res.header(
+// 		"Access-Control-Allow-Headers",
+// 		"Origin, Content-Type, Authorization, Accept, X-Requested-With"
+// 	);
+// 	next();
+// });
 app.use(
 	cors({
-		origin: true,
+		// origin: "http://localhost:3000",
+		origin: "https://wellnation.live",
+		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 		credentials: true,
 		allowedHeaders: [
 			"Content-Type",
 			"Authorization",
 			"Access-Control-Allow-Headers",
+			"Access-Control-Allow-Origin",
+			"Access-Control-Allow-Methods",
 			"X-Requested-With",
 		],
-		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 	})
 );
 app.use(bodyParser.json());
@@ -48,16 +53,19 @@ app.post("/analyze-report", async (req, res) => {
 
 const io = new Server(8001, {
 	cors: {
-		origin: true,
-		methods: ["GET", "POST", "OPTIONS", "DELETE", "PUT"],
+		// origin: "http://localhost:3000",
+		origin: "https://wellnation.live",
+		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+		credentials: true,
 		allowedHeaders: [
 			"Content-Type",
 			"Authorization",
 			"Access-Control-Allow-Headers",
+			"Access-Control-Allow-Origin",
+			"Access-Control-Allow-Methods",
 			"X-Requested-With",
 		],
-		credentials: true,
-	},
+	}
 });
 
 const userToSocketMap = new Map();

@@ -73,11 +73,14 @@ export default function TestReport(props) {
 						},
 						{
 							headers: {
-								"Access-Control-Allow-Origin": "*",
-								"Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
-								"Access-Control-Allow-Headers": "Content-Type, Authorization, Access-Control-Allow-Origin",
+								// "Access-Control-Allow-Origin": "http://localhost:3000",
+								"Access-Control-Allow-Origin": "https://wellnation.live",
+								"Access-Control-Allow-Headers":
+									"Content-Type, Authorization, Access-Control-Allow-Origin",
+								"Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
 							},
-						},
+							withCredentials: true,
+						}
 					)
 					.then((output) => {
 						setLlmOutput(output.data.report);
@@ -96,7 +99,9 @@ export default function TestReport(props) {
 										llmOutput: output.data.report,
 										attachment: `https://firebasestorage.googleapis.com/v0/b/${
 											process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-										}/o/${encodeURIComponent(snapshot.metadata.fullPath)}?alt=media`,
+										}/o/${encodeURIComponent(
+											snapshot.metadata.fullPath
+										)}?alt=media`,
 										status: true,
 									},
 									{ merge: true }
