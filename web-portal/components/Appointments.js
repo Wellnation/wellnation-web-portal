@@ -92,7 +92,7 @@ export default function History(props) {
             phone: pat.data().phone,
             symptoms: row.symptoms,
             dept: row.dept,
-            onlinemode: row.onlinemode,
+            onlinemode: row.onlinemode ? "online" : "offline",
             doc: docname + "@" + row.dept,
             reqtime: row.reqtime,
             shldtime: row.shldtime,
@@ -101,7 +101,6 @@ export default function History(props) {
         })
       )
     }
-    console.log(detailsArr)
     return detailsArr
   }
 
@@ -109,7 +108,7 @@ export default function History(props) {
     {
       field: "pname",
       headerName: "Patient name",
-      width: "200",
+      width: "180",
       renderCell: (params) => {
         if (details.isLoading) return <Skeleton animation="wave" width={150} />
         return (
@@ -137,7 +136,7 @@ export default function History(props) {
       headerName: "Mode",
       width: 100,
       renderCell: (params) => {
-        return <div>{params.value ? "Online" : "Offline"}</div>
+        return <div>{params.value}</div>
       },
     },
     {
@@ -187,7 +186,7 @@ export default function History(props) {
       width: 150,
       renderCell: (params) => 
         params.value ? 
-          <div>Scheduled</div>
+          <div>Completed</div>
         : 
           <Button variant="text" onClick={scheduleTest} startIcon={<CloudUploadIcon />}>
             Update schedule
@@ -199,7 +198,7 @@ export default function History(props) {
   function scheduleTest() {
     try {
       const testRef = firestoreDoc(db, "appointments", activeRowid)
-      setDoc(testRef, { shldtime: testTime.toDate() }, { merge: true })
+      setDoc(testRef, { shldtime: testTime.toDate()}, { merge: true })
       setType("success")
       setMessage("Appointment scheduled successfully")
       setOpenNotif(true)
