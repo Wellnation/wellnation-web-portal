@@ -66,7 +66,8 @@ export default function TestReport(props) {
 				axios
 					.post(
 						// "https://wellnation-socket-server.up.railway.app/analyze-report",
-						"http://localhost:8000/analyze-report",
+						// "http://localhost:8000/analyze-report",
+						"https://api.wellnation.live/analyze-report",
 						{
 							text: result.data.text,
 						}
