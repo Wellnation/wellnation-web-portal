@@ -182,6 +182,13 @@ function Row(props) {
 					},
 					{ merge: true }
 				);
+				const logDoc = firestoreDoc(collection(db, `emergency/${row.id}/logs`));
+				await setDoc(logDoc, {
+					action: "Ambulance Assigned",
+					senderId: hid,
+					timestamp: new Date(),
+					senderName: hospital.data().name,
+				});
 				setType("success");
 				setMessage("Ambulance sent successfully");
 				setOpenNotif(true);
@@ -407,7 +414,8 @@ export default function History() {
       eta: 0,
       id: newAmbulance.id,
       pid: ""
-    });
+		});
+		const logDoc = firestoreDoc(collection(db, `emergency/`))
     setNotif({
       open: true,
       message: "Ambulance added successfully",
