@@ -1,7 +1,5 @@
 import React, { useCallback } from "react";
-import { styled } from "@mui/material/styles";
 import {
-	Paper,
 	Typography,
 	Accordion,
 	AccordionSummary,
@@ -13,6 +11,18 @@ import {
 	IconButton,
 	InputAdornment,
 	Tooltip,
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogActions,
+	Table,
+	TableBody,
+	TableCell,
+	CircularProgress,
+	Chip,
+	TableContainer,
+	TableHead,
+	TableRow,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { useAuth } from "@/lib/zustand.config";
@@ -26,6 +36,7 @@ import {
 	where,
 	getDoc,
 	doc as fireStoreDoc,
+	orderBy,
 } from "firebase/firestore";
 import { Loader } from "@/components/utils";
 import { db } from "@/lib/firebase.config";
@@ -34,14 +45,56 @@ import LabelIcon from "@mui/icons-material/Label";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import ChatForm from "@/components/ChatForm";
 import { Item } from "@/pages/home";
+import Link from "next/link";
+
+const patientColumns = [
+	{
+		id: "tname",
+		label: "Test Availed",
+		minWidth: 100,
+	},
+	{
+		id: "hospital",
+		label: "Hospital",
+		minWidth: 100,
+	},
+	{
+		id: "reqtime",
+		label: "Requested On",
+		minWidth: 150,
+		align: "right",
+	},
+	{
+		id: "shldtime",
+		label: "Scheduled On",
+		minWidth: 150,
+		align: "right",
+	},
+	{
+		id: "status",
+		label: "Status",
+		minWidth: 100,
+		align: "right",
+	},
+	{
+		id: "attachment",
+		label: "View report",
+		minWidth: 100,
+		align: "right",
+	},
+];
 
 const DoctorHome = () => {
 	const router = useRouter();
 	const { did } = router.query;
 	const { socket } = useSocket();
 	const { user, loading } = useAuth();
+	const [pid, setPid] = React.useState("");
 	const [roomId, setRoomId] = React.useState("");
 	const [expanded, setExpanded] = React.useState(false);
+	const [openDialog, setOpenDialog] = React.useState(false);
+	const [patientHist, setPatientHist] = React.useState(null);
+	const [histLoading, setHistLoading] = React.useState(false);
 
 	const handleChange = (panel) => (event, isExpanded) => {
 		setExpanded(isExpanded ? panel : false);
@@ -73,7 +126,8 @@ const DoctorHome = () => {
 		queryFn: async () => {
 			const q = query(
 				collection(db, "appointments"),
-				where("drid", "==", user.uid)
+				where("drid", "==", user.uid),
+				orderBy("shldtime", "desc")
 			);
 			const querySnapshot = await getDocs(q);
 			const appointmentData = {
@@ -87,7 +141,7 @@ const DoctorHome = () => {
 					const patientDoc = await getDoc(
 						fireStoreDoc(db, "publicusers", doc.data().pid)
 					);
-					doc.status
+					doc.data().status
 						? past.push({
 								id: doc.id,
 								patient: patientDoc.data(),
@@ -105,7 +159,27 @@ const DoctorHome = () => {
 			return appointmentData;
 		},
 		refetchInterval: 5000,
+		refetchOnWindowFocus: true,
 	});
+
+	const fetchPatientHist = async (id) => {
+		setHistLoading(true);
+		const patientHistoryCollection = query(
+			collection(db, "testHistory"),
+			where("patientid", "==", id),
+			orderBy("shldtime", "desc")
+		);
+		const querySnapshot = await getDocs(patientHistoryCollection);
+		let patientHistory = [];
+		querySnapshot.docs.map((doc) => {
+			patientHistory.push({
+				id: doc.id,
+				...doc.data(),
+			});
+		});
+		setPatientHist(patientHistory);
+		setHistLoading(false);
+	};
 
 	if (isLoading || loading) {
 		return <Loader />;
@@ -126,7 +200,7 @@ const DoctorHome = () => {
 			<Item
 				elevation={0}
 				style={{
-					padding: "30px",
+					padding: "20px",
 				}}
 			>
 				<h1>Appointments</h1>
@@ -218,8 +292,169 @@ const DoctorHome = () => {
 														</ListItem>
 													</Grid>
 												</Grid>
+												<Button
+													style={{
+														marginTop: "20px",
+													}}
+													onClick={() => {
+														setOpenDialog(true);
+														setPid(appointment.patient.name);
+														fetchPatientHist(appointment.pid);
+													}}
+												>
+													See Patient History
+												</Button>
+												<Dialog
+													open={openDialog}
+													onClose={() => setOpenDialog(false)}
+													fullWidth
+													maxWidth={"lg"}
+												>
+													<DialogTitle>
+														<b>Patient History: {pid}</b>
+													</DialogTitle>
+													<DialogContent>
+														{histLoading ? (
+															<div
+																style={{
+																	display: "flex",
+																	justifyContent: "center",
+																	alignItems: "center",
+																}}
+															>
+																<CircularProgress />
+															</div>
+														) : (
+															<div>
+																{patientHist && patientHist.length > 0 ? (
+																	<TableContainer>
+																		<Table
+																			stickyHeader
+																			aria-label="collapsible table"
+																		>
+																			<TableHead>
+																				<TableRow>
+																					{patientColumns.map((column) => (
+																						<TableCell
+																							key={column.id}
+																							align={column.align}
+																							style={{
+																								minWidth: column.minWidth,
+																							}}
+																						>
+																							{column.label}
+																						</TableCell>
+																					))}
+																				</TableRow>
+																			</TableHead>
+																			<TableBody>
+																				{patientHist.map((row) => {
+																					return (
+																						<TableRow
+																							key={row.id}
+																							sx={{
+																								"& > *": {
+																									borderBottom: "unset",
+																								},
+																							}}
+																						>
+																							<TableCell
+																								component="th"
+																								scope="row"
+																							>
+																								{row.tname}
+																							</TableCell>
+																							<TableCell
+																								component="th"
+																								scope="row"
+																							>
+																								{row.hname}
+																							</TableCell>
+																							<TableCell align="right">
+																								{row.reqtime
+																									.toDate()
+																									.toDateString() +
+																									" at " +
+																									row.reqtime
+																										.toDate()
+																										.toLocaleTimeString(
+																											"en-us"
+																										)}
+																							</TableCell>
+																							<TableCell align="right">
+																								{row.shldtime
+																									.toDate()
+																									.toDateString() +
+																									" at " +
+																									row.shldtime
+																										.toDate()
+																										.toLocaleTimeString(
+																											"en-us"
+																										)}
+																							</TableCell>
+																							<TableCell align="right">
+																								{row.status &&
+																								row.attatchment ? (
+																									<Chip
+																										label="Completed"
+																										color="primary"
+																										variant="outlined"
+																									/>
+																								) : row.status &&
+																								  !row.attachment ? (
+																									<Chip
+																										label="Scheduled"
+																										color="primary"
+																										variant="outlined"
+																									/>
+																								) : !row.status ? (
+																									<Chip
+																										label="Pending"
+																										color="primary"
+																										variant="outlined"
+																									/>
+																								) : (
+																									<Chip
+																										label="Completed"
+																										color="primary"
+																										variant="outlined"
+																									/>
+																								)}
+																							</TableCell>
+																							<TableCell align="center">
+																								{row.attachment ? (
+																									<Link
+																										href={row.attachment}
+																										target="_blank"
+																									>
+																										View Report
+																									</Link>
+																								) : (
+																									<b>No Report</b>
+																								)}
+																							</TableCell>
+																						</TableRow>
+																					);
+																				})}
+																			</TableBody>
+																		</Table>
+																	</TableContainer>
+																) : (
+																	<Typography variant="h6" gutterBottom>
+																		No history found
+																	</Typography>
+																)}
+															</div>
+														)}
+													</DialogContent>
+													<DialogActions>
+														<Button onClick={() => setOpenDialog(false)}>
+															Close
+														</Button>
+													</DialogActions>
+												</Dialog>
 												{appointment.onlinemode && (
-													<div style={{ marginLeft: "10px" }}>
+													<div>
 														<h3>Video Chat with {appointment.patient.name}</h3>
 														<div style={{ marginBottom: "10px" }}>
 															<TextField

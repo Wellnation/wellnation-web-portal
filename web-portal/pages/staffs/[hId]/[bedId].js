@@ -15,6 +15,8 @@ import {
 	Autocomplete,
 	CircularProgress,
 	TextField,
+	Popper,
+	MenuItem,
 } from "@mui/material";
 import { useQuery } from "react-query";
 import { useRouter } from "next/router";
@@ -37,6 +39,107 @@ import { Add, PlaylistAdd } from "@mui/icons-material";
 import { Item } from "@/pages/home";
 import Notifications from "@/components/Notifications";
 
+const AppointmentSelect = ({ patient, setPopOpen, apptId, popOpen }) => {
+  const hId = localStorage.getItem("hId");
+  const [historyData, setHistoryData] = React.useState(null);
+  const [anchorHistEl, setAnchorHistEl] = React.useState(null);
+
+  const fetchHistoryData = async () => {
+		const data = [];
+		if (patient !== "") {
+			const historyRef = query(
+				collection(db, "appointments"),
+				where("pid", "==", patient),
+				where("hid", "==", hId),
+				orderBy("shldtime", "desc")
+			);
+			const historySnapshot = await getDocs(historyRef);
+			await Promise.all(
+				historySnapshot.docs.map(async (doc) => {
+          if (doc.data().drid !== "") {
+            const doctorRef = firestoreDoc(db, "doctors", doc.data().drid);
+            const doctorSnap = await getDoc(doctorRef);
+            data.push({
+              ...doc.data(),
+              id: doc.id,
+              doctor: doctorSnap.data(),
+            });
+          }
+				})
+      );
+			setHistoryData(data);
+    } else {
+      setHistoryData(null);
+    }
+	};
+
+	return (
+		<div>
+			<Button
+				disabled={patient === ""}
+				onClick={(e) => {
+					setPopOpen(!popOpen);
+					setAnchorHistEl(e.currentTarget);
+					fetchHistoryData();
+				}}
+				style={{ marginTop: "10px", width: "100%" }}
+			>
+				Set Appointment Reference
+			</Button>
+			<Popper
+				open={popOpen}
+				anchorEl={anchorHistEl}
+				anchorOrigin={{
+					vertical: "bottom",
+					horizontal: "left",
+				}}
+				transformOrigin={{
+					vertical: "top",
+					horizontal: "left",
+				}}
+				style={{ zIndex: 9999 }}
+			>
+        <Item elevation={3} style={{
+          padding: "1rem",
+          width: "auto",
+          maxHeight: "300px",
+          overflowY: "auto",
+        }}>
+					{historyData ? (
+						historyData.map((h) => (
+							<MenuItem
+								key={h.id}
+								onClick={() => {
+									setPopOpen(false);
+									apptId(h.id);
+								}}
+								divider
+								dense
+							>
+								<div>
+									<Typography variant="h6" style={{ fontWeight: "bold" }}>
+										Department: {h.dept}
+									</Typography>{" "}
+									{/* [{h.shldtime.toDate().toDateString()}{" "}
+									at {h.shldtime().toDate().toLocaleTimeString()}]{" "} */}
+									<Typography variant="body1">
+										Doctor: <b>{h.doctor.name}</b> ({h.doctor.speciality})
+									</Typography>{" "}
+									<Typography variant="body1">
+										<b>Symptoms:</b> {h.symptoms}
+									</Typography>
+								</div>
+							</MenuItem>
+						))
+					) : (
+						<MenuItem onClick={setPopOpen(false)}>No History</MenuItem>
+					)}
+				</Item>
+			</Popper>
+		</div>
+	);
+};
+
 export default function VerticalLinearStepper() {
 	const router = useRouter();
 	const hId = router.query.hId;
@@ -45,12 +148,18 @@ export default function VerticalLinearStepper() {
 	const [logsize, setLogsize] = React.useState(0);
 	const [statusDialogOpen, setStatusDialogOpen] = React.useState(false);
 	const [admissionId, setAdmissionId] = React.useState("");
-	const [status, setStatus] = React.useState(["Vacant", "Occupied"]);
+	const status = ["Vacant", "Occupied"];
 	const [statusSelect, setStatusSelect] = React.useState("");
 	const [patientSelect, setPatientSelect] = React.useState(null);
+	const [patientId, setPatientId] = React.useState("");
 	const [openPatientSelect, setOpenPatientSelect] = React.useState(false);
-  const [patientsData, setPatientsData] = React.useState([]);
-  const [patientsLoading, setPatientsLoading] = React.useState(false);
+	const [patientsData, setPatientsData] = React.useState([]);
+	const [patientsLoading, setPatientsLoading] = React.useState(false);
+	const [anchorEl, setAnchorEl] = React.useState(null);
+	const [apptId, setApptId] = React.useState("");
+	const [histDialogOpen, setHistDialogOpen] = React.useState(false);
+	
+	
 	const [notif, setNotif] = React.useState({
 		open: false,
 		message: "",
@@ -90,7 +199,7 @@ export default function VerticalLinearStepper() {
 		const logs = logsSnapshot.docs.map((doc) => {
 			return { ...doc.data(), id: doc.id };
 		});
-		setActiveStep(logs.length - 1);
+		setActiveStep(0);
 		setLogsize(logs.length - 1);
 		const patientRef = firestoreDoc(
 			db,
@@ -135,19 +244,19 @@ export default function VerticalLinearStepper() {
 			});
 	}
 
-  async function fetchPatientsData(key) {
-    setPatientsLoading(true);
+	async function fetchPatientsData() {
+		setPatientsLoading(true);
 		const patientsRef = query(
 			collection(db, "publicusers"),
-			where("name", ">=", key),
-			where("name", "<=", key + "\uf8ff")
+			where("name", ">=", patientSelect),
+			where("name", "<=", patientSelect + "\uf8ff")
 		);
 		const patientsSnapshot = await getDocs(patientsRef);
-		return setPatientsData(
+		setPatientsData(
 			patientsSnapshot.docs.map((doc) => {
 				return { ...doc.data(), id: doc.id };
 			})
-    ) && setPatientsLoading(false);
+		) && setPatientsLoading(false);
 	}
 
 	const handleAdmission = async () => {
@@ -163,19 +272,19 @@ export default function VerticalLinearStepper() {
 		if (statusSelect === "Occupied") {
 			const admissionDocRef = doc(admissionCol);
 			await setDoc(admissionDocRef, {
-				pId: patientSelect.id,
+				pId: patientId,
 				bedId: bedId,
 				hId: hId,
 				hName: hospitalSnap.data().name,
 				dateAdmitted: new Date(),
 				dateReleased: null,
-				apptId: "",
+				apptId: apptId,
 				price: Number(bedPrice[0].cost),
 				status: true,
 			});
 			await updateDoc(bedsDoc, {
 				status: false,
-				pid: patientSelect.id,
+				pid: patientId,
 			});
 			setOpenPatientSelect(false);
 		} else {
@@ -183,6 +292,11 @@ export default function VerticalLinearStepper() {
 			await updateDoc(admissionDoc, {
 				dateReleased: new Date(),
 				status: false,
+			});
+			const bedDoc = doc(db, `users/${hId}/beds`, bedId);
+			await updateDoc(bedDoc, {
+				status: true,
+				pid: "",
 			});
 			setOpenPatientSelect(false);
 		}
@@ -258,9 +372,8 @@ export default function VerticalLinearStepper() {
 					) : (
 						<>
 							{logsize != -1 &&
-							admissionInfo.data.logs[logsize - 1].logDate
-								.toDate()
-								.toDateString() === new Date().toDateString() ? null : (
+							admissionInfo.data.logs[0].logDate.toDate().toDateString() ===
+								new Date().toDateString() ? null : (
 								<Button
 									onClick={addLogs}
 									sx={{ mt: 1, mr: 1 }}
@@ -320,6 +433,7 @@ export default function VerticalLinearStepper() {
 						disableClearable
 						value={statusSelect}
 						options={status}
+						fullWidth
 						renderInput={(params) => (
 							<TextField
 								{...params}
@@ -329,44 +443,89 @@ export default function VerticalLinearStepper() {
 								InputProps={{ ...params.InputProps, type: "search" }}
 							/>
 						)}
-						onChange={(e, value) => setStatusSelect(value)}
-					/>
-					<Autocomplete
-						id="asynchronous-demo"
-						sx={{ width: 300 }}
-						style={{ marginTop: "10px" }}
-						value={patientSelect}
-						options={patientsData}
-						getOptionLabel={(option) => option.name}
-						isOptionEqualToValue={(option, value) => option.name === value.name}
-						loading={patientsLoading}
-						renderInput={(params) => (
-							<TextField
-								{...params}
-								label="Select Patient"
-								value={patientSelect}
-								InputProps={{
-									...params.InputProps,
-									endAdornment: (
-										<React.Fragment>
-											{patientsLoading ? (
-												<CircularProgress color="primary" size={20} />
-											) : null}
-											{params.InputProps.endAdornment}
-										</React.Fragment>
-									),
-								}}
-							/>
-						)}
 						onChange={(e, value) => {
-							setPatientSelect(value);
-							fetchPatientsData(value);
+							e.preventDefault();
+							setStatusSelect(value);
 						}}
 					/>
+					<TextField
+						style={{ marginTop: "10px" }}
+						label="Select Patient"
+						value={patientSelect}
+						fullWidth
+						InputProps={{
+							endAdornment: (
+								<React.Fragment>
+									{patientsLoading ? (
+										<CircularProgress color="primary" size={20} />
+									) : null}
+								</React.Fragment>
+							),
+						}}
+						onFocus={(e) => {
+							e.preventDefault();
+							setOpenPatientSelect(true);
+							setAnchorEl(e.currentTarget);
+						}}
+						onChange={(e) => {
+							e.preventDefault();
+							setPatientSelect(e.target.value);
+							fetchPatientsData();
+						}}
+					/>
+					<Popper
+						open={openPatientSelect}
+						anchorEl={anchorEl}
+						anchorOrigin={{
+							vertical: "bottom",
+							horizontal: "left",
+						}}
+						transformOrigin={{
+							vertical: "top",
+							horizontal: "left",
+						}}
+						style={{ zIndex: 9999 }}
+					>
+						<Item elevation={3} style={{ padding: "1rem", width: "250px" }}>
+							{patientsData.length > 0 ? (
+								patientsData.map((patient) => (
+									<MenuItem
+										key={patient.patientId}
+										onClick={() => {
+											setPatientSelect(patient.name);
+											setPatientId(patient.userid);
+											setOpenPatientSelect(false);
+										}}
+									>
+										<b>{patient.name}</b>
+									</MenuItem>
+								))
+							) : (
+								<MenuItem>
+									<b>No patients found</b>
+								</MenuItem>
+							)}
+						</Item>
+					</Popper>
+          <AppointmentSelect
+            patient={patientId}
+            popOpen={histDialogOpen}
+            setPopOpen={setHistDialogOpen}
+            apptId={setApptId}
+          />
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={() => handleAdmission()}>Update</Button>
-					<Button onClick={() => setStatusDialogOpen(false)}>Cancel</Button>
+					<Button
+						onClick={() => {
+							setStatusDialogOpen(false);
+							setStatusSelect("");
+							setPatientSelect("");
+							setPatientId("");
+						}}
+					>
+						Cancel
+					</Button>
 				</DialogActions>
 			</Dialog>
 			<Notifications

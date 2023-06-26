@@ -14,20 +14,10 @@ import {
 import Tesseract from "tesseract.js";
 import * as PDFJS from "pdfjs-dist";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
-import { StringStream } from "pdfjs-dist/build/pdf.worker";
 import axios from "axios";
-import {
-	collection,
-	getDocs,
-	where,
-	query,
-	getDoc,
-	doc as firestoreDoc,
-	setDoc,
-} from "firebase/firestore";
+import { doc as firestoreDoc, setDoc } from "firebase/firestore";
 import { db, storage } from "@/lib/firebase.config";
 import { uploadBytes, ref } from "firebase/storage";
-import { set } from "zod";
 
 PDFJS.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
@@ -74,9 +64,22 @@ export default function TestReport(props) {
 				console.log(String(result.data.text));
 				setText(result.data.text);
 				axios
-					.post("https://wellnation-socket-server.up.railway.app/analyze-report", {
-						text: result.data.text,
-					})
+					.post(
+						// "https://wellnation-socket-server.up.railway.app/analyze-report",
+						// "http://localhost:8000/analyze-report",
+						"https://api.wellnation.live/analyze-report",
+						{
+							text: result.data.text,
+						},
+						{
+							headers: {
+								"Access-Control-Allow-Origin": "*",
+								"Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+								"Access-Control-Allow-Headers": "Content-Type, Authorization, Access-Control-Allow-Origin",
+							},
+							withCredentials: true,
+						},
+					)
 					.then((output) => {
 						setLlmOutput(output.data.report);
 						const testsRef = ref(storage, "test-reports/" + file.name);

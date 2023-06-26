@@ -129,8 +129,8 @@ export default function History(props) {
         return <div>{params.value}</div>
       },
     },
-    { field: "symptoms", headerName: "Symptoms", width: 150 },
-    { field: "dept", headerName: "Dept", width: 100 },
+    { field: "symptoms", headerName: "Symptoms", width: 200 },
+    { field: "dept", headerName: "Dept", width: 150 },
     {
       field: "onlinemode",
       headerName: "Mode",
@@ -158,7 +158,7 @@ export default function History(props) {
     {
       field: "reqtime",
       headerName: "Requested On",
-      width: 150,
+      width: 180,
       renderCell: (params) => {
         return <div>{dayjs(params.value.toDate()).format("DD/MM/YYYY HH:mm")}</div>
       },
@@ -166,7 +166,7 @@ export default function History(props) {
     {
       field: "shldtime",
       headerName: "Scheduled Time",
-      width: 180,
+      width: 200,
       renderCell: (params) => (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker
