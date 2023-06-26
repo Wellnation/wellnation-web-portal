@@ -77,8 +77,8 @@ export default function AlignItemsList(props) {
         attachment: "",
         hid: props.hId,
         hname: props.hName,
-        patientId: props.pId,
-        pName: props.pName,
+        patientid: props.pId,
+        pname: props.pName,
       })
 
       const newTest = {
