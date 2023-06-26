@@ -74,7 +74,7 @@ export default function TestReport(props) {
 				console.log(String(result.data.text));
 				setText(result.data.text);
 				axios
-					.post("http://localhost:8000/analyze-report", {
+					.post("https://wellnation-socket-server.up.railway.app/analyze-report", {
 						text: result.data.text,
 					})
 					.then((output) => {
