@@ -77,7 +77,6 @@ export default function TestReport(props) {
 								"Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
 								"Access-Control-Allow-Headers": "Content-Type, Authorization, Access-Control-Allow-Origin",
 							},
-							withCredentials: true,
 						},
 					)
 					.then((output) => {

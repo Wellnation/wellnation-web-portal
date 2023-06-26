@@ -16,7 +16,7 @@ app.use((req, res, next) => {
 });
 app.use(
 	cors({
-		origin: "*",
+		origin: true,
 		credentials: true,
 		allowedHeaders: [
 			"Content-Type",
@@ -48,7 +48,7 @@ app.post("/analyze-report", async (req, res) => {
 
 const io = new Server(8001, {
 	cors: {
-		origin: "*",
+		origin: true,
 		methods: ["GET", "POST", "OPTIONS", "DELETE", "PUT"],
 		allowedHeaders: [
 			"Content-Type",
