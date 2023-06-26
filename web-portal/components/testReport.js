@@ -70,7 +70,15 @@ export default function TestReport(props) {
 						"https://api.wellnation.live/analyze-report",
 						{
 							text: result.data.text,
-						}
+						},
+						{
+							headers: {
+								"Access-Control-Allow-Origin": "*",
+								"Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+								"Access-Control-Allow-Headers": "Content-Type, Authorization",
+							},
+							withCredentials: true,
+						},
 					)
 					.then((output) => {
 						setLlmOutput(output.data.report);

@@ -11,6 +11,11 @@ const SocketProvider = (props) => {
 			// io("https://wellnation-socket-server.up.railway.app", {
 			io("https://socket.wellnation.live", {
 				withCredentials: true,
+				extraHeaders: {
+					"Access-Control-Allow-Origin": "*",
+					"Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+					"Access-Control-Allow-Headers": "Content-Type, Authorization",
+				}
 			}),
 		// () => io("localhost:8001"),
 		[]

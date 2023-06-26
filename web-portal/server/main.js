@@ -9,10 +9,7 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 8000;
 app.use((req, res, next) => {
-	res.header(
-		"Access-Control-Allow-Origin",
-		"http://localhost:3000, https://wellnation.vercel.app, https://wellnation.live, https://staffs.wellnation.live"
-	);
+	res.header("Access-Control-Allow-Origin", "*");
 	res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
 	res.header("Access-Control-Allow-Headers", "Content-Type, Accept");
 	next();
@@ -23,6 +20,8 @@ app.use(
 			"http://localhost:3000",
 			"https://wellnation.vercel.app",
 			"http://34.170.11.83:3000/",
+			"https://wellnation.live",
+			"https://staffs.wellnation.live",
 		],
 		credentials: true,
 		allowedHeaders: [
@@ -55,12 +54,8 @@ app.post("/analyze-report", async (req, res) => {
 
 const io = new Server(8001, {
 	cors: {
-		origin: [
-			"https://wellnation.live",
-			"https://staffs.wellnation.live",
-			"https://wellnation.vercel.app",
-			"http://localhost:3000",
-		],
+		origin:
+			"http://localhost:3000, https://wellnation.vercel.app, https://wellnation.live, https://staffs.wellnation.live",
 		methods: ["GET", "POST", "OPTIONS", "DELETE", "PUT"],
 		allowedHeaders: [
 			"Content-Type",
