@@ -96,9 +96,7 @@ export default function TestReport(props) {
 										llmOutput: output.data.report,
 										attachment: `https://firebasestorage.googleapis.com/v0/b/${
 											process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-										}/o/${encodeURIComponent(
-											snapshot.metadata.fullPath
-										)}?alt=media`,
+										}/o/${encodeURIComponent(snapshot.metadata.fullPath)}?alt=media`,
 										status: true,
 									},
 									{ merge: true }

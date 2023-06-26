@@ -400,6 +400,9 @@ export default function VerticalLinearStepper() {
 													admissionId={admissionInfo.data.admissionId}
 													refetchFunc={admissionInfo.refetch}
 													hId={hId}
+													hName={admissionInfo.data.hName}
+													pId={admissionInfo.data.pId}
+													pName={admissionInfo.data.patient.name}
 												/>
 											</Item>
 										</StepContent>
