@@ -39,6 +39,107 @@ import { Add, PlaylistAdd } from "@mui/icons-material";
 import { Item } from "@/pages/home";
 import Notifications from "@/components/Notifications";
 
+const AppointmentSelect = ({ patient, setPopOpen, apptId, popOpen }) => {
+  const hId = localStorage.getItem("hId");
+  const [historyData, setHistoryData] = React.useState(null);
+  const [anchorHistEl, setAnchorHistEl] = React.useState(null);
+
+  const fetchHistoryData = async () => {
+		const data = [];
+		if (patient !== "") {
+			const historyRef = query(
+				collection(db, "appointments"),
+				where("pid", "==", patient),
+				where("hid", "==", hId),
+				orderBy("shldtime", "desc")
+			);
+			const historySnapshot = await getDocs(historyRef);
+			await Promise.all(
+				historySnapshot.docs.map(async (doc) => {
+          if (doc.data().drid !== "") {
+            const doctorRef = firestoreDoc(db, "doctors", doc.data().drid);
+            const doctorSnap = await getDoc(doctorRef);
+            data.push({
+              ...doc.data(),
+              id: doc.id,
+              doctor: doctorSnap.data(),
+            });
+          }
+				})
+      );
+			setHistoryData(data);
+    } else {
+      setHistoryData(null);
+    }
+	};
+
+	return (
+		<div>
+			<Button
+				disabled={patient === ""}
+				onClick={(e) => {
+					setPopOpen(!popOpen);
+					setAnchorHistEl(e.currentTarget);
+					fetchHistoryData();
+				}}
+				style={{ marginTop: "10px", width: "100%" }}
+			>
+				Set Appointment Reference
+			</Button>
+			<Popper
+				open={popOpen}
+				anchorEl={anchorHistEl}
+				anchorOrigin={{
+					vertical: "bottom",
+					horizontal: "left",
+				}}
+				transformOrigin={{
+					vertical: "top",
+					horizontal: "left",
+				}}
+				style={{ zIndex: 9999 }}
+			>
+        <Item elevation={3} style={{
+          padding: "1rem",
+          width: "auto",
+          maxHeight: "300px",
+          overflowY: "auto",
+        }}>
+					{historyData ? (
+						historyData.map((h) => (
+							<MenuItem
+								key={h.id}
+								onClick={() => {
+									setPopOpen(false);
+									apptId(h.id);
+								}}
+								divider
+								dense
+							>
+								<div>
+									<Typography variant="h6" style={{ fontWeight: "bold" }}>
+										Department: {h.dept}
+									</Typography>{" "}
+									{/* [{h.shldtime.toDate().toDateString()}{" "}
+									at {h.shldtime().toDate().toLocaleTimeString()}]{" "} */}
+									<Typography variant="body1">
+										Doctor: <b>{h.doctor.name}</b> ({h.doctor.speciality})
+									</Typography>{" "}
+									<Typography variant="body1">
+										<b>Symptoms:</b> {h.symptoms}
+									</Typography>
+								</div>
+							</MenuItem>
+						))
+					) : (
+						<MenuItem onClick={setPopOpen(false)}>No History</MenuItem>
+					)}
+				</Item>
+			</Popper>
+		</div>
+	);
+};
+
 export default function VerticalLinearStepper() {
 	const router = useRouter();
 	const hId = router.query.hId;
@@ -57,8 +158,8 @@ export default function VerticalLinearStepper() {
 	const [anchorEl, setAnchorEl] = React.useState(null);
 	const [apptId, setApptId] = React.useState("");
 	const [histDialogOpen, setHistDialogOpen] = React.useState(false);
-	const [historyData, setHistoryData] = React.useState(null);
-	const [andhorHistEl, setAnchorHistEl] = React.useState(null);
+	
+	
 	const [notif, setNotif] = React.useState({
 		open: false,
 		message: "",
@@ -204,31 +305,6 @@ export default function VerticalLinearStepper() {
 			message: "Admission status updated successfully!",
 			type: "success",
 		});
-	};
-
-	const fetchHistoryData = async () => {
-		const data = [];
-		if (patientId !== "") {
-			const historyRef = query(
-				collection(db, "appointments"),
-				where("pId", "==", patientId),
-				where("hid", "==", hId),
-				orderBy("shldtime", "desc")
-			);
-			const historySnapshot = await getDocs(historyRef);
-			await Promise.all(
-				historySnapshot.docs.map(async (doc) => {
-					const doctorRef = firestoreDoc(db, "doctors", doc.data().drid);
-					const doctorSnap = await getDoc(doctorRef);
-					data.push({
-						...doc.data(),
-						id: doc.id,
-						doctor: doctorSnap.data(),
-					});
-				})
-			);
-			setHistoryData(data);
-		}
 	};
 
 	return (
@@ -428,7 +504,12 @@ export default function VerticalLinearStepper() {
 							)}
 						</Item>
 					</Popper>
-					<AppointmentSelect patient={patientId}  />
+          <AppointmentSelect
+            patient={patientId}
+            popOpen={histDialogOpen}
+            setPopOpen={setHistDialogOpen}
+            apptId={setApptId}
+          />
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={() => handleAdmission()}>Update</Button>

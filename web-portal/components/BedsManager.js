@@ -29,7 +29,7 @@ const BedsManager = () => {
 			setHospitalName(hospitalSnap.data().name);
 			const bedsCol = await getDocs(
 				query(collection(db, `users/${hId}/beds`), orderBy("roomNo"))
-      );
+			);
 			await Promise.all(
 				bedsCol.docs.map(async (doc) => {
 					const type = hospitalSnap
@@ -92,12 +92,12 @@ const BedsManager = () => {
 							padding: "30px 20px",
 							display: "flex",
 							flexDirection: "column",
-              minHeight: "300px",
-              cursor: "pointer"
-            }}
-            onClick={() => {
-              window.location.href = window.origin + `/${hId}/${bed.id}`
-            }}
+							minHeight: "300px",
+							cursor: "pointer",
+						}}
+						onClick={() => {
+							window.location.href = window.origin + `/${hId}/${bed.id}`;
+						}}
 					>
 						<Typography
 							variant="h4"
@@ -136,10 +136,7 @@ const BedsManager = () => {
 								>
 									Patient Name: {bed.patientName}
 								</Typography>
-								<Typography
-									variant="h6"
-									style={{ fontWeight: "bold" }}
-								>
+								<Typography variant="h6" style={{ fontWeight: "bold" }}>
 									Contact: {bed.patientContact}
 								</Typography>
 							</>

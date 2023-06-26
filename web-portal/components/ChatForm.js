@@ -145,8 +145,7 @@ const ChatForm = ({ pid }) => {
 			<Item
 				elevation={0}
 				style={{
-					margin: "30px auto",
-					padding: "30px",
+					margin: "auto",
 				}}
 			>
 				<h1>Diagnosis & Prescription Form</h1>

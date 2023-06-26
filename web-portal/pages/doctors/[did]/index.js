@@ -1,7 +1,5 @@
 import React, { useCallback } from "react";
-import { styled } from "@mui/material/styles";
 import {
-	Paper,
 	Typography,
 	Accordion,
 	AccordionSummary,
@@ -13,6 +11,13 @@ import {
 	IconButton,
 	InputAdornment,
 	Tooltip,
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogActions,
+	Table,
+	TableBody,
+	TableCell,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { useAuth } from "@/lib/zustand.config";
@@ -26,6 +31,7 @@ import {
 	where,
 	getDoc,
 	doc as fireStoreDoc,
+	orderBy,
 } from "firebase/firestore";
 import { Loader } from "@/components/utils";
 import { db } from "@/lib/firebase.config";
@@ -73,7 +79,8 @@ const DoctorHome = () => {
 		queryFn: async () => {
 			const q = query(
 				collection(db, "appointments"),
-				where("drid", "==", user.uid)
+				where("drid", "==", user.uid),
+				orderBy("shldtime", "desc")
 			);
 			const querySnapshot = await getDocs(q);
 			const appointmentData = {
@@ -87,7 +94,7 @@ const DoctorHome = () => {
 					const patientDoc = await getDoc(
 						fireStoreDoc(db, "publicusers", doc.data().pid)
 					);
-					doc.status
+					doc.data().status
 						? past.push({
 								id: doc.id,
 								patient: patientDoc.data(),
@@ -126,7 +133,7 @@ const DoctorHome = () => {
 			<Item
 				elevation={0}
 				style={{
-					padding: "30px",
+					padding: "20px",
 				}}
 			>
 				<h1>Appointments</h1>
@@ -218,8 +225,161 @@ const DoctorHome = () => {
 														</ListItem>
 													</Grid>
 												</Grid>
+												<Button
+													style={{
+														marginTop: "20px",
+													}}
+												>
+													See Patient History
+												</Button>
+												<Dialog
+													open={openDialog}
+													onClose={() => setOpenDialog(false)}
+													fullWidth
+													maxWidth={"lg"}
+												>
+													<DialogTitle>
+														<b>Patient History: {pid}</b>
+													</DialogTitle>
+													<DialogContent>
+														{histLoading ? (
+															<div
+																style={{
+																	display: "flex",
+																	justifyContent: "center",
+																	alignItems: "center",
+																}}
+															>
+																<CircularProgress />
+															</div>
+														) : (
+															<div>
+																{patientHist && patientHist.length > 0 ? (
+																	<TableContainer>
+																		<Table
+																			stickyHeader
+																			aria-label="collapsible table"
+																		>
+																			<TableHead>
+																				<TableRow>
+																					{patientColumns.map((column) => (
+																						<TableCell
+																							key={column.id}
+																							align={column.align}
+																							style={{
+																								minWidth: column.minWidth,
+																							}}
+																						>
+																							{column.label}
+																						</TableCell>
+																					))}
+																				</TableRow>
+																			</TableHead>
+																			<TableBody>
+																				{patientHist.map((row) => {
+																					return (
+																						<TableRow
+																							key={row.id}
+																							sx={{
+																								"& > *": {
+																									borderBottom: "unset",
+																								},
+																							}}
+																						>
+																							<TableCell
+																								component="th"
+																								scope="row"
+																							>
+																								{row.data().tname}
+																							</TableCell>
+																							<TableCell align="right">
+																								{row
+																									.data()
+																									.reqtime.toDate()
+																									.toDateString() +
+																									" at " +
+																									row
+																										.data()
+																										.reqtime.toDate()
+																										.toLocaleTimeString(
+																											"en-us"
+																										)}
+																							</TableCell>
+																							<TableCell align="right">
+																								{row
+																									.data()
+																									.shldtime.toDate()
+																									.toDateString() +
+																									" at " +
+																									row
+																										.data()
+																										.shldtime.toDate()
+																										.toLocaleTimeString(
+																											"en-us"
+																										)}
+																							</TableCell>
+																							<TableCell align="right">
+																								{row.data().status &&
+																								row.data().attatchment ? (
+																									<Chip
+																										label="Completed"
+																										color="primary"
+																										variant="outlined"
+																									/>
+																								) : row.data().status &&
+																								  !row.data().attachment ? (
+																									<Chip
+																										label="Scheduled"
+																										color="primary"
+																										variant="outlined"
+																									/>
+																								) : (
+																									<Chip
+																										label="Pending"
+																										color="primary"
+																										variant="outlined"
+																									/>
+																								)}
+																							</TableCell>
+																							<TableCell align="center">
+																								{row.data().attachment ? (
+																									<Link
+																										href={`https://firebasestorage.googleapis.com/v0/b/${
+																											process.env
+																												.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+																										}/o/${encodeURIComponent(
+																											row.data().attachment
+																										)}?alt=media`}
+																										target="_blank"
+																									>
+																										View Report
+																									</Link>
+																								) : (
+																									<b>No Report</b>
+																								)}
+																							</TableCell>
+																						</TableRow>
+																					);
+																				})}
+																			</TableBody>
+																		</Table>
+																	</TableContainer>
+																) : (
+																	<Typography variant="h6" gutterBottom>
+																		No history found
+																	</Typography>
+																)}
+															</div>
+														)}
+													</DialogContent>
+													<DialogActions>
+														<Button onClick={() => setOpenDialog(false)}>
+															Close
+														</Button>
+													</DialogActions>
+												</Dialog>
 												{appointment.onlinemode && (
-													<div style={{ marginLeft: "10px" }}>
+													<div>
 														<h3>Video Chat with {appointment.patient.name}</h3>
 														<div style={{ marginBottom: "10px" }}>
 															<TextField
