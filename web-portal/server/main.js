@@ -16,13 +16,7 @@ app.use((req, res, next) => {
 });
 app.use(
 	cors({
-		origin: [
-			"http://localhost:3000",
-			"https://wellnation.vercel.app",
-			"http://34.170.11.83:3000/",
-			"https://wellnation.live",
-			"https://staffs.wellnation.live",
-		],
+		origin: "*",
 		credentials: true,
 		allowedHeaders: [
 			"Content-Type",
@@ -54,8 +48,7 @@ app.post("/analyze-report", async (req, res) => {
 
 const io = new Server(8001, {
 	cors: {
-		origin:
-			"http://localhost:3000, https://wellnation.vercel.app, https://wellnation.live, https://staffs.wellnation.live",
+		origin: "*",
 		methods: ["GET", "POST", "OPTIONS", "DELETE", "PUT"],
 		allowedHeaders: [
 			"Content-Type",
