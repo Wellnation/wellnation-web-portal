@@ -222,8 +222,7 @@ const VideoRoom = () => {
 							{myStream && (
 								<div
 									style={{
-										margin: "auto",
-										marginTop: "20px",
+										margin: "20px auto",
 									}}
 								>
 									<ReactPlayer
@@ -236,22 +235,19 @@ const VideoRoom = () => {
 										style={{
 											display: "flex",
 											justifyContent: "center",
-											marginTop: "20px",
+											margin: "20px auto",
 											alignItems: "center",
 										}}
 									>
 										<IconButton
 											style={{
-												marginLeft: "20px",
+												marginRight: "20px",
 											}}
 											onClick={() => setMute(!mute)}
 										>
 											{mute ? <MicOffRounded color="error" /> : <MicIcon />}
 										</IconButton>
 										<IconButton
-											style={{
-												marginLeft: "20px",
-											}}
 											onClick={() => setVideo(!video)}
 										>
 											{video ? <Videocam /> : <VideocamOff color="error" />}
@@ -276,7 +272,7 @@ const VideoRoom = () => {
 								style={{
 									display: "flex",
 									justifyContent: "center",
-									marginTop: "20px",
+									margin: "20px auto",
 									alignItems: "center",
 								}}
 							>
