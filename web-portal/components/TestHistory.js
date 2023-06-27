@@ -244,20 +244,14 @@ const TestHistory = () => {
 																	.toLocaleTimeString("en-us")}
 														</TableCell>
 														<TableCell align="right">
-															{row.data().status && row.data().attatchment ? (
+															{row.data().status &&
+															row.data().attachment ? (
 																<Chip
 																	label="Completed"
 																	color="primary"
 																	variant="outlined"
 																/>
-															) : row.data().status &&
-															  !row.data().attachment ? (
-																<Chip
-																	label="Scheduled"
-																	color="primary"
-																	variant="outlined"
-																/>
-															) : !row.status ? (
+															) : !row.data().status ? (
 																<Chip
 																	label="Pending"
 																	color="primary"
@@ -265,7 +259,7 @@ const TestHistory = () => {
 																/>
 															) : (
 																<Chip
-																	label="Completed"
+																	label="Scheduled"
 																	color="primary"
 																	variant="outlined"
 																/>
@@ -274,12 +268,7 @@ const TestHistory = () => {
 														<TableCell align="center">
 															{row.data().attachment ? (
 																<Link
-																	href={`https://firebasestorage.googleapis.com/v0/b/${
-																		process.env
-																			.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-																	}/o/${encodeURIComponent(
-																		row.data().attachment
-																	)}?alt=media`}
+																	href={row.data().attachment}
 																	target="_blank"
 																>
 																	View Report
