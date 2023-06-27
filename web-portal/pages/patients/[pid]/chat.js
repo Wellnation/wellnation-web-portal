@@ -2,8 +2,6 @@ import React, { useCallback } from "react";
 import {
 	Button,
 	IconButton,
-	Paper,
-	styled,
 	TextField,
 	InputAdornment,
 	Tooltip,
@@ -20,9 +18,6 @@ import {
 import { useRouter } from "next/router";
 import peer from "@/service/peer";
 import { Item } from "@/pages/home";
-
-// import dynamic from "next/dynamic";
-// const peer = dynamic(() => import("@/service/peer"), { ssr: false });
 
 const PatientChat = () => {
 	const router = useRouter();
@@ -228,15 +223,18 @@ const PatientChat = () => {
 					{myStream && (
 						<div
 							style={{
-								margin: "auto",
-								marginTop: "20px",
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+								flexDirection: "column",
+								margin: "20px auto",
 							}}
 						>
 							<ReactPlayer
 								url={myStream}
 								playing={video}
 								muted={mute}
-								width="500px"
+								width="80vw"
 							/>
 							<div
 								style={{
@@ -248,18 +246,13 @@ const PatientChat = () => {
 							>
 								<IconButton
 									style={{
-										marginLeft: "20px",
+										marginRight: "20px",
 									}}
 									onClick={() => setMute(!mute)}
 								>
 									{mute ? <MicOffRounded color="error" /> : <MicIcon />}
 								</IconButton>
-								<IconButton
-									style={{
-										marginLeft: "20px",
-									}}
-									onClick={() => setVideo(!video)}
-								>
+								<IconButton onClick={() => setVideo(!video)}>
 									{video ? <Videocam /> : <VideocamOff color="error" />}
 								</IconButton>
 							</div>
@@ -268,13 +261,17 @@ const PatientChat = () => {
 					{remoteStream && (
 						<div
 							style={{
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+								flexDirection: "column",
 								paddingTop: 0,
 								marginTop: 0,
 								textAlign: "center",
 							}}
 						>
 							<h2>{remoteUID ? remoteUID + " Stream" : ""}</h2>
-							<ReactPlayer url={remoteStream} playing width="500px" />
+							<ReactPlayer url={remoteStream} playing width="80vw" />
 							<div
 								style={{
 									display: "flex",
