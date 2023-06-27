@@ -222,6 +222,10 @@ const VideoRoom = () => {
 							{myStream && (
 								<div
 									style={{
+										display: "flex",
+										justifyContent: "center",
+										alignItems: "center",
+										flexDirection: "column",
 										margin: "20px auto",
 									}}
 								>
@@ -247,9 +251,7 @@ const VideoRoom = () => {
 										>
 											{mute ? <MicOffRounded color="error" /> : <MicIcon />}
 										</IconButton>
-										<IconButton
-											onClick={() => setVideo(!video)}
-										>
+										<IconButton onClick={() => setVideo(!video)}>
 											{video ? <Videocam /> : <VideocamOff color="error" />}
 										</IconButton>
 									</div>
@@ -258,6 +260,10 @@ const VideoRoom = () => {
 							{remoteStream && (
 								<div
 									style={{
+										display: "flex",
+										justifyContent: "center",
+										alignItems: "center",
+										flexDirection: "column",
 										paddingTop: 0,
 										marginTop: 0,
 										textAlign: "center",
