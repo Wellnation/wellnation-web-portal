@@ -132,8 +132,8 @@ const TestManager = ({ data }) => {
 									</Typography>
 									<Typography variant="body1">
 										{tests.data().description
-											? tests.data().description.length > 70 &&
-												tests.data().description.substring(0, 70) + "..."
+											? tests.data().description.length > 70 ?
+												tests.data().description.substring(0, 70) + "..." : tests.data().description
 											: "No description provided"}
 									</Typography>
 								</div>

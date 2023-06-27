@@ -16,7 +16,7 @@ const RoomGenerate = ({ data, hId, notifType, notifMsg, notifOpen }) => {
 			for (let j = 0; j < beds; j++) {
 				const roomDocRef = doc(collection(db, `users/${hId}/beds`));
 				await setDoc(roomDocRef, {
-					bedNo: String(j + 1).concat(bedLetter),
+					bedNo: String(startingRoom).concat(bedLetter),
 					pid: "",
 					roomNo: Number(startingRoom),
 					status: true,
@@ -29,7 +29,7 @@ const RoomGenerate = ({ data, hId, notifType, notifMsg, notifOpen }) => {
 					"created for room:",
 					startingRoom,
 					"bed:",
-					String(j + 1).concat(bedLetter)
+					String(startingRoom).concat(bedLetter)
 				);
 				bedLetter = String.fromCharCode(bedLetter.charCodeAt() + 1);
 			}

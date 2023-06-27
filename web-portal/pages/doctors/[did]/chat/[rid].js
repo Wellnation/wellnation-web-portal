@@ -222,38 +222,36 @@ const VideoRoom = () => {
 							{myStream && (
 								<div
 									style={{
-										margin: "auto",
-										marginTop: "20px",
+										display: "flex",
+										justifyContent: "center",
+										alignItems: "center",
+										flexDirection: "column",
+										margin: "20px auto",
 									}}
 								>
 									<ReactPlayer
 										url={myStream}
 										playing={video}
 										muted={mute}
-										width="500px"
+										width="80vw"
 									/>
 									<div
 										style={{
 											display: "flex",
 											justifyContent: "center",
-											marginTop: "20px",
+											margin: "20px auto",
 											alignItems: "center",
 										}}
 									>
 										<IconButton
 											style={{
-												marginLeft: "20px",
+												marginRight: "20px",
 											}}
 											onClick={() => setMute(!mute)}
 										>
 											{mute ? <MicOffRounded color="error" /> : <MicIcon />}
 										</IconButton>
-										<IconButton
-											style={{
-												marginLeft: "20px",
-											}}
-											onClick={() => setVideo(!video)}
-										>
+										<IconButton onClick={() => setVideo(!video)}>
 											{video ? <Videocam /> : <VideocamOff color="error" />}
 										</IconButton>
 									</div>
@@ -262,13 +260,17 @@ const VideoRoom = () => {
 							{remoteStream && (
 								<div
 									style={{
+										display: "flex",
+										justifyContent: "center",
+										alignItems: "center",
+										flexDirection: "column",
 										paddingTop: 0,
 										marginTop: 0,
 										textAlign: "center",
 									}}
 								>
 									<h2>{remoteUID ? remoteUID + " Stream" : ""}</h2>
-									<ReactPlayer url={remoteStream} playing width="500px" />
+									<ReactPlayer url={remoteStream} playing width="80vw" />
 								</div>
 							)}
 							<ChatForm pid={remoteUID} />
@@ -276,7 +278,7 @@ const VideoRoom = () => {
 								style={{
 									display: "flex",
 									justifyContent: "center",
-									marginTop: "20px",
+									margin: "20px auto",
 									alignItems: "center",
 								}}
 							>
