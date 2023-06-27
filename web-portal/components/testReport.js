@@ -109,8 +109,8 @@ export default function TestReport(props) {
 							})
 							.then(() => {
 								query({ inputs: output.data.report }).then((response) => {
-									console.log(response);
-									setCritical(response[0].label === "NEGATIVE" ? false : true);
+									console.log(response[0]);
+									setCritical(response[0][0].label === "NEGATIVE" ? false : true);
 								});
 							})
 							.then(() => {

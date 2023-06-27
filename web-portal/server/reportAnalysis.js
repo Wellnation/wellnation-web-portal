@@ -17,7 +17,7 @@ module.exports = async function ReportAnalysis(report) {
   const formatInstructions = zparser.getFormatInstructions()
 
   const prompt = new PromptTemplate({
-    template: "Answer the users question as best as possible.\n{format_instructions}\nPredict accurately whether the patient should be categorised as critical or non-critical based on the given readings and report details by comparing with standard values of the readings? Patient readings - {question}\nAnalyze the report briefly",
+    template: "Answer the users question as best as possible.\n{format_instructions}\nPredict accurately whether the patient should be categorised as critical or non-critical based on the given readings and report details by comparing with standard values of the readings? Patient readings - {question}\nAnalyze the report and give a brief summary",
     inputVariables: ["question"],
     partialVariables: { format_instructions: formatInstructions },
   })

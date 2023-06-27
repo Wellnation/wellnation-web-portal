@@ -109,14 +109,14 @@ function Navbar() {
 			name: "Home",
 			link: `/doctors/${dId}`,
 		},
-		{
-			name: (
-				<Badge color="error" badgeContent={Number(badge)}>
-					Emergency
-				</Badge>
-			),
-			link: "/emergency",
-		},
+		// {
+		// 	name: (
+		// 		<Badge color="error" badgeContent={Number(badge)}>
+		// 			Emergency
+		// 		</Badge>
+		// 	),
+		// 	link: "/emergency",
+		// },
 	];
 
 	const setForDoctor = [
